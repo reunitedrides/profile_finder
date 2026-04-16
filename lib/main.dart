@@ -41,20 +41,24 @@ class HistoryEntry {
   final ProfileRecord profile;
   final DateTime savedAt;
   final String? location;
+  final double? roofPitch;
 
-  const HistoryEntry({required this.profile, required this.savedAt, this.location});
+  const HistoryEntry({required this.profile, required this.savedAt, this.location, this.roofPitch});
 
   Map<String, dynamic> toJson() => {
     'profile': profile.toJson(),
     'savedAt': savedAt.toIso8601String(),
     'location': location,
+    'roofPitch': roofPitch,
   };
 
   factory HistoryEntry.fromJson(Map<String, dynamic> json) {
+    double? toD(dynamic v) { if (v == null) return null; if (v is num) return v.toDouble(); return double.tryParse(v.toString()); }
     return HistoryEntry(
       profile: ProfileRecord.fromJson(json['profile'] as Map<String, dynamic>),
       savedAt: DateTime.tryParse(json['savedAt']?.toString() ?? '') ?? DateTime.now(),
       location: json['location']?.toString(),
+      roofPitch: toD(json['roofPitch']),
     );
   }
 
@@ -832,6 +836,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             Expanded(child: Text(entry.location!, style: const TextStyle(fontSize: 11, color: Colors.blue), overflow: TextOverflow.ellipsis)),
                           ]),
                         ],
+                        if (entry.roofPitch != null) ...[
+                          const SizedBox(height: 2),
+                          Row(children: [
+                            const Icon(Icons.architecture, size: 12, color: Colors.deepOrange),
+                            const SizedBox(width: 4),
+                            Text('Pitch: ${entry.roofPitch!.toStringAsFixed(1)}°', style: const TextStyle(fontSize: 11, color: Colors.deepOrange)),
+                          ]),
+                        ],
                       ]),
                       isThreeLine: true,
                       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -862,13 +874,14 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
   Future<void> _saveToHistory(BuildContext context, ProfileRecord profile) async {
     final TextEditingController locationController = TextEditingController();
-    final String? location = await showDialog<String>(
+    final TextEditingController pitchController = TextEditingController();
+    final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('Save ${profile.displayTitle}', style: const TextStyle(fontSize: 16)),
-        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('Enter a building or location name (optional):'),
-          const SizedBox(height: 12),
+        content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('Location / building name (optional):'),
+          const SizedBox(height: 8),
           TextField(
             controller: locationController,
             autofocus: true,
@@ -879,22 +892,40 @@ class _ResultsScreenState extends State<ResultsScreen> {
               prefixIcon: Icon(Icons.location_on),
             ),
           ),
-        ]),
+          const SizedBox(height: 16),
+          const Text('Roof pitch in degrees (optional):'),
+          const SizedBox(height: 8),
+          TextField(
+            controller: pitchController,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: const InputDecoration(
+              hintText: 'e.g. 22.5',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.architecture),
+              suffixText: '°',
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text('Tip: use the Pitch Finder tool to measure', style: TextStyle(fontSize: 11, color: Colors.grey)),
+        ])),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, null), child: const Text('Cancel')),
           ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, locationController.text.trim()),
+            onPressed: () => Navigator.pop(ctx, {'location': locationController.text.trim(), 'pitch': pitchController.text.trim()}),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
             child: const Text('Save'),
           ),
         ],
       ),
     );
-    if (location == null) return; // cancelled
+    if (result == null) return;
+    final String location = result['location'] ?? '';
+    final double? pitch = double.tryParse(result['pitch'] ?? '');
     await HistoryService.saveEntry(HistoryEntry(
       profile: profile,
       savedAt: DateTime.now(),
       location: location.isEmpty ? null : location,
+      roofPitch: pitch,
     ));
     setState(() { _savedKeys.add(_profileKey(profile)); });
     if (context.mounted) {
@@ -902,7 +933,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
         content: Row(children: [
           const Icon(Icons.check_circle, color: Colors.white),
           const SizedBox(width: 8),
-          Text(location.isEmpty ? 'Saved to history!' : 'Saved to history: $location'),
+          Text(location.isEmpty ? 'Saved to history!' : 'Saved: $location'),
         ]),
         backgroundColor: Colors.green.shade700,
         duration: const Duration(seconds: 2),
@@ -1225,28 +1256,42 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
         backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Instructions
+            // How to hold phone diagram
             Card(
               color: Colors.blue.shade50,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: const Padding(
-                padding: EdgeInsets.all(14),
-                child: Row(children: [
-                  Icon(Icons.info_outline, color: Colors.blue),
-                  SizedBox(width: 10),
-                  Expanded(child: Text(
-                    'Place the edge of your phone flat against the roof surface. Hold steady then tap Lock to capture the reading.',
-                    style: TextStyle(fontSize: 13),
-                  )),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const Row(children: [
+                    Icon(Icons.info_outline, color: Colors.blue),
+                    SizedBox(width: 8),
+                    Text('How to use', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                  ]),
+                  const SizedBox(height: 10),
+                  // Simple diagram
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                    child: Column(children: [
+                      // Roof line diagram
+                      CustomPaint(size: const Size(200, 80), painter: _RoofDiagramPainter()),
+                      const SizedBox(height: 8),
+                      const Text('Hold the BOTTOM EDGE of your phone\nagainst the roof slope', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+                    ]),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text('• Hold phone in portrait mode\n• Press the bottom edge flat against the roof\n• Keep steady for a stable reading\n• Tap Lock to capture the angle', style: TextStyle(fontSize: 13, height: 1.6)),
                 ]),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
             // Big degree display
             Container(
@@ -1268,7 +1313,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
                 ),
               ]),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // Pitch ratio and extra info
             Row(children: [
@@ -1293,7 +1338,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
                   ])),
               )),
             ]),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
             // Lock / Unlock button
             SizedBox(width: double.infinity,
@@ -1324,6 +1369,8 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
               const SizedBox(height: 12),
               Text('Reading locked at ${(_lockedPitch ?? 0).toStringAsFixed(1)}°',
                 style: TextStyle(color: Colors.orange.shade700, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 8),
+              const Text('Go to Profile Search, find your profile,\nthen tap Save to History + Location to record this pitch.', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey)),
             ],
 
             if (!_locked) ...[
@@ -1336,11 +1383,66 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
                 const Text('Live reading', style: TextStyle(color: Colors.green, fontSize: 12)),
               ]),
             ],
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Roof Diagram Painter (for pitch finder instructions)
+// ═══════════════════════════════════════════════════════════════
+
+class _RoofDiagramPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..strokeWidth = 2.5..style = PaintingStyle.stroke;
+
+    // Draw roof outline
+    paint.color = Colors.grey.shade400;
+    final roofPath = Path()
+      ..moveTo(size.width * 0.1, size.height * 0.8)
+      ..lineTo(size.width * 0.5, size.height * 0.15)
+      ..lineTo(size.width * 0.9, size.height * 0.8);
+    canvas.drawPath(roofPath, paint);
+
+    // Draw phone on left slope
+    paint.color = Colors.blue.shade600;
+    paint.strokeWidth = 3;
+    // Phone rectangle on slope
+    final double cx = size.width * 0.27;
+    final double cy = size.height * 0.5;
+    final double angle = -math.atan2(size.height * 0.65, size.width * 0.4);
+    canvas.save();
+    canvas.translate(cx, cy);
+    canvas.rotate(angle);
+    final phoneRect = RRect.fromRectAndRadius(
+      Rect.fromCenter(center: Offset.zero, width: 28, height: 14),
+      const Radius.circular(3));
+    canvas.drawRRect(phoneRect, paint..style = PaintingStyle.fill..color = Colors.blue.shade100);
+    canvas.drawRRect(phoneRect, paint..style = PaintingStyle.stroke..color = Colors.blue.shade700);
+    canvas.restore();
+
+    // Angle arc
+    paint.color = Colors.orange;
+    paint.strokeWidth = 1.5;
+    paint.style = PaintingStyle.stroke;
+    canvas.drawArc(
+      Rect.fromCenter(center: Offset(size.width * 0.1, size.height * 0.8), width: 50, height: 50),
+      -math.pi / 2, -math.atan2(size.height * 0.65, size.width * 0.4), false, paint);
+
+    // Angle label
+    final tp = TextPainter(
+      text: TextSpan(text: '°', style: TextStyle(color: Colors.orange.shade700, fontSize: 14, fontWeight: FontWeight.bold)),
+      textDirection: TextDirection.ltr);
+    tp.layout();
+    tp.paint(canvas, Offset(size.width * 0.1 + 28, size.height * 0.55));
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // ═══════════════════════════════════════════════════════════════
