@@ -983,7 +983,12 @@ class _ResultsScreenState extends State<ResultsScreen> {
                           return;
                         }
 
-                        final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
+                        // Use timeout to prevent it getting stuck
+                        final pos = await Geolocator.getCurrentPosition(
+                          desiredAccuracy: LocationAccuracy.medium,
+                        ).timeout(const Duration(seconds: 10), onTimeout: () {
+                          throw Exception('Location timed out. Try again.');
+                        });
                         gpsLat = pos.latitude;
                         gpsLng = pos.longitude;
                         if (locationController.text.isEmpty) {
@@ -993,7 +998,10 @@ class _ResultsScreenState extends State<ResultsScreen> {
                         if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('📍 GPS location captured!'), backgroundColor: Colors.green, duration: Duration(seconds: 1)));
                       } catch (e) {
                         setSheetState(() { gpsLoading = false; });
-                        if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('Could not get location: $e')));
+                        if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+                          content: Text(e.toString().contains('timed out') ? '📍 Location timed out — try again' : 'Could not get location: $e'),
+                          duration: const Duration(seconds: 3),
+                        ));
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -1345,6 +1353,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   double? _lockedPitch;
   bool _locked = false;
   double _calibrationOffset = 0.0;
+  bool _showInstructions = true;
   StreamSubscription<AccelerometerEvent>? _sub;
 
   // Smoothing buffer
@@ -1355,6 +1364,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   void initState() {
     super.initState();
     _loadCalibration();
+    _loadInstructionsPref();
     _sub = accelerometerEventStream(samplingPeriod: SensorInterval.normalInterval).listen((event) {
       // Correct formula: angle of phone's long axis from horizontal
       // When phone flat: y≈0 → 0°, when tilted 30°: y≈-4.9 → 30°
@@ -1374,6 +1384,19 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   Future<void> _loadCalibration() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() { _calibrationOffset = prefs.getDouble('pitch_calibration') ?? 0.0; });
+  }
+
+  Future<void> _loadInstructionsPref() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() { _showInstructions = prefs.getBool('pitch_show_instructions') ?? true; });
+  }
+
+  Future<void> _hideInstructions({bool permanently = false}) async {
+    if (permanently) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('pitch_show_instructions', false);
+    }
+    setState(() { _showInstructions = false; });
   }
 
   Future<void> _calibrate() async {
@@ -1460,26 +1483,32 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // How to hold phone diagram
-            Card(
+            // How to hold phone diagram — dismissible
+            if (_showInstructions) Card(
               color: Colors.blue.shade50,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Row(children: [
-                    Icon(Icons.info_outline, color: Colors.blue),
-                    SizedBox(width: 8),
-                    Text('How to use', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                  Row(children: [
+                    const Icon(Icons.info_outline, color: Colors.blue),
+                    const SizedBox(width: 8),
+                    const Expanded(child: Text('How to use', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue))),
+                    // Close button
+                    IconButton(
+                      onPressed: () => _hideInstructions(),
+                      icon: const Icon(Icons.close, size: 18, color: Colors.blue),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      tooltip: 'Close',
+                    ),
                   ]),
                   const SizedBox(height: 10),
-                  // Simple diagram
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
                     child: Column(children: [
-                      // Roof line diagram
                       CustomPaint(size: const Size(200, 80), painter: _RoofDiagramPainter()),
                       const SizedBox(height: 8),
                       const Text('Hold the BOTTOM EDGE of your phone\nagainst the roof slope', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
@@ -1499,10 +1528,20 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
                       ]),
                     ),
                   ],
+                  const SizedBox(height: 10),
+                  // Don't show again button
+                  SizedBox(width: double.infinity,
+                    child: TextButton.icon(
+                      onPressed: () => _hideInstructions(permanently: true),
+                      icon: const Icon(Icons.visibility_off, size: 16),
+                      label: const Text('Don\'t show again', style: TextStyle(fontSize: 12)),
+                      style: TextButton.styleFrom(foregroundColor: Colors.grey),
+                    ),
+                  ),
                 ]),
               ),
             ),
-            const SizedBox(height: 24),
+            if (_showInstructions) const SizedBox(height: 24),
 
             // Big degree display
             Container(
