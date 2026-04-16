@@ -1065,13 +1065,26 @@ class _ResultsScreenState extends State<ResultsScreen> {
       appBar: AppBar(title: Text('${widget.title} Results'), backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
       body: widget.results.isEmpty
           ? const Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No matches found.\n\nTry widening the tolerance or changing one of the measurements.', textAlign: TextAlign.center)))
-          : SingleChildScrollView(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Text('Matches found: ${widget.results.length}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
-              ...widget.results.map((r) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: r.profile.isTileCategory ? _tileResultCard(context, r) : _sheetResultCard(context, r))),
-              const SizedBox(height: 20),
-            ])),
+          : Column(children: [
+              // Prominent save banner at top
+              Container(
+                width: double.infinity,
+                color: Colors.amber.shade50,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(children: [
+                  const Icon(Icons.bookmark_add, color: Colors.orange, size: 20),
+                  const SizedBox(width: 8),
+                  const Expanded(child: Text('Found your profile? Scroll down to save it with location & roof pitch!', style: TextStyle(fontSize: 13, color: Colors.black87))),
+                ]),
+              ),
+              Expanded(child: SingleChildScrollView(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text('Matches found: ${widget.results.length}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+                ...widget.results.map((r) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: r.profile.isTileCategory ? _tileResultCard(context, r) : _sheetResultCard(context, r))),
+                const SizedBox(height: 20),
+              ]))),
+            ]),
     );
   }
 }
@@ -1186,30 +1199,58 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   double _pitch = 0.0;
   double? _lockedPitch;
   bool _locked = false;
+  double _calibrationOffset = 0.0;
   StreamSubscription<AccelerometerEvent>? _sub;
 
   // Smoothing buffer
   final List<double> _buffer = [];
-  static const int _bufferSize = 10;
+  static const int _bufferSize = 15;
 
   @override
   void initState() {
     super.initState();
+    _loadCalibration();
     _sub = accelerometerEventStream(samplingPeriod: SensorInterval.normalInterval).listen((event) {
-      // Calculate pitch from accelerometer
-      // When phone is flat: y≈0, z≈-9.8 → 0°
-      // When phone is vertical: y≈-9.8, z≈0 → 90°
-      final double rawPitch = math.atan2(event.y.abs(), event.z.abs()) * 180 / math.pi;
+      // Correct formula: angle of phone's long axis from horizontal
+      // When phone flat: y≈0 → 0°, when tilted 30°: y≈-4.9 → 30°
+      final double rawPitch = math.atan2(-event.y, math.sqrt(event.x * event.x + event.z * event.z)) * 180 / math.pi;
+      final double calibrated = (rawPitch - _calibrationOffset).abs();
 
-      // Smooth with rolling average
-      _buffer.add(rawPitch);
+      _buffer.add(calibrated);
       if (_buffer.length > _bufferSize) _buffer.removeAt(0);
       final double smoothed = _buffer.reduce((a, b) => a + b) / _buffer.length;
 
       if (!_locked && mounted) {
-        setState(() { _pitch = smoothed; });
+        setState(() { _pitch = smoothed.clamp(0.0, 90.0); });
       }
     });
+  }
+
+  Future<void> _loadCalibration() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() { _calibrationOffset = prefs.getDouble('pitch_calibration') ?? 0.0; });
+  }
+
+  Future<void> _calibrate() async {
+    // Get raw reading before calibration
+    final prefs = await SharedPreferences.getInstance();
+    // Current raw pitch = _pitch + _calibrationOffset (since displayed is already calibrated)
+    final double rawNow = _pitch + _calibrationOffset;
+    await prefs.setDouble('pitch_calibration', rawNow);
+    setState(() { _calibrationOffset = rawNow; _buffer.clear(); _pitch = 0.0; });
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('✓ Calibrated! Phone is now set as 0°'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ));
+    }
+  }
+
+  Future<void> _resetCalibration() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('pitch_calibration');
+    setState(() { _calibrationOffset = 0.0; _buffer.clear(); });
   }
 
   @override
@@ -1218,7 +1259,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
     super.dispose();
   }
 
-  // Convert degrees to pitch ratio (rise:12 in imperial, or rise:run)
+  // Convert degrees to pitch ratio
   String _pitchRatio(double deg) {
     if (deg < 1) return 'Flat';
     final double rise = math.tan(deg * math.pi / 180) * 12;
@@ -1255,6 +1296,19 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
         title: const Text('Roof Pitch Finder'),
         backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
+        actions: [
+          TextButton.icon(
+            onPressed: _calibrate,
+            icon: const Icon(Icons.tune, color: Colors.white, size: 18),
+            label: const Text('Calibrate', style: TextStyle(color: Colors.white, fontSize: 13)),
+          ),
+          if (_calibrationOffset != 0.0)
+            IconButton(
+              tooltip: 'Reset calibration',
+              icon: const Icon(Icons.refresh, color: Colors.white),
+              onPressed: _resetCalibration,
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -1287,7 +1341,19 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
                     ]),
                   ),
                   const SizedBox(height: 10),
-                  const Text('• Hold phone in portrait mode\n• Press the bottom edge flat against the roof\n• Keep steady for a stable reading\n• Tap Lock to capture the angle', style: TextStyle(fontSize: 13, height: 1.6)),
+                  const Text('• Hold phone in portrait mode\n• Press the bottom edge flat against the roof\n• Keep steady for a stable reading\n• Tap Lock to capture the angle\n• Use Calibrate (top right) on a known flat surface to zero the reading', style: TextStyle(fontSize: 13, height: 1.6)),
+                  if (_calibrationOffset != 0.0) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(color: Colors.green.shade50, borderRadius: BorderRadius.circular(6), border: Border.all(color: Colors.green.shade300)),
+                      child: Row(children: [
+                        Icon(Icons.check_circle, size: 14, color: Colors.green.shade700),
+                        const SizedBox(width: 6),
+                        Text('Calibrated (offset: ${_calibrationOffset.toStringAsFixed(1)}°)', style: TextStyle(fontSize: 12, color: Colors.green.shade700)),
+                      ]),
+                    ),
+                  ],
                 ]),
               ),
             ),
