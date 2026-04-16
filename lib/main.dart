@@ -6,6 +6,7 @@ import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrie
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:geolocator/geolocator.dart';
 
 const String _donateUrl = 'https://ko-fi.com/weddingfund';
 const String _appVersion = '1.0.0';
@@ -42,14 +43,18 @@ class HistoryEntry {
   final DateTime savedAt;
   final String? location;
   final double? roofPitch;
+  final double? gpsLat;
+  final double? gpsLng;
 
-  const HistoryEntry({required this.profile, required this.savedAt, this.location, this.roofPitch});
+  const HistoryEntry({required this.profile, required this.savedAt, this.location, this.roofPitch, this.gpsLat, this.gpsLng});
 
   Map<String, dynamic> toJson() => {
     'profile': profile.toJson(),
     'savedAt': savedAt.toIso8601String(),
     'location': location,
     'roofPitch': roofPitch,
+    'gpsLat': gpsLat,
+    'gpsLng': gpsLng,
   };
 
   factory HistoryEntry.fromJson(Map<String, dynamic> json) {
@@ -59,8 +64,12 @@ class HistoryEntry {
       savedAt: DateTime.tryParse(json['savedAt']?.toString() ?? '') ?? DateTime.now(),
       location: json['location']?.toString(),
       roofPitch: toD(json['roofPitch']),
+      gpsLat: toD(json['gpsLat']),
+      gpsLng: toD(json['gpsLng']),
     );
   }
+
+  bool get hasGps => gpsLat != null && gpsLng != null;
 
   String get formattedDate {
     final d = savedAt;
@@ -831,7 +840,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         if ((entry.location ?? '').isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Row(children: [
-                            const Icon(Icons.location_on, size: 12, color: Colors.blue),
+                            Icon(entry.hasGps ? Icons.where_to_vote : Icons.location_on, size: 12, color: Colors.blue),
                             const SizedBox(width: 4),
                             Expanded(child: Text(entry.location!, style: const TextStyle(fontSize: 11, color: Colors.blue), overflow: TextOverflow.ellipsis)),
                           ]),
@@ -875,57 +884,149 @@ class _ResultsScreenState extends State<ResultsScreen> {
   Future<void> _saveToHistory(BuildContext context, ProfileRecord profile) async {
     final TextEditingController locationController = TextEditingController();
     final TextEditingController pitchController = TextEditingController();
-    final result = await showDialog<Map<String, String>>(
+    double? gpsLat;
+    double? gpsLng;
+    bool gpsLoading = false;
+
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Save ${profile.displayTitle}', style: const TextStyle(fontSize: 16)),
-        content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('Location / building name (optional):'),
-          const SizedBox(height: 8),
-          TextField(
-            controller: locationController,
-            autofocus: true,
-            textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              hintText: 'e.g. 14 High Street, Garage Roof...',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.location_on),
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.only(
+            left: 20, right: 20, top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+          ),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            // Handle bar
+            Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
+            const SizedBox(height: 16),
+            Text('Save Profile', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue.shade700)),
+            Text(profile.displayTitle, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+            const SizedBox(height: 20),
+
+            // Location field with GPS button
+            const Text('Building / Location name', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 6),
+            Row(children: [
+              Expanded(child: TextField(
+                controller: locationController,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  hintText: 'e.g. 14 High Street, Garage Roof',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.location_on),
+                  isDense: true,
+                ),
+              )),
+              const SizedBox(width: 8),
+              // GPS pin button
+              Tooltip(
+                message: 'Use my GPS location',
+                child: SizedBox(
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: gpsLoading ? null : () async {
+                      setSheetState(() { gpsLoading = true; });
+                      try {
+                        LocationPermission perm = await Geolocator.checkPermission();
+                        if (perm == LocationPermission.denied) {
+                          perm = await Geolocator.requestPermission();
+                        }
+                        if (perm == LocationPermission.deniedForever) {
+                          if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('Location permission denied. Enable in Settings.')));
+                          setSheetState(() { gpsLoading = false; });
+                          return;
+                        }
+                        final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
+                        gpsLat = pos.latitude;
+                        gpsLng = pos.longitude;
+                        if (locationController.text.isEmpty) {
+                          locationController.text = '${pos.latitude.toStringAsFixed(5)}, ${pos.longitude.toStringAsFixed(5)}';
+                        }
+                        setSheetState(() { gpsLoading = false; });
+                        if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('📍 GPS location captured!'), backgroundColor: Colors.green, duration: Duration(seconds: 1)));
+                      } catch (e) {
+                        setSheetState(() { gpsLoading = false; });
+                        if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('Could not get location: $e')));
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: gpsLat != null ? Colors.green : Colors.blue.shade700,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                    ),
+                    child: gpsLoading
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : Icon(gpsLat != null ? Icons.where_to_vote : Icons.my_location, size: 22),
+                  ),
+                ),
+              ),
+            ]),
+            if (gpsLat != null) ...[
+              const SizedBox(height: 4),
+              Text('GPS: ${gpsLat!.toStringAsFixed(5)}, ${gpsLng!.toStringAsFixed(5)}',
+                style: TextStyle(fontSize: 11, color: Colors.green.shade700)),
+            ],
+            const SizedBox(height: 16),
+
+            // Pitch field
+            const Text('Roof pitch (degrees)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 6),
+            TextField(
+              controller: pitchController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(
+                hintText: 'e.g. 22.5',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.architecture),
+                suffixText: '°',
+                isDense: true,
+                helperText: 'Use the Pitch Finder tool in Tools menu',
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          const Text('Roof pitch in degrees (optional):'),
-          const SizedBox(height: 8),
-          TextField(
-            controller: pitchController,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(
-              hintText: 'e.g. 22.5',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.architecture),
-              suffixText: '°',
-            ),
-          ),
-          const SizedBox(height: 4),
-          const Text('Tip: use the Pitch Finder tool to measure', style: TextStyle(fontSize: 11, color: Colors.grey)),
-        ])),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, null), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, {'location': locationController.text.trim(), 'pitch': pitchController.text.trim()}),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
-            child: const Text('Save'),
-          ),
-        ],
+            const SizedBox(height: 24),
+
+            // Save / Cancel buttons
+            Row(children: [
+              Expanded(child: OutlinedButton(
+                onPressed: () => Navigator.pop(ctx, null),
+                child: const Text('Cancel'),
+              )),
+              const SizedBox(width: 12),
+              Expanded(flex: 2, child: ElevatedButton.icon(
+                onPressed: () => Navigator.pop(ctx, {
+                  'location': locationController.text.trim(),
+                  'pitch': pitchController.text.trim(),
+                  'gpsLat': gpsLat,
+                  'gpsLng': gpsLng,
+                }),
+                icon: const Icon(Icons.bookmark_add),
+                label: const Text('Save to History'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade700,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              )),
+            ]),
+          ]),
+        ),
       ),
     );
+
     if (result == null) return;
-    final String location = result['location'] ?? '';
-    final double? pitch = double.tryParse(result['pitch'] ?? '');
+    final String location = result['location'] as String? ?? '';
+    final double? pitch = double.tryParse(result['pitch'] as String? ?? '');
     await HistoryService.saveEntry(HistoryEntry(
       profile: profile,
       savedAt: DateTime.now(),
       location: location.isEmpty ? null : location,
       roofPitch: pitch,
+      gpsLat: result['gpsLat'] as double?,
+      gpsLng: result['gpsLng'] as double?,
     ));
     setState(() { _savedKeys.add(_profileKey(profile)); });
     if (context.mounted) {
