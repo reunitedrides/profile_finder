@@ -1,8 +1,6 @@
 name: profile_finder
 description: "Roof Profile Finder App"
-
 publish_to: 'none'
-
 version: 1.0.0+4
 
 environment:
@@ -11,20 +9,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   cupertino_icons: ^1.0.8
   url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
-
   assets:
     - assets/data/steel_profiles.json
     - assets/data/cement_profiles.json
@@ -33,7 +28,7 @@ flutter:
 
 flutter_launcher_icons:
   android: true
-  ios: false
+  ios: true
   image_path: "assets/images/icon.png"
   image_path_android: "assets/images/icon.png"
   adaptive_icon_background: "#1565C0"
