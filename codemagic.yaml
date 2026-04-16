@@ -1,0 +1,8 @@
+workflows:
+  ios-workflow:
+    name: iOS Workflow
+    scripts:
+      - name: Generate icons
+        script: flutter pub run flutter_launcher_icons
+      - name: Build iOS
+        script: flutter build ipa --release --export-options-plist /Users/builder/export_options.plist
