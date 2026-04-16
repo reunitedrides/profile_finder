@@ -2,21 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrientation;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-const String _bannerAdUnitId = 'ca-app-pub-3940256099942544/6300978111';
 const String _donateUrl = 'https://ko-fi.com/weddingfund';
 const String _appVersion = '1.0.0';
 const String _contactEmail = 'marksjones73@gmail.com';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await MobileAds.instance.initialize();
-  } catch (e) {
-    // Ads failed to init - app continues without ads
-    debugPrint('Ads init failed: $e');
-  }
   runApp(const RoofProfileFinderApp());
 }
 
@@ -73,7 +65,7 @@ class ProfileRecord {
   final String? weightText;
   final String? sourceUrl;
   final String? notes;
-  final String? imageFile; // e.g. "assets/images/227A.png"
+  final String? imageFile;
 
   const ProfileRecord({
     required this.code,
@@ -135,7 +127,6 @@ class ProfileRecord {
             ? json['category'].toString().trim().toLowerCase()
             : 'sheet';
 
-    // image_file from JSON may be "images/227A.png" — prefix with assets/
     String? rawImage = json['image_file']?.toString() ?? json['imageFile']?.toString();
     String? imageFile;
     if (rawImage != null && rawImage.isNotEmpty) {
@@ -226,12 +217,6 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   List<String> _tileTypes = <String>[];
   List<String> _tileProfileFamilies = <String>[];
 
-  BannerAd? _bannerAd;
-  bool _bannerLoaded = false;
-  AnchoredAdaptiveBannerAdSize? _adSize;
-  int _lastWidth = 0;
-
-  // ── Corrugated removed — now part of Steel ──────────────────────────────
   static const Map<String, String> _fileMap = {
     'steel':  'assets/data/steel_profiles.json',
     'cement': 'assets/data/cement_profiles.json',
@@ -260,51 +245,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final int width = MediaQuery.of(context).size.width.truncate();
-    if (width > 0 && width != _lastWidth) {
-      _lastWidth = width;
-      _loadAdaptiveBannerForWidth(width);
-    }
-  }
-
-  Future<void> _loadAdaptiveBannerForWidth(int widthPx) async {
-    try {
-      final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(widthPx);
-      if (!mounted) return;
-      if (size == null) {
-        setState(() { _bannerLoaded = false; _adSize = null; _bannerAd = null; });
-        return;
-      }
-      _bannerAd?.dispose();
-      _bannerAd = null;
-      final banner = BannerAd(
-        adUnitId: _bannerAdUnitId,
-        size: size,
-        request: const AdRequest(),
-        listener: BannerAdListener(
-          onAdLoaded: (ad) {
-            if (!mounted) { ad.dispose(); return; }
-            setState(() { _bannerAd = ad as BannerAd; _bannerLoaded = true; _adSize = size; });
-          },
-          onAdFailedToLoad: (ad, error) {
-            ad.dispose();
-            if (!mounted) return;
-            setState(() { _bannerAd = null; _bannerLoaded = false; _adSize = null; });
-          },
-        ),
-      );
-      await banner.load();
-    } catch (_) {
-      if (!mounted) return;
-      setState(() { _bannerAd = null; _bannerLoaded = false; _adSize = null; });
-    }
-  }
-
-  @override
   void dispose() {
-    _bannerAd?.dispose();
     _profileSearchController.removeListener(_updateNameSuggestions);
     _profileSearchController.dispose();
     _pitchController.dispose();
@@ -790,7 +731,6 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
             children: <Widget>[
               const Text('Choose profile type', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
-              // ── 3 buttons: Steel, Cement, Tiles — corrugated removed ──
               Wrap(spacing: 8, runSpacing: 8, children: <Widget>[
                 _categoryButton('Steel', 'steel'),
                 _categoryButton('Cement', 'cement'),
@@ -833,8 +773,6 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
             ],
           ),
         ),
-        if (_bannerLoaded && _bannerAd != null && _adSize != null)
-          SafeArea(top: false, child: SizedBox(width: _adSize!.width.toDouble(), height: _adSize!.height.toDouble(), child: AdWidget(ad: _bannerAd!))),
       ]),
     );
   }
@@ -844,53 +782,14 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 // Results Screen
 // ═══════════════════════════════════════════════════════════════
 
-class ResultsScreen extends StatefulWidget {
+class ResultsScreen extends StatelessWidget {
   final String title;
   final List<SearchResult> results;
   const ResultsScreen({super.key, required this.title, required this.results});
-  @override
-  State<ResultsScreen> createState() => _ResultsScreenState();
-}
 
-class _ResultsScreenState extends State<ResultsScreen> {
-  BannerAd? _bannerAd;
-  bool _bannerLoaded = false;
-  AnchoredAdaptiveBannerAdSize? _adSize;
-  int _lastWidth = 0;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final int width = MediaQuery.of(context).size.width.truncate();
-    if (width > 0 && width != _lastWidth) { _lastWidth = width; _loadAdaptiveBannerForWidth(width); }
-  }
-
-  Future<void> _loadAdaptiveBannerForWidth(int widthPx) async {
-    try {
-      final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(widthPx);
-      if (!mounted) return;
-      if (size == null) { setState(() { _bannerLoaded = false; _adSize = null; _bannerAd = null; }); return; }
-      _bannerAd?.dispose(); _bannerAd = null;
-      final banner = BannerAd(
-        adUnitId: _bannerAdUnitId, size: size, request: const AdRequest(),
-        listener: BannerAdListener(
-          onAdLoaded: (ad) { if (!mounted) { ad.dispose(); return; } setState(() { _bannerAd = ad as BannerAd; _bannerLoaded = true; _adSize = size; }); },
-          onAdFailedToLoad: (ad, error) { ad.dispose(); if (!mounted) return; setState(() { _bannerAd = null; _bannerLoaded = false; _adSize = null; }); },
-        ),
-      );
-      await banner.load();
-    } catch (_) {
-      if (!mounted) return;
-      setState(() { _bannerAd = null; _bannerLoaded = false; _adSize = null; });
-    }
-  }
-
-  @override
-  void dispose() { _bannerAd?.dispose(); super.dispose(); }
-
-  Future<void> _openSourceUrl(String url) async {
+  Future<void> _openSourceUrl(BuildContext context, String url) async {
     final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication) && mounted) {
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication) && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open source link.')));
     }
   }
@@ -911,15 +810,13 @@ class _ResultsScreenState extends State<ResultsScreen> {
     return '-';
   }
 
-  // ── Profile image widget ─────────────────────────────────────
-  Widget _profileImage(ProfileRecord p) {
+  Widget _profileImage(BuildContext context, ProfileRecord p) {
     if (p.imageFile == null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 10, bottom: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Pinch-to-zoom inline image
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: SizedBox(
@@ -938,7 +835,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
               ),
             ),
           ),
-          // Tap for fullscreen button
           TextButton.icon(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
@@ -957,7 +853,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 
-  Widget _sheetResultCard(SearchResult result) {
+  Widget _sheetResultCard(BuildContext context, SearchResult result) {
     final ProfileRecord p = result.profile;
     return Card(
       margin: const EdgeInsets.only(top: 10),
@@ -967,7 +863,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
           Text(p.displayTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          _profileImage(p),
+          _profileImage(context, p),
           const SizedBox(height: 6),
           Text('Manufacturer: ${p.manufacturer}'),
           Text('Shape: ${p.shape}'),
@@ -983,7 +879,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 
-  Widget _tileResultCard(SearchResult result) {
+  Widget _tileResultCard(BuildContext context, SearchResult result) {
     final ProfileRecord p = result.profile;
     return Card(
       margin: const EdgeInsets.only(top: 10),
@@ -993,7 +889,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
           Text(p.displayTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          _profileImage(p),
+          _profileImage(context, p),
           const SizedBox(height: 6),
           Text('Manufacturer: ${p.manufacturer}'),
           if ((p.brand ?? '').isNotEmpty) Text('Brand: ${p.brand}'),
@@ -1014,7 +910,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
           ],
           if ((p.sourceUrl ?? '').isNotEmpty) ...<Widget>[
             const SizedBox(height: 10),
-            TextButton.icon(onPressed: () => _openSourceUrl(p.sourceUrl!), icon: const Icon(Icons.open_in_new), label: const Text('Open manufacturer source')),
+            TextButton.icon(onPressed: () => _openSourceUrl(context, p.sourceUrl!), icon: const Icon(Icons.open_in_new), label: const Text('Open manufacturer source')),
           ],
         ]),
       ),
@@ -1024,45 +920,28 @@ class _ResultsScreenState extends State<ResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.title} Results'), backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
-      body: Column(children: <Widget>[
-        Expanded(
-          child: widget.results.isEmpty
-              ? const Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No matches found.\n\nTry widening the tolerance or changing one of the measurements.', textAlign: TextAlign.center)))
-              : SingleChildScrollView(
-                  child: InteractiveViewer(
-                    panEnabled: true,
-                    scaleEnabled: true,
-                    boundaryMargin: const EdgeInsets.all(80),
-                    minScale: 0.5,
-                    maxScale: 4.0,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                          child: Text('Matches found: ${widget.results.length}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        ),
-                        ...widget.results.map((SearchResult r) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: r.profile.isTileCategory ? _tileResultCard(r) : _sheetResultCard(r),
-                        )),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
+      appBar: AppBar(title: Text('$title Results'), backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
+      body: widget.results.isEmpty
+          ? const Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No matches found.\n\nTry widening the tolerance or changing one of the measurements.', textAlign: TextAlign.center)))
+          : SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Text('Matches found: ${results.length}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
-                ),
-        ),
-        if (_bannerLoaded && _bannerAd != null && _adSize != null)
-          SafeArea(top: false, child: SizedBox(width: _adSize!.width.toDouble(), height: _adSize!.height.toDouble(), child: AdWidget(ad: _bannerAd!))),
-      ]),
+                  ...results.map((SearchResult r) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: r.profile.isTileCategory ? _tileResultCard(context, r) : _sheetResultCard(context, r),
+                  )),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
     );
   }
 }
-
-// ═══════════════════════════════════════════════════════════════
-// How To Use Screen
-// ═══════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════
 // Full-Screen Image Viewer
@@ -1071,9 +950,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
 class _FullScreenImagePage extends StatefulWidget {
   final String imageFile;
   final String title;
-
   const _FullScreenImagePage({required this.imageFile, required this.title});
-
   @override
   State<_FullScreenImagePage> createState() => _FullScreenImagePageState();
 }
@@ -1090,9 +967,7 @@ class _FullScreenImagePageState extends State<_FullScreenImagePage> {
 
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations(const <DeviceOrientation>[
-      DeviceOrientation.portraitUp,
-    ]);
+    SystemChrome.setPreferredOrientations(const <DeviceOrientation>[DeviceOrientation.portraitUp]);
     super.dispose();
   }
 
@@ -1121,11 +996,7 @@ class _FullScreenImagePageState extends State<_FullScreenImagePage> {
                 errorBuilder: (context, error, stackTrace) => const Center(
                   child: Padding(
                     padding: EdgeInsets.all(24),
-                    child: Text(
-                      'Image not available.',
-                      style: TextStyle(color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
+                    child: Text('Image not available.', style: TextStyle(color: Colors.white), textAlign: TextAlign.center),
                   ),
                 ),
               ),
@@ -1136,6 +1007,10 @@ class _FullScreenImagePageState extends State<_FullScreenImagePage> {
     );
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// How To Use Screen
+// ═══════════════════════════════════════════════════════════════
 
 class HowToUseScreen extends StatefulWidget {
   const HowToUseScreen({super.key});
