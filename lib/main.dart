@@ -15,7 +15,6 @@ void main() {
 
 class RoofProfileFinderApp extends StatelessWidget {
   const RoofProfileFinderApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,35 +31,59 @@ class RoofProfileFinderApp extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// History Entry — wraps a profile with date + location
+// ═══════════════════════════════════════════════════════════════
+
+class HistoryEntry {
+  final ProfileRecord profile;
+  final DateTime savedAt;
+  final String? location;
+
+  const HistoryEntry({required this.profile, required this.savedAt, this.location});
+
+  Map<String, dynamic> toJson() => {
+    'profile': profile.toJson(),
+    'savedAt': savedAt.toIso8601String(),
+    'location': location,
+  };
+
+  factory HistoryEntry.fromJson(Map<String, dynamic> json) {
+    return HistoryEntry(
+      profile: ProfileRecord.fromJson(json['profile'] as Map<String, dynamic>),
+      savedAt: DateTime.tryParse(json['savedAt']?.toString() ?? '') ?? DateTime.now(),
+      location: json['location']?.toString(),
+    );
+  }
+
+  String get formattedDate {
+    final d = savedAt;
+    return '${d.day.toString().padLeft(2,'0')}/${d.month.toString().padLeft(2,'0')}/${d.year}  ${d.hour.toString().padLeft(2,'0')}:${d.minute.toString().padLeft(2,'0')}';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // History Service
 // ═══════════════════════════════════════════════════════════════
 
 class HistoryService {
-  static const String _key = 'profile_history';
-  static const int _maxItems = 10;
+  static const String _key = 'profile_history_v2';
+  static const int _maxItems = 20;
 
-  static Future<void> saveProfile(ProfileRecord profile) async {
+  static Future<void> saveEntry(HistoryEntry entry) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> history = prefs.getStringList(_key) ?? [];
-    final String encoded = jsonEncode(profile.toJson());
-    history.removeWhere((item) {
-      try {
-        final Map<String, dynamic> m = jsonDecode(item) as Map<String, dynamic>;
-        return m['code'] == profile.code && m['profileName'] == profile.profileName;
-      } catch (_) { return false; }
-    });
-    history.insert(0, encoded);
+    history.insert(0, jsonEncode(entry.toJson()));
     if (history.length > _maxItems) history.removeRange(_maxItems, history.length);
     await prefs.setStringList(_key, history);
   }
 
-  static Future<List<ProfileRecord>> loadHistory() async {
+  static Future<List<HistoryEntry>> loadHistory() async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> history = prefs.getStringList(_key) ?? [];
-    final List<ProfileRecord> results = [];
+    final List<HistoryEntry> results = [];
     for (final item in history) {
       try {
-        results.add(ProfileRecord.fromJson(jsonDecode(item) as Map<String, dynamic>));
+        results.add(HistoryEntry.fromJson(jsonDecode(item) as Map<String, dynamic>));
       } catch (_) {}
     }
     return results;
@@ -71,6 +94,10 @@ class HistoryService {
     await prefs.remove(_key);
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// ProfileRecord
+// ═══════════════════════════════════════════════════════════════
 
 class ProfileRecord {
   final String code;
@@ -110,145 +137,75 @@ class ProfileRecord {
   final String? imageFile;
 
   const ProfileRecord({
-    required this.code,
-    required this.profileName,
-    required this.manufacturer,
-    required this.shape,
-    required this.pitch,
-    required this.depth,
-    required this.crown,
-    required this.trough,
-    required this.coverWidth,
-    required this.overallWidth,
-    required this.category,
-    required this.brand,
-    required this.material,
-    required this.materialGroup,
-    required this.tileType,
-    required this.profile,
-    required this.profileGroup,
-    required this.fixingType,
-    required this.aliases,
-    required this.nominalLengthMm,
-    required this.nominalWidthMm,
-    required this.gaugeMinMm,
-    required this.gaugeMaxMm,
-    required this.minimumPitchDegMin,
-    required this.coveragePerSqm,
-    required this.weightKgPerSqm,
-    required this.overallSizeText,
-    required this.coverWidthText,
-    required this.gaugeText,
-    required this.minimumPitchText,
-    required this.coverageText,
-    required this.weightText,
-    required this.sourceUrl,
-    required this.notes,
-    required this.imageFile,
+    required this.code, required this.profileName, required this.manufacturer,
+    required this.shape, required this.pitch, required this.depth,
+    required this.crown, required this.trough, required this.coverWidth,
+    required this.overallWidth, required this.category, required this.brand,
+    required this.material, required this.materialGroup, required this.tileType,
+    required this.profile, required this.profileGroup, required this.fixingType,
+    required this.aliases, required this.nominalLengthMm, required this.nominalWidthMm,
+    required this.gaugeMinMm, required this.gaugeMaxMm, required this.minimumPitchDegMin,
+    required this.coveragePerSqm, required this.weightKgPerSqm, required this.overallSizeText,
+    required this.coverWidthText, required this.gaugeText, required this.minimumPitchText,
+    required this.coverageText, required this.weightText, required this.sourceUrl,
+    required this.notes, required this.imageFile,
   });
 
   Map<String, dynamic> toJson() => {
-    'code': code,
-    'profileName': profileName,
-    'manufacturer': manufacturer,
-    'shape': shape,
-    'pitch': pitch,
-    'depth': depth,
-    'crown': crown,
-    'trough': trough,
-    'coverWidth': coverWidth,
-    'overallWidth': overallWidth,
-    'category': category,
-    'brand': brand,
-    'material': material,
-    'materialGroup': materialGroup,
-    'tileType': tileType,
-    'profile': profile,
-    'profileGroup': profileGroup,
-    'fixingType': fixingType,
-    'aliases': aliases,
-    'nominalLengthMm': nominalLengthMm,
-    'nominalWidthMm': nominalWidthMm,
-    'gaugeMinMm': gaugeMinMm,
-    'gaugeMaxMm': gaugeMaxMm,
-    'minimumPitchDegMin': minimumPitchDegMin,
-    'coveragePerSqm': coveragePerSqm,
-    'weightKgPerSqm': weightKgPerSqm,
-    'overallSizeText': overallSizeText,
-    'coverWidthText': coverWidthText,
-    'gaugeText': gaugeText,
-    'minimumPitchText': minimumPitchText,
-    'coverageText': coverageText,
-    'weightText': weightText,
-    'sourceUrl': sourceUrl,
-    'notes': notes,
+    'code': code, 'profileName': profileName, 'manufacturer': manufacturer,
+    'shape': shape, 'pitch': pitch, 'depth': depth, 'crown': crown,
+    'trough': trough, 'coverWidth': coverWidth, 'overallWidth': overallWidth,
+    'category': category, 'brand': brand, 'material': material,
+    'materialGroup': materialGroup, 'tileType': tileType, 'profile': profile,
+    'profileGroup': profileGroup, 'fixingType': fixingType, 'aliases': aliases,
+    'nominalLengthMm': nominalLengthMm, 'nominalWidthMm': nominalWidthMm,
+    'gaugeMinMm': gaugeMinMm, 'gaugeMaxMm': gaugeMaxMm,
+    'minimumPitchDegMin': minimumPitchDegMin, 'coveragePerSqm': coveragePerSqm,
+    'weightKgPerSqm': weightKgPerSqm, 'overallSizeText': overallSizeText,
+    'coverWidthText': coverWidthText, 'gaugeText': gaugeText,
+    'minimumPitchText': minimumPitchText, 'coverageText': coverageText,
+    'weightText': weightText, 'sourceUrl': sourceUrl, 'notes': notes,
     'imageFile': imageFile,
   };
 
   factory ProfileRecord.fromJson(Map<String, dynamic> json) {
-    double? toNullableDouble(dynamic value) {
-      if (value == null) return null;
-      if (value is num) return value.toDouble();
-      return double.tryParse(value.toString().trim());
+    double? toD(dynamic v) {
+      if (v == null) return null;
+      if (v is num) return v.toDouble();
+      return double.tryParse(v.toString().trim());
     }
-
-    List<String> toStringList(dynamic value) {
-      if (value is List) {
-        return value
-            .map((dynamic e) => e.toString().trim())
-            .where((String e) => e.isNotEmpty)
-            .toList();
-      }
-      return <String>[];
+    List<String> toList(dynamic v) {
+      if (v is List) return v.map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList();
+      return [];
     }
-
-    final String category =
-        json['category']?.toString().trim().isNotEmpty == true
-            ? json['category'].toString().trim().toLowerCase()
-            : 'sheet';
-
-    String? rawImage = json['image_file']?.toString() ?? json['imageFile']?.toString() ?? json['imageFile']?.toString();
-    String? imageFile = json['imageFile']?.toString();
-    if (imageFile == null && rawImage != null && rawImage.isNotEmpty) {
-      imageFile = rawImage.startsWith('assets/') ? rawImage : 'assets/$rawImage';
+    final String cat = json['category']?.toString().trim().isNotEmpty == true
+        ? json['category'].toString().trim().toLowerCase() : 'sheet';
+    String? rawImg = json['image_file']?.toString() ?? json['imageFile']?.toString();
+    String? imgFile = json['imageFile']?.toString();
+    if (imgFile == null && rawImg != null && rawImg.isNotEmpty) {
+      imgFile = rawImg.startsWith('assets/') ? rawImg : 'assets/$rawImg';
     }
-
     return ProfileRecord(
       code: json['code']?.toString() ?? json['id']?.toString() ?? '',
       profileName: json['profileName']?.toString() ?? '',
       manufacturer: json['manufacturer']?.toString() ?? '',
       shape: json['shape']?.toString() ?? json['profile']?.toString() ?? 'unknown',
-      pitch: toNullableDouble(json['pitch']),
-      depth: toNullableDouble(json['depth']),
-      crown: toNullableDouble(json['crown']),
-      trough: toNullableDouble(json['trough']),
-      coverWidth: toNullableDouble(json['coverWidth']) ?? toNullableDouble(json['coverWidthMm']),
-      overallWidth: toNullableDouble(json['overallWidth']),
-      category: category,
-      brand: json['brand']?.toString(),
-      material: json['material']?.toString(),
-      materialGroup: json['materialGroup']?.toString(),
-      tileType: json['tileType']?.toString(),
-      profile: json['profile']?.toString(),
-      profileGroup: json['profileGroup']?.toString(),
-      fixingType: json['fixingType']?.toString(),
-      aliases: toStringList(json['aliases']),
-      nominalLengthMm: toNullableDouble(json['nominalLengthMm']),
-      nominalWidthMm: toNullableDouble(json['nominalWidthMm']),
-      gaugeMinMm: toNullableDouble(json['gaugeMinMm']),
-      gaugeMaxMm: toNullableDouble(json['gaugeMaxMm']),
-      minimumPitchDegMin: toNullableDouble(json['minimumPitchDegMin']),
-      coveragePerSqm: toNullableDouble(json['coveragePerSqm']),
-      weightKgPerSqm: toNullableDouble(json['weightKgPerSqm']),
-      overallSizeText: json['overallSizeText']?.toString(),
-      coverWidthText: json['coverWidthText']?.toString(),
-      gaugeText: json['gaugeText']?.toString(),
-      minimumPitchText: json['minimumPitchText']?.toString(),
-      coverageText: json['coverageText']?.toString(),
-      weightText: json['weightText']?.toString(),
-      sourceUrl: json['sourceUrl']?.toString(),
-      notes: json['notes']?.toString(),
-      imageFile: imageFile,
+      pitch: toD(json['pitch']), depth: toD(json['depth']),
+      crown: toD(json['crown']), trough: toD(json['trough']),
+      coverWidth: toD(json['coverWidth']) ?? toD(json['coverWidthMm']),
+      overallWidth: toD(json['overallWidth']), category: cat,
+      brand: json['brand']?.toString(), material: json['material']?.toString(),
+      materialGroup: json['materialGroup']?.toString(), tileType: json['tileType']?.toString(),
+      profile: json['profile']?.toString(), profileGroup: json['profileGroup']?.toString(),
+      fixingType: json['fixingType']?.toString(), aliases: toList(json['aliases']),
+      nominalLengthMm: toD(json['nominalLengthMm']), nominalWidthMm: toD(json['nominalWidthMm']),
+      gaugeMinMm: toD(json['gaugeMinMm']), gaugeMaxMm: toD(json['gaugeMaxMm']),
+      minimumPitchDegMin: toD(json['minimumPitchDegMin']), coveragePerSqm: toD(json['coveragePerSqm']),
+      weightKgPerSqm: toD(json['weightKgPerSqm']), overallSizeText: json['overallSizeText']?.toString(),
+      coverWidthText: json['coverWidthText']?.toString(), gaugeText: json['gaugeText']?.toString(),
+      minimumPitchText: json['minimumPitchText']?.toString(), coverageText: json['coverageText']?.toString(),
+      weightText: json['weightText']?.toString(), sourceUrl: json['sourceUrl']?.toString(),
+      notes: json['notes']?.toString(), imageFile: imgFile,
     );
   }
 
@@ -264,6 +221,10 @@ class SearchResult {
   final double score;
   const SearchResult({required this.profile, required this.score});
 }
+
+// ═══════════════════════════════════════════════════════════════
+// Profile Search Screen
+// ═══════════════════════════════════════════════════════════════
 
 class ProfileSearchScreen extends StatefulWidget {
   const ProfileSearchScreen({super.key});
@@ -285,17 +246,17 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   final TextEditingController _tileMinPitchController = TextEditingController();
   final TextEditingController _tileCoverageController = TextEditingController();
 
-  List<ProfileRecord> _profiles = <ProfileRecord>[];
-  List<ProfileRecord> _nameSuggestions = <ProfileRecord>[];
+  List<ProfileRecord> _profiles = [];
+  List<ProfileRecord> _nameSuggestions = [];
   bool _loading = true;
   String _selectedCategory = 'steel';
   double _toleranceMultiplier = 1.0;
   String? _selectedTileMaterial;
   String? _selectedTileType;
   String? _selectedTileProfileFamily;
-  List<String> _tileMaterials = <String>[];
-  List<String> _tileTypes = <String>[];
-  List<String> _tileProfileFamilies = <String>[];
+  List<String> _tileMaterials = [];
+  List<String> _tileTypes = [];
+  List<String> _tileProfileFamilies = [];
 
   static const Map<String, String> _fileMap = {
     'steel':  'assets/data/steel_profiles.json',
@@ -328,16 +289,11 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   void dispose() {
     _profileSearchController.removeListener(_updateNameSuggestions);
     _profileSearchController.dispose();
-    _pitchController.dispose();
-    _depthController.dispose();
-    _crownController.dispose();
-    _troughController.dispose();
-    _coverWidthController.dispose();
-    _overallWidthController.dispose();
-    _tileLengthController.dispose();
-    _tileWidthController.dispose();
-    _tileGaugeController.dispose();
-    _tileMinPitchController.dispose();
+    _pitchController.dispose(); _depthController.dispose();
+    _crownController.dispose(); _troughController.dispose();
+    _coverWidthController.dispose(); _overallWidthController.dispose();
+    _tileLengthController.dispose(); _tileWidthController.dispose();
+    _tileGaugeController.dispose(); _tileMinPitchController.dispose();
     _tileCoverageController.dispose();
     super.dispose();
   }
@@ -351,132 +307,102 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   }
 
   Future<void> _openSuggestEmail() async {
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: _contactEmail,
+    final Uri emailUri = Uri(scheme: 'mailto', path: _contactEmail,
       queryParameters: <String, String>{
         'subject': 'Roof Profile Finder - Missing Profile Suggestion',
         'body': 'Hi,\n\nI would like to suggest a missing roof profile.\n\nType: \nManufacturer: \nProfile name/code: \nMeasurements: \nNotes: \n\nThank you.',
-      },
-    );
+      });
     if (!await launchUrl(emailUri, mode: LaunchMode.externalApplication) && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not open email app.')));
     }
   }
 
   Future<void> _showAboutDialogBox() async {
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('About Roof Profile Finder'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text('Roof Profile Finder was created to help identify roof profile sheets, tiles and slates more quickly and accurately.'),
-                const SizedBox(height: 8),
-                const Text('This is my first app and my first experience of coding. I work as a roofer, and I built it to help solve a real problem on site, because there are so many different roof profiles in use and identifying the correct one is not always straightforward.'),
-                const SizedBox(height: 8),
-                const Text('Use the search fields, filters and measurements to narrow down likely matches, then review them on the dedicated results screen.'),
-                const SizedBox(height: 8),
-                const Text('I will continue improving the database over time. If you notice a missing sheet, tile or slate, please use the suggest profile option in the menu and I will do my best to add more in future updates.'),
-                const SizedBox(height: 12),
-                Text('Version: $_appVersion', style: const TextStyle(fontWeight: FontWeight.w600)),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(onPressed: () async { Navigator.of(dialogContext).pop(); await _openSuggestEmail(); }, child: const Text('Suggest Profile')),
-            TextButton(onPressed: () async { Navigator.of(dialogContext).pop(); await _openDonate(); }, child: const Text('Donate')),
-            TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Close')),
-          ],
-        );
-      },
-    );
+    await showDialog<void>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('About Roof Profile Finder'),
+      content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('Roof Profile Finder was created to help identify roof profile sheets, tiles and slates more quickly and accurately.'),
+        const SizedBox(height: 8),
+        const Text('This is my first app and my first experience of coding. I work as a roofer, and I built it to help solve a real problem on site.'),
+        const SizedBox(height: 8),
+        const Text('Use the search fields, filters and measurements to narrow down likely matches, then review them on the dedicated results screen.'),
+        const SizedBox(height: 8),
+        const Text('I will continue improving the database over time. If you notice a missing profile, please use the suggest option in the menu.'),
+        const SizedBox(height: 12),
+        Text('Version: $_appVersion', style: const TextStyle(fontWeight: FontWeight.w600)),
+      ])),
+      actions: [
+        TextButton(onPressed: () async { Navigator.of(ctx).pop(); await _openSuggestEmail(); }, child: const Text('Suggest Profile')),
+        TextButton(onPressed: () async { Navigator.of(ctx).pop(); await _openDonate(); }, child: const Text('Donate')),
+        TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Close')),
+      ],
+    ));
   }
 
   Future<void> _showSuggestProfileDialog() async {
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Suggest a Missing Profile'),
-          content: const SingleChildScrollView(
-            child: Text('If you cannot find a roof sheet, tile or slate in the app, tap Email below and include as much detail as possible, such as the manufacturer, profile name, measurements, and photos if available.\n\nI will do my best to add more profiles in future updates.'),
-          ),
-          actions: <Widget>[
-            TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Close')),
-            TextButton(onPressed: () async { Navigator.of(dialogContext).pop(); await _openSuggestEmail(); }, child: const Text('Email')),
-          ],
-        );
-      },
-    );
+    await showDialog<void>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('Suggest a Missing Profile'),
+      content: const SingleChildScrollView(child: Text('If you cannot find a roof sheet, tile or slate, tap Email below and include as much detail as possible.')),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Close')),
+        TextButton(onPressed: () async { Navigator.of(ctx).pop(); await _openSuggestEmail(); }, child: const Text('Email')),
+      ],
+    ));
   }
 
   void _handleTopMenu(String value) {
     switch (value) {
-      case 'help':
-        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen()));
-        break;
-      case 'about':
-        _showAboutDialogBox();
-        break;
-      case 'suggest':
-        _showSuggestProfileDialog();
-        break;
+      case 'help': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen())); break;
+      case 'about': _showAboutDialogBox(); break;
+      case 'suggest': _showSuggestProfileDialog(); break;
     }
   }
 
   Future<void> _loadProfilesForCategory(String category) async {
-    setState(() { _loading = true; _nameSuggestions = <ProfileRecord>[]; });
+    setState(() { _loading = true; _nameSuggestions = []; });
     _clearSearchInputs(silent: true);
     try {
-      final String filePath = _fileMap[category]!;
-      final String jsonString = await rootBundle.loadString(filePath);
+      final String jsonString = await rootBundle.loadString(_fileMap[category]!);
       final List<dynamic> decoded = json.decode(jsonString) as List<dynamic>;
-      final List<ProfileRecord> loaded = decoded.map((dynamic e) => ProfileRecord.fromJson(e as Map<String, dynamic>)).toList();
+      final List<ProfileRecord> loaded = decoded.map((e) => ProfileRecord.fromJson(e as Map<String, dynamic>)).toList();
       setState(() {
-        _selectedCategory = category;
-        _profiles = loaded;
-        _loading = false;
-        _tileMaterials = _uniqueSorted(loaded.map((ProfileRecord p) => p.materialGroup ?? p.material ?? '').where((String v) => v.isNotEmpty));
-        _tileTypes = _uniqueSorted(loaded.map((ProfileRecord p) => p.tileType ?? p.profile ?? '').where((String v) => v.isNotEmpty));
-        _tileProfileFamilies = _uniqueSorted(loaded.map((ProfileRecord p) => p.profileGroup ?? p.profile ?? '').where((String v) => v.isNotEmpty));
+        _selectedCategory = category; _profiles = loaded; _loading = false;
+        _tileMaterials = _uniqueSorted(loaded.map((p) => p.materialGroup ?? p.material ?? '').where((v) => v.isNotEmpty));
+        _tileTypes = _uniqueSorted(loaded.map((p) => p.tileType ?? p.profile ?? '').where((v) => v.isNotEmpty));
+        _tileProfileFamilies = _uniqueSorted(loaded.map((p) => p.profileGroup ?? p.profile ?? '').where((v) => v.isNotEmpty));
       });
     } catch (e) {
-      setState(() { _profiles = <ProfileRecord>[]; _loading = false; });
+      setState(() { _profiles = []; _loading = false; });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not load profile data: $e')));
     }
   }
 
   List<String> _uniqueSorted(Iterable<String> values) {
-    final Set<String> unique = <String>{};
-    for (final String v in values) { final String t = v.trim(); if (t.isNotEmpty) unique.add(t); }
-    final List<String> sorted = unique.toList();
-    sorted.sort((String a, String b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    final Set<String> unique = {};
+    for (final v in values) { final t = v.trim(); if (t.isNotEmpty) unique.add(t); }
+    final sorted = unique.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     return sorted;
   }
 
   void _updateNameSuggestions() {
     final String query = _profileSearchController.text.trim().toLowerCase();
-    if (query.isEmpty) { setState(() { _nameSuggestions = <ProfileRecord>[]; }); return; }
-    final List<ProfileRecord> matches = _profiles.where((ProfileRecord p) => _matchesQuery(p, query)).toList();
-    matches.sort((ProfileRecord a, ProfileRecord b) {
-      final bool aStarts = a.profileName.toLowerCase().startsWith(query);
-      final bool bStarts = b.profileName.toLowerCase().startsWith(query);
-      if (aStarts && !bStarts) return -1;
-      if (!aStarts && bStarts) return 1;
+    if (query.isEmpty) { setState(() { _nameSuggestions = []; }); return; }
+    final matches = _profiles.where((p) => _matchesQuery(p, query)).toList();
+    matches.sort((a, b) {
+      final aS = a.profileName.toLowerCase().startsWith(query);
+      final bS = b.profileName.toLowerCase().startsWith(query);
+      if (aS && !bS) return -1; if (!aS && bS) return 1;
       return a.profileName.toLowerCase().compareTo(b.profileName.toLowerCase());
     });
     setState(() { _nameSuggestions = matches.take(12).toList(); });
   }
 
   bool _matchesQuery(ProfileRecord p, String query) {
-    final List<String> haystack = <String>[p.profileName, p.code, p.manufacturer, p.brand ?? '', p.shape, p.material ?? '', p.materialGroup ?? '', p.tileType ?? '', p.profile ?? '', p.profileGroup ?? '', ...p.aliases];
-    return haystack.any((String v) => v.toLowerCase().contains(query));
+    return [p.profileName, p.code, p.manufacturer, p.brand ?? '', p.shape,
+            p.material ?? '', p.materialGroup ?? '', p.tileType ?? '',
+            p.profile ?? '', p.profileGroup ?? '', ...p.aliases]
+        .any((v) => v.toLowerCase().contains(query));
   }
 
   void _selectProfileFromNameSearch(ProfileRecord profile) {
@@ -499,9 +425,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       _coverWidthController.text = profile.coverWidth == null ? '' : _formatNumber(profile.coverWidth);
       _overallWidthController.text = profile.overallWidth == null ? '' : _formatNumber(profile.overallWidth);
     }
-    setState(() { _nameSuggestions = <ProfileRecord>[]; });
-    HistoryService.saveProfile(profile);
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ResultsScreen(title: 'Results', results: <SearchResult>[SearchResult(profile: profile, score: 0)])));
+    setState(() { _nameSuggestions = []; });
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ResultsScreen(title: 'Results', results: [SearchResult(profile: profile, score: 0)])));
   }
 
   String _formatGaugeForInput(ProfileRecord p) {
@@ -512,9 +437,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   }
 
   double? _readNumber(TextEditingController c) {
-    final String text = c.text.trim();
-    if (text.isEmpty) return null;
-    return double.tryParse(text);
+    final t = c.text.trim(); if (t.isEmpty) return null; return double.tryParse(t);
   }
 
   bool _withinTolerance(double pv, double iv, double t) => (pv - iv).abs() <= t;
@@ -531,30 +454,23 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   double get _tileCoverageTolerance => _baseTileCoverageTolerance * _toleranceMultiplier;
 
   void _searchProfiles() {
-    final List<SearchResult> matches = _isTileCategory ? _findTileProfiles() : _findSheetProfiles();
-    if (matches.isNotEmpty) {
-      HistoryService.saveProfile(matches.first.profile);
-    }
+    final matches = _isTileCategory ? _findTileProfiles() : _findSheetProfiles();
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ResultsScreen(title: _categoryTitle(), results: matches.take(25).toList())));
   }
 
   List<SearchResult> _findSheetProfiles() {
-    final String query = _profileSearchController.text.trim().toLowerCase();
-    final double? pitch = _readNumber(_pitchController);
-    final double? depth = _readNumber(_depthController);
-    final double? crown = _readNumber(_crownController);
-    final double? trough = _readNumber(_troughController);
-    final double? coverWidth = _readNumber(_coverWidthController);
-    final double? overallWidth = _readNumber(_overallWidthController);
-    if (query.isEmpty && [pitch, depth, crown, trough, coverWidth, overallWidth].every((double? v) => v == null)) {
+    final q = _profileSearchController.text.trim().toLowerCase();
+    final pitch = _readNumber(_pitchController), depth = _readNumber(_depthController);
+    final crown = _readNumber(_crownController), trough = _readNumber(_troughController);
+    final coverWidth = _readNumber(_coverWidthController), overallWidth = _readNumber(_overallWidthController);
+    if (q.isEmpty && [pitch, depth, crown, trough, coverWidth, overallWidth].every((v) => v == null)) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter a name/manufacturer or at least one measurement.')));
-      return <SearchResult>[];
+      return [];
     }
-    final List<SearchResult> matches = <SearchResult>[];
-    for (final ProfileRecord p in _profiles) {
-      bool passes = true;
-      double score = 0;
-      if (query.isNotEmpty && !_matchesQuery(p, query)) passes = false;
+    final matches = <SearchResult>[];
+    for (final p in _profiles) {
+      bool passes = true; double score = 0;
+      if (q.isNotEmpty && !_matchesQuery(p, q)) passes = false;
       if (pitch != null) { if (p.pitch == null || !_withinTolerance(p.pitch!, pitch, _pitchTolerance)) { passes = false; } else { score += (p.pitch! - pitch).abs(); } }
       if (depth != null) { if (p.depth == null || !_withinTolerance(p.depth!, depth, _depthTolerance)) { passes = false; } else { score += (p.depth! - depth).abs(); } }
       if (crown != null) { if (p.crown == null || !_withinTolerance(p.crown!, crown, _crownTolerance)) { passes = false; } else { score += (p.crown! - crown).abs(); } }
@@ -563,45 +479,41 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       if (overallWidth != null) { if (p.overallWidth == null || !_withinTolerance(p.overallWidth!, overallWidth, _overallWidthTolerance)) { passes = false; } else { score += (p.overallWidth! - overallWidth).abs(); } }
       if (passes) matches.add(SearchResult(profile: p, score: score));
     }
-    matches.sort((SearchResult a, SearchResult b) => a.score.compareTo(b.score));
+    matches.sort((a, b) => a.score.compareTo(b.score));
     return matches;
   }
 
   List<SearchResult> _findTileProfiles() {
-    final String query = _profileSearchController.text.trim().toLowerCase();
-    final double? nominalLength = _readNumber(_tileLengthController);
-    final double? nominalWidth = _readNumber(_tileWidthController);
-    final double? coverWidth = _readNumber(_coverWidthController);
-    final double? gauge = _readNumber(_tileGaugeController);
-    final double? minimumPitch = _readNumber(_tileMinPitchController);
-    final double? coverage = _readNumber(_tileCoverageController);
-    final bool hasFilters = _selectedTileMaterial != null || _selectedTileType != null || _selectedTileProfileFamily != null;
-    if (query.isEmpty && !hasFilters && [nominalLength, nominalWidth, coverWidth, gauge, minimumPitch, coverage].every((double? v) => v == null)) {
+    final q = _profileSearchController.text.trim().toLowerCase();
+    final nomLen = _readNumber(_tileLengthController), nomWid = _readNumber(_tileWidthController);
+    final covWid = _readNumber(_coverWidthController), gauge = _readNumber(_tileGaugeController);
+    final minPitch = _readNumber(_tileMinPitchController), coverage = _readNumber(_tileCoverageController);
+    final hasFilters = _selectedTileMaterial != null || _selectedTileType != null || _selectedTileProfileFamily != null;
+    if (q.isEmpty && !hasFilters && [nomLen, nomWid, covWid, gauge, minPitch, coverage].every((v) => v == null)) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter a name, choose a tile filter, or add a measurement.')));
-      return <SearchResult>[];
+      return [];
     }
-    final List<SearchResult> matches = <SearchResult>[];
-    for (final ProfileRecord p in _profiles) {
-      bool passes = true;
-      double score = 0;
-      if (query.isNotEmpty && !_matchesQuery(p, query)) passes = false;
+    final matches = <SearchResult>[];
+    for (final p in _profiles) {
+      bool passes = true; double score = 0;
+      if (q.isNotEmpty && !_matchesQuery(p, q)) passes = false;
       if (_selectedTileMaterial != null && (p.materialGroup ?? p.material ?? '').toLowerCase() != _selectedTileMaterial!.toLowerCase()) passes = false;
       if (_selectedTileType != null && (p.tileType ?? p.profile ?? '').toLowerCase() != _selectedTileType!.toLowerCase()) passes = false;
       if (_selectedTileProfileFamily != null && (p.profileGroup ?? p.profile ?? '').toLowerCase() != _selectedTileProfileFamily!.toLowerCase()) passes = false;
-      if (nominalLength != null) { if (p.nominalLengthMm == null || !_withinTolerance(p.nominalLengthMm!, nominalLength, _tileLengthTolerance)) { passes = false; } else { score += (p.nominalLengthMm! - nominalLength).abs(); } }
-      if (nominalWidth != null) { if (p.nominalWidthMm == null || !_withinTolerance(p.nominalWidthMm!, nominalWidth, _tileWidthTolerance)) { passes = false; } else { score += (p.nominalWidthMm! - nominalWidth).abs(); } }
-      if (coverWidth != null) { if (p.coverWidth == null || !_withinTolerance(p.coverWidth!, coverWidth, _coverWidthTolerance)) { passes = false; } else { score += (p.coverWidth! - coverWidth).abs(); } }
-      if (gauge != null) { final bool gm = _matchesGauge(p, gauge); if (!gm) { passes = false; } else { score += _gaugeScore(p, gauge); } }
-      if (minimumPitch != null) { if (p.minimumPitchDegMin == null || !_withinTolerance(p.minimumPitchDegMin!, minimumPitch, _tilePitchTolerance)) { passes = false; } else { score += (p.minimumPitchDegMin! - minimumPitch).abs(); } }
+      if (nomLen != null) { if (p.nominalLengthMm == null || !_withinTolerance(p.nominalLengthMm!, nomLen, _tileLengthTolerance)) { passes = false; } else { score += (p.nominalLengthMm! - nomLen).abs(); } }
+      if (nomWid != null) { if (p.nominalWidthMm == null || !_withinTolerance(p.nominalWidthMm!, nomWid, _tileWidthTolerance)) { passes = false; } else { score += (p.nominalWidthMm! - nomWid).abs(); } }
+      if (covWid != null) { if (p.coverWidth == null || !_withinTolerance(p.coverWidth!, covWid, _coverWidthTolerance)) { passes = false; } else { score += (p.coverWidth! - covWid).abs(); } }
+      if (gauge != null) { if (!_matchesGauge(p, gauge)) { passes = false; } else { score += _gaugeScore(p, gauge); } }
+      if (minPitch != null) { if (p.minimumPitchDegMin == null || !_withinTolerance(p.minimumPitchDegMin!, minPitch, _tilePitchTolerance)) { passes = false; } else { score += (p.minimumPitchDegMin! - minPitch).abs(); } }
       if (coverage != null) { if (p.coveragePerSqm == null || !_withinTolerance(p.coveragePerSqm!, coverage, _tileCoverageTolerance)) { passes = false; } else { score += (p.coveragePerSqm! - coverage).abs(); } }
       if (passes) matches.add(SearchResult(profile: p, score: score));
     }
-    matches.sort((SearchResult a, SearchResult b) => a.score.compareTo(b.score));
+    matches.sort((a, b) => a.score.compareTo(b.score));
     return matches;
   }
 
   bool _matchesGauge(ProfileRecord p, double gauge) {
-    final double t = _tileGaugeTolerance;
+    final t = _tileGaugeTolerance;
     if (p.gaugeMinMm != null && p.gaugeMaxMm != null) return gauge >= p.gaugeMinMm! - t && gauge <= p.gaugeMaxMm! + t;
     if (p.gaugeMinMm != null) return _withinTolerance(p.gaugeMinMm!, gauge, t);
     if (p.gaugeMaxMm != null) return _withinTolerance(p.gaugeMaxMm!, gauge, t);
@@ -615,83 +527,58 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     return 9999;
   }
 
-  void _clearSearch() { _clearSearchInputs(); setState(() { _nameSuggestions = <ProfileRecord>[]; }); }
+  void _clearSearch() { _clearSearchInputs(); setState(() { _nameSuggestions = []; }); }
 
   void _clearSearchInputs({bool silent = false}) {
-    _profileSearchController.clear();
-    _pitchController.clear();
-    _depthController.clear();
-    _crownController.clear();
-    _troughController.clear();
-    _coverWidthController.clear();
-    _overallWidthController.clear();
-    _tileLengthController.clear();
-    _tileWidthController.clear();
-    _tileGaugeController.clear();
-    _tileMinPitchController.clear();
-    _tileCoverageController.clear();
-    _selectedTileMaterial = null;
-    _selectedTileType = null;
-    _selectedTileProfileFamily = null;
+    _profileSearchController.clear(); _pitchController.clear(); _depthController.clear();
+    _crownController.clear(); _troughController.clear(); _coverWidthController.clear();
+    _overallWidthController.clear(); _tileLengthController.clear(); _tileWidthController.clear();
+    _tileGaugeController.clear(); _tileMinPitchController.clear(); _tileCoverageController.clear();
+    _selectedTileMaterial = null; _selectedTileType = null; _selectedTileProfileFamily = null;
     if (!silent) setState(() {});
   }
 
   Widget _measurementField(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: TextField(
-        controller: controller,
+    return Padding(padding: const EdgeInsets.only(bottom: 12),
+      child: TextField(controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), filled: true, fillColor: Colors.white),
-      ),
-    );
+        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), filled: true, fillColor: Colors.white)));
   }
 
   Widget _categoryButton(String label, String value) {
     final bool isSelected = _selectedCategory == value;
-    return SizedBox(
-      width: 160,
-      child: ElevatedButton(
-        onPressed: () => _loadProfilesForCategory(value),
+    return SizedBox(width: 160,
+      child: ElevatedButton(onPressed: () => _loadProfilesForCategory(value),
         style: ElevatedButton.styleFrom(
           backgroundColor: isSelected ? Colors.blue.shade700 : Colors.grey.shade300,
           foregroundColor: isSelected ? Colors.white : Colors.black87,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-        ),
-        child: Text(label, textAlign: TextAlign.center),
-      ),
-    );
+          padding: const EdgeInsets.symmetric(vertical: 14)),
+        child: Text(label, textAlign: TextAlign.center)));
   }
 
   Widget _tileDropdownField({required String label, required String? value, required List<String> items, required ValueChanged<String?> onChanged}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+    return Padding(padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
-        value: value,
-        isExpanded: true,
+        initialValue: value, isExpanded: true,
         decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), filled: true, fillColor: Colors.white),
-        items: <DropdownMenuItem<String>>[
-          const DropdownMenuItem<String>(value: null, child: Text('Any')),
-          ...items.map((String item) => DropdownMenuItem<String>(value: item, child: Text(item))),
-        ],
-        onChanged: onChanged,
-      ),
-    );
+        items: [const DropdownMenuItem<String>(value: null, child: Text('Any')),
+                ...items.map((item) => DropdownMenuItem<String>(value: item, child: Text(item)))],
+        onChanged: onChanged));
   }
 
   String _formatNumber(double? value) => value == null ? '-' : (value == value.roundToDouble() ? value.toInt().toString() : value.toStringAsFixed(1));
 
   Widget _suggestionCard(ProfileRecord p) {
-    final String subtitle = p.isTileCategory ? '${p.manufacturer} • ${p.tileTypeLabel}' : '${p.manufacturer} • ${p.code}';
+    final subtitle = p.isTileCategory ? '${p.manufacturer} • ${p.tileTypeLabel}' : '${p.manufacturer} • ${p.code}';
     return ListTile(title: Text(p.profileName), subtitle: Text(subtitle), trailing: const Icon(Icons.arrow_forward_ios, size: 16), onTap: () => _selectProfileFromNameSearch(p));
   }
 
   String _categoryTitle() {
     switch (_selectedCategory) {
-      case 'steel':  return 'Steel Profiles';
+      case 'steel': return 'Steel Profiles';
       case 'cement': return 'Fibre Cement Profiles';
-      case 'tile':   return 'Roof Tiles & Slates';
-      default:       return 'Profiles';
+      case 'tile': return 'Roof Tiles & Slates';
+      default: return 'Profiles';
     }
   }
 
@@ -699,37 +586,31 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     if (_toleranceMultiplier <= 0.75) return 'Tight';
     if (_toleranceMultiplier <= 1.25) return 'Normal';
     if (_toleranceMultiplier <= 1.75) return 'Loose';
-    if (_toleranceMultiplier <= 2.5)  return 'Very Loose';
+    if (_toleranceMultiplier <= 2.5) return 'Very Loose';
     return 'Max';
   }
 
   String _searchFieldLabel() => _isTileCategory ? 'Search tile name, manufacturer, brand, or profile' : 'Search profile name, code, or manufacturer';
-  String _searchFieldHint()  => _isTileCategory ? 'Start typing tile name or manufacturer...' : 'Start typing profile name...';
+  String _searchFieldHint() => _isTileCategory ? 'Start typing tile name or manufacturer...' : 'Start typing profile name...';
 
   Widget _buildToleranceCard() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+    return Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(padding: const EdgeInsets.all(14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('Tolerance: ${_sliderLabel()} (${_toleranceMultiplier.toStringAsFixed(1)}x)', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          Slider(value: _toleranceMultiplier, min: 0.5, max: 3.0, divisions: 10, label: _toleranceMultiplier.toStringAsFixed(1), onChanged: (double v) { setState(() { _toleranceMultiplier = v; }); }),
-          Text(
-            _isTileCategory
-                ? 'Length ±${_tileLengthTolerance.toInt()} | Width ±${_tileWidthTolerance.toInt()} | Cover ±${_coverWidthTolerance.toInt()} | Gauge ±${_tileGaugeTolerance.toInt()} | Min pitch ±${_tilePitchTolerance.toStringAsFixed(1)}° | Coverage ±${_tileCoverageTolerance.toStringAsFixed(1)}'
-                : 'Pitch ±${_pitchTolerance.toInt()} | Depth ±${_depthTolerance.toInt()} | Crown ±${_crownTolerance.toInt()} | Trough ±${_troughTolerance.toInt()} | Cover ±${_coverWidthTolerance.toInt()} | Overall ±${_overallWidthTolerance.toInt()}',
-            style: const TextStyle(fontSize: 12),
-          ),
-        ]),
-      ),
-    );
+          Slider(value: _toleranceMultiplier, min: 0.5, max: 3.0, divisions: 10, label: _toleranceMultiplier.toStringAsFixed(1), onChanged: (v) { setState(() { _toleranceMultiplier = v; }); }),
+          Text(_isTileCategory
+              ? 'Length ±${_tileLengthTolerance.toInt()} | Width ±${_tileWidthTolerance.toInt()} | Cover ±${_coverWidthTolerance.toInt()} | Gauge ±${_tileGaugeTolerance.toInt()} | Min pitch ±${_tilePitchTolerance.toStringAsFixed(1)}° | Coverage ±${_tileCoverageTolerance.toStringAsFixed(1)}'
+              : 'Pitch ±${_pitchTolerance.toInt()} | Depth ±${_depthTolerance.toInt()} | Crown ±${_crownTolerance.toInt()} | Trough ±${_troughTolerance.toInt()} | Cover ±${_coverWidthTolerance.toInt()} | Overall ±${_overallWidthTolerance.toInt()}',
+            style: const TextStyle(fontSize: 12)),
+        ])));
   }
 
   Widget _buildTileFields() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-      _tileDropdownField(label: 'Material', value: _selectedTileMaterial, items: _tileMaterials, onChanged: (String? v) { setState(() { _selectedTileMaterial = v; }); }),
-      _tileDropdownField(label: 'Type', value: _selectedTileType, items: _tileTypes, onChanged: (String? v) { setState(() { _selectedTileType = v; }); }),
-      _tileDropdownField(label: 'Profile family', value: _selectedTileProfileFamily, items: _tileProfileFamilies, onChanged: (String? v) { setState(() { _selectedTileProfileFamily = v; }); }),
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      _tileDropdownField(label: 'Material', value: _selectedTileMaterial, items: _tileMaterials, onChanged: (v) { setState(() { _selectedTileMaterial = v; }); }),
+      _tileDropdownField(label: 'Type', value: _selectedTileType, items: _tileTypes, onChanged: (v) { setState(() { _selectedTileType = v; }); }),
+      _tileDropdownField(label: 'Profile family', value: _selectedTileProfileFamily, items: _tileProfileFamilies, onChanged: (v) { setState(() { _selectedTileProfileFamily = v; }); }),
       _measurementField('Nominal Length (mm)', _tileLengthController),
       _measurementField('Nominal Width (mm)', _tileWidthController),
       _measurementField('Cover Width (mm)', _coverWidthController),
@@ -740,7 +621,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   }
 
   Widget _buildSheetFields() {
-    return Column(children: <Widget>[
+    return Column(children: [
       _measurementField('Pitch (mm)', _pitchController),
       _measurementField('Depth (mm)', _depthController),
       _measurementField('Crown (mm)', _crownController),
@@ -754,116 +635,102 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(64),
+        preferredSize: const Size.fromHeight(56),
         child: Container(
           color: Colors.blue.shade700,
           child: SafeArea(
             bottom: false,
             child: SizedBox(
-              height: 64,
-              child: Stack(clipBehavior: Clip.none, children: <Widget>[
-                Positioned.fill(
-                  left: 4, right: 150,
-                  child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Transform.translate(
-                      offset: const Offset(0, 6),
-                      child: SizedBox(
-                        height: 68,
-                        child: ClipRect(
-                          child: Align(
-                            alignment: Alignment.bottomLeft,
-                            heightFactor: 0.90,
-                            child: Image.asset(
-                              'assets/images/logo.png',
-                              fit: BoxFit.contain,
-                              alignment: Alignment.bottomLeft,
-                              filterQuality: FilterQuality.high,
-                              errorBuilder: (context, error, stackTrace) => const Text('Roof Profile Finder', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ),
+              height: 56,
+              child: Row(children: [
+                // Logo on the left
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8, top: 4, bottom: 4),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      fit: BoxFit.contain,
+                      alignment: Alignment.centerLeft,
+                      filterQuality: FilterQuality.high,
+                      errorBuilder: (context, error, stackTrace) => const Text(
+                        'Roof Profile Finder',
+                        style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
                 ),
-                Positioned(
-                  right: 0, top: 0,
-                  child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                    IconButton(
-                      tooltip: 'Recent History',
-                      onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HistoryScreen())),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-                      icon: const Icon(Icons.history, size: 28, color: Colors.white),
-                    ),
-                    IconButton(tooltip: 'Donate', onPressed: _openDonate, padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 44, minHeight: 44), icon: const Icon(Icons.volunteer_activism, size: 28, color: Colors.white)),
-                    PopupMenuButton<String>(
-                      tooltip: 'Menu',
-                      onSelected: _handleTopMenu,
-                      icon: const Icon(Icons.more_vert, color: Colors.white),
-                      itemBuilder: (BuildContext context) => const <PopupMenuEntry<String>>[
-                        PopupMenuItem<String>(value: 'help',    child: Text('How to use')),
-                        PopupMenuItem<String>(value: 'about',   child: Text('About')),
-                        PopupMenuItem<String>(value: 'suggest', child: Text('Suggest missing profile')),
-                      ],
-                    ),
-                  ]),
+                // Icons on the right
+                IconButton(
+                  tooltip: 'Recent History',
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HistoryScreen())),
+                  icon: const Icon(Icons.history, size: 26, color: Colors.white),
+                ),
+                IconButton(
+                  tooltip: 'Donate',
+                  onPressed: _openDonate,
+                  icon: const Icon(Icons.volunteer_activism, size: 26, color: Colors.white),
+                ),
+                PopupMenuButton<String>(
+                  tooltip: 'Menu',
+                  onSelected: _handleTopMenu,
+                  icon: const Icon(Icons.more_vert, color: Colors.white),
+                  itemBuilder: (context) => const [
+                    PopupMenuItem<String>(value: 'help', child: Text('How to use')),
+                    PopupMenuItem<String>(value: 'about', child: Text('About')),
+                    PopupMenuItem<String>(value: 'suggest', child: Text('Suggest missing profile')),
+                  ],
                 ),
               ]),
             ),
           ),
         ),
       ),
-      body: _loading ? const Center(child: CircularProgressIndicator()) : Column(children: <Widget>[
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-            children: <Widget>[
-              const Text('Choose profile type', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 10),
-              Wrap(spacing: 8, runSpacing: 8, children: <Widget>[
-                _categoryButton('Steel', 'steel'),
-                _categoryButton('Cement', 'cement'),
-                _categoryButton('Tiles / Slates', 'tile'),
-              ]),
-              const SizedBox(height: 18),
-              Text(_categoryTitle(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _profileSearchController,
-                decoration: InputDecoration(
-                  labelText: _searchFieldLabel(),
-                  hintText: _searchFieldHint(),
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: _profileSearchController.text.isNotEmpty
-                      ? IconButton(icon: const Icon(Icons.clear), onPressed: () { _profileSearchController.clear(); setState(() { _nameSuggestions = <ProfileRecord>[]; }); })
-                      : null,
-                  border: const OutlineInputBorder(),
-                  filled: true, fillColor: Colors.white,
-                ),
-              ),
-              if (_nameSuggestions.isNotEmpty) ...<Widget>[
-                const SizedBox(height: 8),
-                Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), child: Column(children: _nameSuggestions.map(_suggestionCard).toList())),
-              ],
-              const SizedBox(height: 16),
-              _buildToleranceCard(),
-              const SizedBox(height: 12),
-              _isTileCategory ? _buildTileFields() : _buildSheetFields(),
-              const SizedBox(height: 12),
-              Row(children: <Widget>[
-                Expanded(child: ElevatedButton.icon(onPressed: _searchProfiles, icon: const Icon(Icons.search), label: const Text('Show Results'), style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16)))),
-                const SizedBox(width: 12),
-                Expanded(child: OutlinedButton.icon(onPressed: _clearSearch, icon: const Icon(Icons.clear), label: const Text('Clear'), style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)))),
-              ]),
-              const SizedBox(height: 20),
-              Text('Loaded Profiles: ${_profiles.length}', style: const TextStyle(fontSize: 14)),
-              const SizedBox(height: 10),
-              Text(_isTileCategory ? 'Enter a name, apply filters, or add measurements to view results on a separate screen.' : 'Enter a name or measurements to view results on a separate screen.'),
+      body: _loading ? const Center(child: CircularProgressIndicator()) : Column(children: [
+        Expanded(child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+          children: [
+            const Text('Choose profile type', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              _categoryButton('Steel', 'steel'),
+              _categoryButton('Cement', 'cement'),
+              _categoryButton('Tiles / Slates', 'tile'),
+            ]),
+            const SizedBox(height: 18),
+            Text(_categoryTitle(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _profileSearchController,
+              decoration: InputDecoration(
+                labelText: _searchFieldLabel(), hintText: _searchFieldHint(),
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _profileSearchController.text.isNotEmpty
+                    ? IconButton(icon: const Icon(Icons.clear), onPressed: () { _profileSearchController.clear(); setState(() { _nameSuggestions = []; }); })
+                    : null,
+                border: const OutlineInputBorder(), filled: true, fillColor: Colors.white),
+            ),
+            if (_nameSuggestions.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), child: Column(children: _nameSuggestions.map(_suggestionCard).toList())),
             ],
-          ),
-        ),
+            const SizedBox(height: 16),
+            _buildToleranceCard(),
+            const SizedBox(height: 12),
+            _isTileCategory ? _buildTileFields() : _buildSheetFields(),
+            const SizedBox(height: 12),
+            Row(children: [
+              Expanded(child: ElevatedButton.icon(onPressed: _searchProfiles, icon: const Icon(Icons.search), label: const Text('Show Results'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16)))),
+              const SizedBox(width: 12),
+              Expanded(child: OutlinedButton.icon(onPressed: _clearSearch, icon: const Icon(Icons.clear), label: const Text('Clear'),
+                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)))),
+            ]),
+            const SizedBox(height: 20),
+            Text('Loaded Profiles: ${_profiles.length}', style: const TextStyle(fontSize: 14)),
+            const SizedBox(height: 10),
+            Text(_isTileCategory ? 'Enter a name, apply filters, or add measurements to view results on a separate screen.' : 'Enter a name or measurements to view results on a separate screen.'),
+          ],
+        )),
       ]),
     );
   }
@@ -880,14 +747,11 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  List<ProfileRecord> _history = [];
+  List<HistoryEntry> _history = [];
   bool _loading = true;
 
   @override
-  void initState() {
-    super.initState();
-    _loadHistory();
-  }
+  void initState() { super.initState(); _loadHistory(); }
 
   Future<void> _loadHistory() async {
     final history = await HistoryService.loadHistory();
@@ -899,35 +763,26 @@ class _HistoryScreenState extends State<HistoryScreen> {
     setState(() { _history = []; });
   }
 
-  String _subtitle(ProfileRecord p) {
-    if (p.isTileCategory) return '${p.manufacturer} • ${p.tileTypeLabel}';
-    return '${p.manufacturer} • ${p.category}';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Recent History'),
-        backgroundColor: Colors.blue.shade700,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white,
         actions: [
           if (_history.isNotEmpty)
             IconButton(
               tooltip: 'Clear history',
               icon: const Icon(Icons.delete_outline),
               onPressed: () async {
-                final confirm = await showDialog<bool>(
-                  context: context,
+                final confirm = await showDialog<bool>(context: context,
                   builder: (ctx) => AlertDialog(
                     title: const Text('Clear History'),
-                    content: const Text('Remove all recent profiles?'),
+                    content: const Text('Remove all saved profiles?'),
                     actions: [
                       TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
                       TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Clear')),
-                    ],
-                  ),
-                );
+                    ]));
                 if (confirm == true) _clearHistory();
               },
             ),
@@ -936,42 +791,49 @@ class _HistoryScreenState extends State<HistoryScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _history.isEmpty
-              ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.history, size: 64, color: Colors.grey),
-                        SizedBox(height: 16),
-                        Text('No recent profiles yet.\n\nProfiles you view will appear here.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                  ),
-                )
+              ? const Center(child: Padding(padding: EdgeInsets.all(24),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(Icons.history, size: 64, color: Colors.grey),
+                    SizedBox(height: 16),
+                    Text('No saved profiles yet.\n\nTap "Save to History" on any result to save it here.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+                  ])))
               : ListView.separated(
                   padding: const EdgeInsets.all(12),
                   itemCount: _history.length,
                   separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, index) {
-                    final ProfileRecord p = _history[index];
+                    final HistoryEntry entry = _history[index];
+                    final ProfileRecord p = entry.profile;
                     return ListTile(
                       leading: p.imageFile != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
+                          ? ClipRRect(borderRadius: BorderRadius.circular(6),
                               child: Image.asset(p.imageFile!, width: 48, height: 48, fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.roofing, size: 48, color: Colors.blue)),
-                            )
+                                errorBuilder: (_, __, ___) => const Icon(Icons.roofing, size: 48, color: Colors.blue)))
                           : const Icon(Icons.roofing, size: 48, color: Colors.blue),
                       title: Text(p.displayTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle: Text(_subtitle(p)),
+                      subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text('${p.manufacturer} • ${p.isTileCategory ? p.tileTypeLabel : p.category}'),
+                        const SizedBox(height: 2),
+                        Row(children: [
+                          const Icon(Icons.access_time, size: 12, color: Colors.grey),
+                          const SizedBox(width: 4),
+                          Text(entry.formattedDate, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                        ]),
+                        if ((entry.location ?? '').isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Row(children: [
+                            const Icon(Icons.location_on, size: 12, color: Colors.blue),
+                            const SizedBox(width: 4),
+                            Expanded(child: Text(entry.location!, style: const TextStyle(fontSize: 11, color: Colors.blue), overflow: TextOverflow.ellipsis)),
+                          ]),
+                        ],
+                      ]),
+                      isThreeLine: true,
                       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                       onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                        builder: (_) => ResultsScreen(title: 'Profile', results: [SearchResult(profile: p, score: 0)]),
-                      )),
+                        builder: (_) => ResultsScreen(title: 'Profile', results: [SearchResult(profile: p, score: 0)]))),
                     );
-                  },
-                ),
+                  }),
     );
   }
 }
@@ -980,10 +842,68 @@ class _HistoryScreenState extends State<HistoryScreen> {
 // Results Screen
 // ═══════════════════════════════════════════════════════════════
 
-class ResultsScreen extends StatelessWidget {
+class ResultsScreen extends StatefulWidget {
   final String title;
   final List<SearchResult> results;
   const ResultsScreen({super.key, required this.title, required this.results});
+  @override
+  State<ResultsScreen> createState() => _ResultsScreenState();
+}
+
+class _ResultsScreenState extends State<ResultsScreen> {
+  final Set<String> _savedKeys = {};
+
+  String _profileKey(ProfileRecord p) => '${p.code}_${p.profileName}';
+
+  Future<void> _saveToHistory(BuildContext context, ProfileRecord profile) async {
+    final TextEditingController locationController = TextEditingController();
+    final String? location = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Save ${profile.displayTitle}', style: const TextStyle(fontSize: 16)),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('Enter a building or location name (optional):'),
+          const SizedBox(height: 12),
+          TextField(
+            controller: locationController,
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(
+              hintText: 'e.g. 14 High Street, Garage Roof...',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.location_on),
+            ),
+          ),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, null), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, locationController.text.trim()),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (location == null) return; // cancelled
+    await HistoryService.saveEntry(HistoryEntry(
+      profile: profile,
+      savedAt: DateTime.now(),
+      location: location.isEmpty ? null : location,
+    ));
+    setState(() { _savedKeys.add(_profileKey(profile)); });
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(children: [
+          const Icon(Icons.check_circle, color: Colors.white),
+          const SizedBox(width: 8),
+          Text(location.isEmpty ? 'Saved to history!' : 'Saved to history: $location'),
+        ]),
+        backgroundColor: Colors.green.shade700,
+        duration: const Duration(seconds: 2),
+      ));
+    }
+  }
 
   Future<void> _openSourceUrl(BuildContext context, String url) async {
     final Uri uri = Uri.parse(url);
@@ -1010,55 +930,47 @@ class ResultsScreen extends StatelessWidget {
 
   Widget _profileImage(BuildContext context, ProfileRecord p) {
     if (p.imageFile == null) return const SizedBox.shrink();
+    return Padding(padding: const EdgeInsets.only(top: 10, bottom: 4),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        ClipRRect(borderRadius: BorderRadius.circular(6),
+          child: SizedBox(height: 160, width: double.infinity,
+            child: InteractiveViewer(panEnabled: true, boundaryMargin: const EdgeInsets.all(10), minScale: 0.5, maxScale: 8.0,
+              child: Image.asset(p.imageFile!, fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => const SizedBox.shrink())))),
+        TextButton.icon(
+          onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+            builder: (_) => _FullScreenImagePage(imageFile: p.imageFile!, title: p.displayTitle))),
+          icon: const Icon(Icons.fullscreen, size: 16),
+          label: const Text('Full screen', style: TextStyle(fontSize: 12)),
+          style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4), visualDensity: VisualDensity.compact)),
+      ]));
+  }
+
+  Widget _saveButton(BuildContext context, ProfileRecord p) {
+    final bool saved = _savedKeys.contains(_profileKey(p));
     return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: SizedBox(
-              height: 160,
-              width: double.infinity,
-              child: InteractiveViewer(
-                panEnabled: true,
-                boundaryMargin: const EdgeInsets.all(10),
-                minScale: 0.5,
-                maxScale: 8.0,
-                child: Image.asset(
-                  p.imageFile!,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
-                ),
-              ),
-            ),
+      padding: const EdgeInsets.only(top: 10),
+      child: SizedBox(width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: saved ? null : () => _saveToHistory(context, p),
+          icon: Icon(saved ? Icons.check_circle : Icons.bookmark_add_outlined),
+          label: Text(saved ? 'Saved to History' : 'Save to History + Location'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: saved ? Colors.green.shade600 : Colors.blue.shade700,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 12),
           ),
-          TextButton.icon(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => _FullScreenImagePage(imageFile: p.imageFile!, title: p.displayTitle),
-              ),
-            ),
-            icon: const Icon(Icons.fullscreen, size: 16),
-            label: const Text('Full screen', style: TextStyle(fontSize: 12)),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              visualDensity: VisualDensity.compact,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
   Widget _sheetResultCard(BuildContext context, SearchResult result) {
     final ProfileRecord p = result.profile;
-    return Card(
-      margin: const EdgeInsets.only(top: 10),
+    return Card(margin: const EdgeInsets.only(top: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+      child: Padding(padding: const EdgeInsets.all(14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(p.displayTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           _profileImage(context, p),
@@ -1072,19 +984,16 @@ class ResultsScreen extends StatelessWidget {
           Text('Cover Width: ${_formatNumber(p.coverWidth)} mm'),
           Text('Overall Width: ${_formatNumber(p.overallWidth)} mm'),
           Text('Match Score: ${result.score.toStringAsFixed(1)}'),
-        ]),
-      ),
-    );
+          _saveButton(context, p),
+        ])));
   }
 
   Widget _tileResultCard(BuildContext context, SearchResult result) {
     final ProfileRecord p = result.profile;
-    return Card(
-      margin: const EdgeInsets.only(top: 10),
+    return Card(margin: const EdgeInsets.only(top: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+      child: Padding(padding: const EdgeInsets.all(14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(p.displayTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           _profileImage(context, p),
@@ -1102,41 +1011,31 @@ class ResultsScreen extends StatelessWidget {
           Text('Coverage: ${p.coverageText ?? (p.coveragePerSqm == null ? '-' : '${_formatNumber(p.coveragePerSqm)} tiles/m²')}'),
           Text('Weight: ${p.weightText ?? (p.weightKgPerSqm == null ? '-' : '${_formatNumber(p.weightKgPerSqm)} kg/m²')}'),
           Text('Match Score: ${result.score.toStringAsFixed(1)}'),
-          if ((p.notes ?? '').isNotEmpty) ...<Widget>[
+          if ((p.notes ?? '').isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(p.notes!, style: TextStyle(fontSize: 12, color: Colors.grey.shade700)),
           ],
-          if ((p.sourceUrl ?? '').isNotEmpty) ...<Widget>[
+          if ((p.sourceUrl ?? '').isNotEmpty) ...[
             const SizedBox(height: 10),
             TextButton.icon(onPressed: () => _openSourceUrl(context, p.sourceUrl!), icon: const Icon(Icons.open_in_new), label: const Text('Open manufacturer source')),
           ],
-        ]),
-      ),
-    );
+          _saveButton(context, p),
+        ])));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('$title Results'), backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
-      body: results.isEmpty
+      appBar: AppBar(title: Text('${widget.title} Results'), backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
+      body: widget.results.isEmpty
           ? const Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No matches found.\n\nTry widening the tolerance or changing one of the measurements.', textAlign: TextAlign.center)))
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                    child: Text('Matches found: ${results.length}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  ),
-                  ...results.map((SearchResult r) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: r.profile.isTileCategory ? _tileResultCard(context, r) : _sheetResultCard(context, r),
-                  )),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
+          : SingleChildScrollView(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text('Matches found: ${widget.results.length}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+              ...widget.results.map((r) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: r.profile.isTileCategory ? _tileResultCard(context, r) : _sheetResultCard(context, r))),
+              const SizedBox(height: 20),
+            ])),
     );
   }
 }
@@ -1157,51 +1056,26 @@ class _FullScreenImagePageState extends State<_FullScreenImagePage> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations(const <DeviceOrientation>[
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+    SystemChrome.setPreferredOrientations(const [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
   }
-
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations(const <DeviceOrientation>[DeviceOrientation.portraitUp]);
+    SystemChrome.setPreferredOrientations(const [DeviceOrientation.portraitUp]);
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text(widget.title, style: const TextStyle(fontSize: 14)),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return InteractiveViewer(
-            panEnabled: true,
-            boundaryMargin: const EdgeInsets.all(20),
-            minScale: 0.5,
-            maxScale: 8.0,
-            child: SizedBox(
-              width: constraints.maxWidth,
-              height: constraints.maxHeight,
-              child: Image.asset(
-                widget.imageFile,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Text('Image not available.', style: TextStyle(color: Colors.white), textAlign: TextAlign.center),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+      appBar: AppBar(title: Text(widget.title, style: const TextStyle(fontSize: 14)), backgroundColor: Colors.black, foregroundColor: Colors.white),
+      body: LayoutBuilder(builder: (context, constraints) {
+        return InteractiveViewer(panEnabled: true, boundaryMargin: const EdgeInsets.all(20), minScale: 0.5, maxScale: 8.0,
+          child: SizedBox(width: constraints.maxWidth, height: constraints.maxHeight,
+            child: Image.asset(widget.imageFile, fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => const Center(
+                child: Padding(padding: EdgeInsets.all(24),
+                  child: Text('Image not available.', style: TextStyle(color: Colors.white), textAlign: TextAlign.center))))));
+      }),
     );
   }
 }
@@ -1220,33 +1094,22 @@ class _HowToUseScreenState extends State<HowToUseScreen> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations(const <DeviceOrientation>[DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+    SystemChrome.setPreferredOrientations(const [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
   }
-
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations(const <DeviceOrientation>[DeviceOrientation.portraitUp]);
+    SystemChrome.setPreferredOrientations(const [DeviceOrientation.portraitUp]);
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(title: const Text('How to use'), backgroundColor: Colors.black, foregroundColor: Colors.white),
-      body: Center(
-        child: InteractiveViewer(
-          panEnabled: true, minScale: 0.8, maxScale: 4,
-          child: Image.asset(
-            'assets/images/how_to_use.png',
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const Padding(
-              padding: EdgeInsets.all(24),
-              child: Text('Help image not found.\n\nMake sure the file is in:\nassets/images/how_to_use.png', textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
-            ),
-          ),
-        ),
-      ),
+      body: Center(child: InteractiveViewer(panEnabled: true, minScale: 0.8, maxScale: 4,
+        child: Image.asset('assets/images/how_to_use.png', fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) => const Padding(padding: EdgeInsets.all(24),
+            child: Text('Help image not found.\n\nMake sure the file is in:\nassets/images/how_to_use.png', textAlign: TextAlign.center, style: TextStyle(color: Colors.white)))))),
     );
   }
 }
