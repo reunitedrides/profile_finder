@@ -1,7 +1,7 @@
 name: profile_finder
 description: "Roof Profile Finder App"
 publish_to: 'none'
-version: 1.0.0+5
+version: 1.0.0+8
 
 environment:
   sdk: ^3.11.4
@@ -12,8 +12,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   url_launcher: ^6.3.0
   shared_preferences: ^2.3.0
-  sensors_plus: ^6.0.0
-  geolocator: ^13.0.0
 
 dev_dependencies:
   flutter_test:
