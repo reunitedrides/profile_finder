@@ -921,7 +921,7 @@ class ResultsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('$title Results'), backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
-      body: widget.results.isEmpty
+      body: results.isEmpty
           ? const Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No matches found.\n\nTry widening the tolerance or changing one of the measurements.', textAlign: TextAlign.center)))
           : SingleChildScrollView(
               child: Column(
