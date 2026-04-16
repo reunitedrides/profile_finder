@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrientation;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 
 const String _donateUrl = 'https://ko-fi.com/weddingfund';
 const String _appVersion = '1.0.0';
@@ -352,6 +355,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   void _handleTopMenu(String value) {
     switch (value) {
+      case 'tools': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen())); break;
       case 'help': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen())); break;
       case 'about': _showAboutDialogBox(); break;
       case 'suggest': _showSuggestProfileDialog(); break;
@@ -675,6 +679,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                   onSelected: _handleTopMenu,
                   icon: const Icon(Icons.more_vert, color: Colors.white),
                   itemBuilder: (context) => const [
+                    PopupMenuItem<String>(value: 'tools', child: Text('Tools')),
                     PopupMenuItem<String>(value: 'help', child: Text('How to use')),
                     PopupMenuItem<String>(value: 'about', child: Text('About')),
                     PopupMenuItem<String>(value: 'suggest', child: Text('Suggest missing profile')),
@@ -1076,6 +1081,264 @@ class _FullScreenImagePageState extends State<_FullScreenImagePage> {
                 child: Padding(padding: EdgeInsets.all(24),
                   child: Text('Image not available.', style: TextStyle(color: Colors.white), textAlign: TextAlign.center))))));
       }),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Tools Screen
+// ═══════════════════════════════════════════════════════════════
+
+class ToolsScreen extends StatelessWidget {
+  const ToolsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tools'),
+        backgroundColor: Colors.blue.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const Text('Roofer\'s Tools', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(16),
+              leading: Container(
+                width: 52, height: 52,
+                decoration: BoxDecoration(color: Colors.blue.shade700, borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.architecture, color: Colors.white, size: 28),
+              ),
+              title: const Text('Roof Pitch Finder', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              subtitle: const Text('Use your phone to measure roof pitch in degrees and ratio'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PitchAngleScreen())),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Placeholder for future tools
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(16),
+              leading: Container(
+                width: 52, height: 52,
+                decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(10)),
+                child: Icon(Icons.calculate_outlined, color: Colors.grey.shade500, size: 28),
+              ),
+              title: Text('More tools coming soon...', style: TextStyle(fontSize: 16, color: Colors.grey.shade500)),
+              subtitle: Text('Additional roofer tools will be added here', style: TextStyle(color: Colors.grey.shade400)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Pitch Angle Screen
+// ═══════════════════════════════════════════════════════════════
+
+class PitchAngleScreen extends StatefulWidget {
+  const PitchAngleScreen({super.key});
+  @override
+  State<PitchAngleScreen> createState() => _PitchAngleScreenState();
+}
+
+class _PitchAngleScreenState extends State<PitchAngleScreen> {
+  double _pitch = 0.0;
+  double? _lockedPitch;
+  bool _locked = false;
+  StreamSubscription<AccelerometerEvent>? _sub;
+
+  // Smoothing buffer
+  final List<double> _buffer = [];
+  static const int _bufferSize = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = accelerometerEventStream(samplingPeriod: SensorInterval.normalInterval).listen((event) {
+      // Calculate pitch from accelerometer
+      // When phone is flat: y≈0, z≈-9.8 → 0°
+      // When phone is vertical: y≈-9.8, z≈0 → 90°
+      final double rawPitch = math.atan2(event.y.abs(), event.z.abs()) * 180 / math.pi;
+
+      // Smooth with rolling average
+      _buffer.add(rawPitch);
+      if (_buffer.length > _bufferSize) _buffer.removeAt(0);
+      final double smoothed = _buffer.reduce((a, b) => a + b) / _buffer.length;
+
+      if (!_locked && mounted) {
+        setState(() { _pitch = smoothed; });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
+
+  // Convert degrees to pitch ratio (rise:12 in imperial, or rise:run)
+  String _pitchRatio(double deg) {
+    if (deg < 1) return 'Flat';
+    final double rise = math.tan(deg * math.pi / 180) * 12;
+    return '${rise.toStringAsFixed(1)}/12';
+  }
+
+  // Pitch description
+  String _pitchDescription(double deg) {
+    if (deg < 2) return 'Flat / Very Low Pitch';
+    if (deg < 10) return 'Low Pitch';
+    if (deg < 20) return 'Medium Pitch';
+    if (deg < 30) return 'Steep Pitch';
+    if (deg < 45) return 'Very Steep';
+    return 'Extreme Pitch';
+  }
+
+  Color _pitchColor(double deg) {
+    if (deg < 2) return Colors.grey;
+    if (deg < 10) return Colors.green;
+    if (deg < 20) return Colors.orange;
+    if (deg < 30) return Colors.deepOrange;
+    return Colors.red;
+  }
+
+  double get _displayPitch => _locked ? (_lockedPitch ?? _pitch) : _pitch;
+
+  @override
+  Widget build(BuildContext context) {
+    final double deg = _displayPitch;
+    final Color pitchColor = _pitchColor(deg);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Roof Pitch Finder'),
+        backgroundColor: Colors.blue.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Instructions
+            Card(
+              color: Colors.blue.shade50,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: const Padding(
+                padding: EdgeInsets.all(14),
+                child: Row(children: [
+                  Icon(Icons.info_outline, color: Colors.blue),
+                  SizedBox(width: 10),
+                  Expanded(child: Text(
+                    'Place the edge of your phone flat against the roof surface. Hold steady then tap Lock to capture the reading.',
+                    style: TextStyle(fontSize: 13),
+                  )),
+                ]),
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            // Big degree display
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              decoration: BoxDecoration(
+                color: pitchColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: pitchColor, width: 2),
+              ),
+              child: Column(children: [
+                Text(
+                  '${deg.toStringAsFixed(1)}°',
+                  style: TextStyle(fontSize: 72, fontWeight: FontWeight.bold, color: pitchColor),
+                ),
+                Text(
+                  _pitchDescription(deg),
+                  style: TextStyle(fontSize: 18, color: pitchColor, fontWeight: FontWeight.w500),
+                ),
+              ]),
+            ),
+            const SizedBox(height: 24),
+
+            // Pitch ratio and extra info
+            Row(children: [
+              Expanded(child: Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(padding: const EdgeInsets.all(16),
+                  child: Column(children: [
+                    const Text('Pitch Ratio', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    const SizedBox(height: 4),
+                    Text(_pitchRatio(deg), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  ])),
+              )),
+              const SizedBox(width: 12),
+              Expanded(child: Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(padding: const EdgeInsets.all(16),
+                  child: Column(children: [
+                    const Text('% Slope', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    const SizedBox(height: 4),
+                    Text('${(math.tan(deg * math.pi / 180) * 100).toStringAsFixed(1)}%',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  ])),
+              )),
+            ]),
+            const SizedBox(height: 32),
+
+            // Lock / Unlock button
+            SizedBox(width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    if (_locked) {
+                      _locked = false;
+                      _lockedPitch = null;
+                    } else {
+                      _locked = true;
+                      _lockedPitch = _pitch;
+                    }
+                  });
+                },
+                icon: Icon(_locked ? Icons.lock_open : Icons.lock),
+                label: Text(_locked ? 'Unlock (Resume Live)' : 'Lock Reading'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _locked ? Colors.orange : Colors.blue.shade700,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+
+            if (_locked) ...[
+              const SizedBox(height: 12),
+              Text('Reading locked at ${(_lockedPitch ?? 0).toStringAsFixed(1)}°',
+                style: TextStyle(color: Colors.orange.shade700, fontWeight: FontWeight.w500)),
+            ],
+
+            if (!_locked) ...[
+              const SizedBox(height: 12),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(width: 8, height: 8,
+                  decoration: BoxDecoration(color: Colors.green, shape: BoxShape.circle,
+                    boxShadow: [BoxShadow(color: Colors.green.withOpacity(0.5), blurRadius: 6)])),
+                const SizedBox(width: 6),
+                const Text('Live reading', style: TextStyle(color: Colors.green, fontSize: 12)),
+              ]),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }
