@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrientation;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const String _donateUrl = 'https://ko-fi.com/weddingfund';
 const String _appVersion = '1.0.0';
@@ -27,6 +28,47 @@ class RoofProfileFinderApp extends StatelessWidget {
       ),
       home: const ProfileSearchScreen(),
     );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// History Service
+// ═══════════════════════════════════════════════════════════════
+
+class HistoryService {
+  static const String _key = 'profile_history';
+  static const int _maxItems = 10;
+
+  static Future<void> saveProfile(ProfileRecord profile) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> history = prefs.getStringList(_key) ?? [];
+    final String encoded = jsonEncode(profile.toJson());
+    history.removeWhere((item) {
+      try {
+        final Map<String, dynamic> m = jsonDecode(item) as Map<String, dynamic>;
+        return m['code'] == profile.code && m['profileName'] == profile.profileName;
+      } catch (_) { return false; }
+    });
+    history.insert(0, encoded);
+    if (history.length > _maxItems) history.removeRange(_maxItems, history.length);
+    await prefs.setStringList(_key, history);
+  }
+
+  static Future<List<ProfileRecord>> loadHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> history = prefs.getStringList(_key) ?? [];
+    final List<ProfileRecord> results = [];
+    for (final item in history) {
+      try {
+        results.add(ProfileRecord.fromJson(jsonDecode(item) as Map<String, dynamic>));
+      } catch (_) {}
+    }
+    return results;
+  }
+
+  static Future<void> clearHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_key);
   }
 }
 
@@ -105,6 +147,44 @@ class ProfileRecord {
     required this.imageFile,
   });
 
+  Map<String, dynamic> toJson() => {
+    'code': code,
+    'profileName': profileName,
+    'manufacturer': manufacturer,
+    'shape': shape,
+    'pitch': pitch,
+    'depth': depth,
+    'crown': crown,
+    'trough': trough,
+    'coverWidth': coverWidth,
+    'overallWidth': overallWidth,
+    'category': category,
+    'brand': brand,
+    'material': material,
+    'materialGroup': materialGroup,
+    'tileType': tileType,
+    'profile': profile,
+    'profileGroup': profileGroup,
+    'fixingType': fixingType,
+    'aliases': aliases,
+    'nominalLengthMm': nominalLengthMm,
+    'nominalWidthMm': nominalWidthMm,
+    'gaugeMinMm': gaugeMinMm,
+    'gaugeMaxMm': gaugeMaxMm,
+    'minimumPitchDegMin': minimumPitchDegMin,
+    'coveragePerSqm': coveragePerSqm,
+    'weightKgPerSqm': weightKgPerSqm,
+    'overallSizeText': overallSizeText,
+    'coverWidthText': coverWidthText,
+    'gaugeText': gaugeText,
+    'minimumPitchText': minimumPitchText,
+    'coverageText': coverageText,
+    'weightText': weightText,
+    'sourceUrl': sourceUrl,
+    'notes': notes,
+    'imageFile': imageFile,
+  };
+
   factory ProfileRecord.fromJson(Map<String, dynamic> json) {
     double? toNullableDouble(dynamic value) {
       if (value == null) return null;
@@ -127,9 +207,9 @@ class ProfileRecord {
             ? json['category'].toString().trim().toLowerCase()
             : 'sheet';
 
-    String? rawImage = json['image_file']?.toString() ?? json['imageFile']?.toString();
-    String? imageFile;
-    if (rawImage != null && rawImage.isNotEmpty) {
+    String? rawImage = json['image_file']?.toString() ?? json['imageFile']?.toString() ?? json['imageFile']?.toString();
+    String? imageFile = json['imageFile']?.toString();
+    if (imageFile == null && rawImage != null && rawImage.isNotEmpty) {
       imageFile = rawImage.startsWith('assets/') ? rawImage : 'assets/$rawImage';
     }
 
@@ -420,6 +500,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       _overallWidthController.text = profile.overallWidth == null ? '' : _formatNumber(profile.overallWidth);
     }
     setState(() { _nameSuggestions = <ProfileRecord>[]; });
+    HistoryService.saveProfile(profile);
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ResultsScreen(title: 'Results', results: <SearchResult>[SearchResult(profile: profile, score: 0)])));
   }
 
@@ -451,6 +532,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   void _searchProfiles() {
     final List<SearchResult> matches = _isTileCategory ? _findTileProfiles() : _findSheetProfiles();
+    if (matches.isNotEmpty) {
+      HistoryService.saveProfile(matches.first.profile);
+    }
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ResultsScreen(title: _categoryTitle(), results: matches.take(25).toList())));
   }
 
@@ -679,7 +763,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
               height: 64,
               child: Stack(clipBehavior: Clip.none, children: <Widget>[
                 Positioned.fill(
-                  left: 4, right: 110,
+                  left: 4, right: 150,
                   child: Align(
                     alignment: Alignment.bottomLeft,
                     child: Transform.translate(
@@ -706,7 +790,14 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                 Positioned(
                   right: 0, top: 0,
                   child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                    IconButton(tooltip: 'Donate', onPressed: _openDonate, padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 44, minHeight: 44), icon: const Icon(Icons.volunteer_activism, size: 30, color: Colors.white)),
+                    IconButton(
+                      tooltip: 'Recent History',
+                      onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HistoryScreen())),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+                      icon: const Icon(Icons.history, size: 28, color: Colors.white),
+                    ),
+                    IconButton(tooltip: 'Donate', onPressed: _openDonate, padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 44, minHeight: 44), icon: const Icon(Icons.volunteer_activism, size: 28, color: Colors.white)),
                     PopupMenuButton<String>(
                       tooltip: 'Menu',
                       onSelected: _handleTopMenu,
@@ -774,6 +865,113 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
           ),
         ),
       ]),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// History Screen
+// ═══════════════════════════════════════════════════════════════
+
+class HistoryScreen extends StatefulWidget {
+  const HistoryScreen({super.key});
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
+  List<ProfileRecord> _history = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHistory();
+  }
+
+  Future<void> _loadHistory() async {
+    final history = await HistoryService.loadHistory();
+    setState(() { _history = history; _loading = false; });
+  }
+
+  Future<void> _clearHistory() async {
+    await HistoryService.clearHistory();
+    setState(() { _history = []; });
+  }
+
+  String _subtitle(ProfileRecord p) {
+    if (p.isTileCategory) return '${p.manufacturer} • ${p.tileTypeLabel}';
+    return '${p.manufacturer} • ${p.category}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Recent History'),
+        backgroundColor: Colors.blue.shade700,
+        foregroundColor: Colors.white,
+        actions: [
+          if (_history.isNotEmpty)
+            IconButton(
+              tooltip: 'Clear history',
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Clear History'),
+                    content: const Text('Remove all recent profiles?'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                      TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Clear')),
+                    ],
+                  ),
+                );
+                if (confirm == true) _clearHistory();
+              },
+            ),
+        ],
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _history.isEmpty
+              ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.history, size: 64, color: Colors.grey),
+                        SizedBox(height: 16),
+                        Text('No recent profiles yet.\n\nProfiles you view will appear here.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+                      ],
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: _history.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final ProfileRecord p = _history[index];
+                    return ListTile(
+                      leading: p.imageFile != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: Image.asset(p.imageFile!, width: 48, height: 48, fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => const Icon(Icons.roofing, size: 48, color: Colors.blue)),
+                            )
+                          : const Icon(Icons.roofing, size: 48, color: Colors.blue),
+                      title: Text(p.displayTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
+                      subtitle: Text(_subtitle(p)),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                        builder: (_) => ResultsScreen(title: 'Profile', results: [SearchResult(profile: p, score: 0)]),
+                      )),
+                    );
+                  },
+                ),
     );
   }
 }
