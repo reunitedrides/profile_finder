@@ -932,14 +932,57 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       setSheetState(() { gpsLoading = true; });
                       try {
                         LocationPermission perm = await Geolocator.checkPermission();
+
                         if (perm == LocationPermission.denied) {
                           perm = await Geolocator.requestPermission();
                         }
+
                         if (perm == LocationPermission.deniedForever) {
-                          if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('Location permission denied. Enable in Settings.')));
                           setSheetState(() { gpsLoading = false; });
+                          if (ctx.mounted) {
+                            await showDialog<void>(
+                              context: ctx,
+                              builder: (dCtx) => AlertDialog(
+                                title: const Row(children: [
+                                  Icon(Icons.location_off, color: Colors.orange),
+                                  SizedBox(width: 8),
+                                  Text('Location Disabled'),
+                                ]),
+                                content: const Text(
+                                  'Location access is turned off for Profile Finder.\n\n'
+                                  'To enable it:\n'
+                                  '1. Tap "Open Settings" below\n'
+                                  '2. Tap Location\n'
+                                  '3. Select "While Using the App"\n\n'
+                                  'This lets the app save the GPS pin of the roof you are working on.',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(dCtx),
+                                    child: const Text('Not Now'),
+                                  ),
+                                  ElevatedButton.icon(
+                                    onPressed: () async {
+                                      Navigator.pop(dCtx);
+                                      await Geolocator.openAppSettings();
+                                    },
+                                    icon: const Icon(Icons.settings),
+                                    label: const Text('Open Settings'),
+                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
                           return;
                         }
+
+                        if (perm == LocationPermission.denied) {
+                          setSheetState(() { gpsLoading = false; });
+                          if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('Location permission is needed to save GPS pin.')));
+                          return;
+                        }
+
                         final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
                         gpsLat = pos.latitude;
                         gpsLng = pos.longitude;
@@ -967,7 +1010,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
             ]),
             if (gpsLat != null) ...[
               const SizedBox(height: 4),
-              Text('GPS: ${gpsLat!.toStringAsFixed(5)}, ${gpsLng!.toStringAsFixed(5)}',
+              Text('📍 GPS captured: ${gpsLat!.toStringAsFixed(5)}, ${gpsLng!.toStringAsFixed(5)}',
                 style: TextStyle(fontSize: 11, color: Colors.green.shade700)),
             ],
             const SizedBox(height: 16),
@@ -989,14 +1032,15 @@ class _ResultsScreenState extends State<ResultsScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Save / Cancel buttons
+            // Save / Cancel buttons — Cancel is compact, Save takes more space
             Row(children: [
-              Expanded(child: OutlinedButton(
+              OutlinedButton(
                 onPressed: () => Navigator.pop(ctx, null),
+                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14)),
                 child: const Text('Cancel'),
-              )),
+              ),
               const SizedBox(width: 12),
-              Expanded(flex: 2, child: ElevatedButton.icon(
+              Expanded(child: ElevatedButton.icon(
                 onPressed: () => Navigator.pop(ctx, {
                   'location': locationController.text.trim(),
                   'pitch': pitchController.text.trim(),
