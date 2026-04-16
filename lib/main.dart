@@ -41,16 +41,18 @@ class RoofProfileFinderApp extends StatelessWidget {
 class HistoryEntry {
   final ProfileRecord profile;
   final DateTime savedAt;
+  final String? buildingName;
   final String? location;
   final double? roofPitch;
   final double? gpsLat;
   final double? gpsLng;
 
-  const HistoryEntry({required this.profile, required this.savedAt, this.location, this.roofPitch, this.gpsLat, this.gpsLng});
+  const HistoryEntry({required this.profile, required this.savedAt, this.buildingName, this.location, this.roofPitch, this.gpsLat, this.gpsLng});
 
   Map<String, dynamic> toJson() => {
     'profile': profile.toJson(),
     'savedAt': savedAt.toIso8601String(),
+    'buildingName': buildingName,
     'location': location,
     'roofPitch': roofPitch,
     'gpsLat': gpsLat,
@@ -62,6 +64,7 @@ class HistoryEntry {
     return HistoryEntry(
       profile: ProfileRecord.fromJson(json['profile'] as Map<String, dynamic>),
       savedAt: DateTime.tryParse(json['savedAt']?.toString() ?? '') ?? DateTime.now(),
+      buildingName: json['buildingName']?.toString(),
       location: json['location']?.toString(),
       roofPitch: toD(json['roofPitch']),
       gpsLat: toD(json['gpsLat']),
@@ -828,7 +831,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               child: Image.asset(p.imageFile!, width: 48, height: 48, fit: BoxFit.contain,
                                 errorBuilder: (_, __, ___) => const Icon(Icons.roofing, size: 48, color: Colors.blue)))
                           : const Icon(Icons.roofing, size: 48, color: Colors.blue),
-                      title: Text(p.displayTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
+                      title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(p.displayTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
+                        if ((entry.buildingName ?? '').isNotEmpty)
+                          Text(entry.buildingName!, style: TextStyle(fontSize: 13, color: Colors.blue.shade700, fontWeight: FontWeight.w500)),
+                      ]),
                       subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text('${p.manufacturer} • ${p.isTileCategory ? p.tileTypeLabel : p.category}'),
                         const SizedBox(height: 2),
@@ -840,10 +847,29 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         if ((entry.location ?? '').isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Row(children: [
-                            Icon(entry.hasGps ? Icons.where_to_vote : Icons.location_on, size: 12, color: Colors.blue),
+                            Icon(entry.hasGps ? Icons.where_to_vote : Icons.location_on, size: 12, color: Colors.blueGrey),
                             const SizedBox(width: 4),
-                            Expanded(child: Text(entry.location!, style: const TextStyle(fontSize: 11, color: Colors.blue), overflow: TextOverflow.ellipsis)),
+                            Expanded(child: Text(entry.location!, style: const TextStyle(fontSize: 11, color: Colors.blueGrey), overflow: TextOverflow.ellipsis)),
                           ]),
+                        ],
+                        if (entry.hasGps) ...[
+                          const SizedBox(height: 2),
+                          GestureDetector(
+                            onTap: () async {
+                              final Uri mapsUri = Uri.parse('https://maps.google.com/?q=${entry.gpsLat},${entry.gpsLng}');
+                              if (await canLaunchUrl(mapsUri)) {
+                                await launchUrl(mapsUri, mode: LaunchMode.externalApplication);
+                              }
+                            },
+                            child: Row(children: [
+                              const Icon(Icons.map, size: 12, color: Colors.green),
+                              const SizedBox(width: 4),
+                              Text('${entry.gpsLat!.toStringAsFixed(4)}, ${entry.gpsLng!.toStringAsFixed(4)}',
+                                style: const TextStyle(fontSize: 11, color: Colors.green, decoration: TextDecoration.underline)),
+                              const SizedBox(width: 4),
+                              const Text('(tap to open map)', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                            ]),
+                          ),
                         ],
                         if (entry.roofPitch != null) ...[
                           const SizedBox(height: 2),
@@ -882,6 +908,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
   String _profileKey(ProfileRecord p) => '${p.code}_${p.profileName}';
 
   Future<void> _saveToHistory(BuildContext context, ProfileRecord profile) async {
+    final TextEditingController buildingController = TextEditingController();
     final TextEditingController locationController = TextEditingController();
     final TextEditingController pitchController = TextEditingController();
     double? gpsLat;
@@ -907,15 +934,30 @@ class _ResultsScreenState extends State<ResultsScreen> {
             Text(profile.displayTitle, style: const TextStyle(fontSize: 13, color: Colors.grey)),
             const SizedBox(height: 20),
 
-            // Location field with GPS button
-            const Text('Building / Location name', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            // Building name field
+            const Text('Building Name', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 6),
+            TextField(
+              controller: buildingController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                hintText: 'e.g. Smith Residence, Factory Unit 4...',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.home_work_outlined),
+                isDense: true,
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            // Address / location field with GPS button
+            const Text('Address / Location', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             Row(children: [
               Expanded(child: TextField(
                 controller: locationController,
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
-                  hintText: 'e.g. 14 High Street, Garage Roof',
+                  hintText: 'e.g. 14 High Street, Birmingham',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.location_on),
                   isDense: true,
@@ -1050,6 +1092,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
               const SizedBox(width: 12),
               Expanded(child: ElevatedButton.icon(
                 onPressed: () => Navigator.pop(ctx, {
+                  'buildingName': buildingController.text.trim(),
                   'location': locationController.text.trim(),
                   'pitch': pitchController.text.trim(),
                   'gpsLat': gpsLat,
@@ -1070,11 +1113,13 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
 
     if (result == null) return;
+    final String buildingName = result['buildingName'] as String? ?? '';
     final String location = result['location'] as String? ?? '';
     final double? pitch = double.tryParse(result['pitch'] as String? ?? '');
     await HistoryService.saveEntry(HistoryEntry(
       profile: profile,
       savedAt: DateTime.now(),
+      buildingName: buildingName.isEmpty ? null : buildingName,
       location: location.isEmpty ? null : location,
       roofPitch: pitch,
       gpsLat: result['gpsLat'] as double?,
@@ -1086,7 +1131,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
         content: Row(children: [
           const Icon(Icons.check_circle, color: Colors.white),
           const SizedBox(width: 8),
-          Text(location.isEmpty ? 'Saved to history!' : 'Saved: $location'),
+          Text(buildingName.isEmpty && location.isEmpty ? 'Saved to history!' : 'Saved: ${buildingName.isNotEmpty ? buildingName : location}'),
         ]),
         backgroundColor: Colors.green.shade700,
         duration: const Duration(seconds: 2),
