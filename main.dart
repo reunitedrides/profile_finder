@@ -170,38 +170,6 @@ class HistoryService {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Tool Usage Service — tracks most used tools
-// ═══════════════════════════════════════════════════════════════
-
-class ToolUsageService {
-  static const String _key = 'tool_usage_counts';
-
-  // Tool IDs and their display info
-  static const Map<String, Map<String, dynamic>> toolInfo = {
-    'pitch':     {'label': 'Pitch Finder',  'icon': Icons.architecture,  'color': 0xFF1565C0},
-    'material':  {'label': 'Material List', 'icon': Icons.list_alt,       'color': 0xFF2E7D32},
-    'area':      {'label': 'Area Calc',     'icon': Icons.calculate,      'color': 0xFF00695C},
-    'rafter':    {'label': 'Rafter Calc',   'icon': Icons.straighten,     'color': 0xFF4E342E},
-    'perimeter': {'label': 'Perimeter',     'icon': Icons.crop_free,      'color': 0xFF283593},
-    'torch':     {'label': 'Torch',         'icon': Icons.flashlight_on,  'color': 0xFFF57F17},
-  };
-
-  static Future<void> recordUsage(String toolId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final Map<String, dynamic> counts = jsonDecode(prefs.getString(_key) ?? '{}') as Map<String, dynamic>;
-    counts[toolId] = (counts[toolId] as int? ?? 0) + 1;
-    await prefs.setString(_key, jsonEncode(counts));
-  }
-
-  static Future<List<String>> getMostUsed({int limit = 3}) async {
-    final prefs = await SharedPreferences.getInstance();
-    final Map<String, dynamic> counts = jsonDecode(prefs.getString(_key) ?? '{}') as Map<String, dynamic>;
-    final sorted = counts.entries.toList()..sort((a, b) => (b.value as int).compareTo(a.value as int));
-    return sorted.take(limit).map((e) => e.key).toList();
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════
 // ProfileRecord
 // ═══════════════════════════════════════════════════════════════
 
@@ -340,7 +308,6 @@ class ProfileSearchScreen extends StatefulWidget {
 
 class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   final TextEditingController _profileSearchController = TextEditingController();
-  List<String> _mostUsedTools = [];
   final TextEditingController _pitchController = TextEditingController();
   final TextEditingController _depthController = TextEditingController();
   final TextEditingController _crownController = TextEditingController();
@@ -390,29 +357,6 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     super.initState();
     _loadProfilesForCategory(_selectedCategory);
     _profileSearchController.addListener(_updateNameSuggestions);
-    _loadMostUsed();
-  }
-
-  Future<void> _loadMostUsed() async {
-    final tools = await ToolUsageService.getMostUsed();
-    if (mounted) setState(() { _mostUsedTools = tools; });
-  }
-
-  Future<void> _openTool(String toolId) async {
-    await ToolUsageService.recordUsage(toolId);
-    if (!mounted) return;
-    final Widget screen;
-    switch (toolId) {
-      case 'pitch':     screen = const PitchAngleScreen(); break;
-      case 'material':  screen = const MaterialListScreen(); break;
-      case 'area':      screen = const RoofAreaCalculator(); break;
-      case 'rafter':    screen = const RafterCalculator(); break;
-      case 'perimeter': screen = const PerimeterAreaTool(); break;
-      case 'torch':     screen = const TorchScreen(); break;
-      default: return;
-    }
-    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
-    _loadMostUsed(); // refresh after returning
   }
 
   @override
@@ -762,6 +706,21 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     ]);
   }
 
+  Widget _toolPill(BuildContext context, IconData icon, String label, Color color, Widget screen) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen)),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(20), border: Border.all(color: color.withOpacity(0.4))),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 6),
+          Text(label, style: TextStyle(fontSize: 13, color: color, fontWeight: FontWeight.w600)),
+        ]),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -821,51 +780,21 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         Expanded(child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
           children: [
-          // Quick Access Buttons
-          Row(children: [
-            Expanded(child: ElevatedButton.icon(
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen())),
-              icon: const Icon(Icons.build, size: 18),
-              label: const Text('Tools'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            )),
-          ]),
-          // Most used tools — shown when user has used tools before
-          if (_mostUsedTools.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Row(children: [
-              Text('Most used: ', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-              Expanded(child: Wrap(spacing: 6, children: _mostUsedTools.map((id) {
-                final info = ToolUsageService.toolInfo[id];
-                if (info == null) return const SizedBox.shrink();
-                final color = Color(info['color'] as int);
-                return GestureDetector(
-                  onTap: () => _openTool(id),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: color.withOpacity(0.4)),
-                    ),
-                    child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(info['icon'] as IconData, size: 13, color: color),
-                      const SizedBox(width: 4),
-                      Text(info['label'] as String, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600)),
-                    ]),
-                  ),
-                );
-              }).toList())),
+            // Quick Tools Bar
+            const Text('Quick Tools', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey)),
+            const SizedBox(height: 8),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              _toolPill(context, Icons.architecture, 'Pitch Finder', Colors.blue.shade700, const PitchAngleScreen()),
+              _toolPill(context, Icons.list_alt, 'Material List', Colors.green.shade700, const MaterialListScreen()),
+              _toolPill(context, Icons.calculate, 'Area Calc', Colors.teal.shade700, const RoofAreaCalculator()),
+              _toolPill(context, Icons.straighten, 'Rafter Calc', Colors.brown.shade600, const RafterCalculator()),
+              _toolPill(context, Icons.crop_free, 'Perimeter', Colors.indigo.shade700, const PerimeterAreaTool()),
+              _toolPill(context, Icons.flashlight_on, 'Torch', Colors.amber.shade700, const TorchScreen()),
             ]),
-          ],
-          const SizedBox(height: 14),
-          const Divider(height: 1),
-          const SizedBox(height: 14),
-          const Text('Choose profile type', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 14),
+            const Text('Choose profile type', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             Wrap(spacing: 8, runSpacing: 8, children: [
               _categoryButton('Steel', 'steel'),
@@ -1807,7 +1736,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
               title: const Text('Roof Pitch Finder', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               subtitle: const Text('Use your phone to measure roof pitch in degrees and ratio'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () { ToolUsageService.recordUsage('pitch'); Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PitchAngleScreen())); },
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PitchAngleScreen())),
             ),
           ),
           const SizedBox(height: 12),
@@ -1823,7 +1752,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
               title: const Text('Torch', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               subtitle: const Text('Turn on your phone torch for working in dark roof spaces'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () { ToolUsageService.recordUsage('torch'); Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const TorchScreen())); },
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const TorchScreen())),
             ),
           ),
           const SizedBox(height: 12),
@@ -1839,7 +1768,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
               title: const Text('Material List', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               subtitle: const Text('Build a material takeoff list for any roofing job'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () { ToolUsageService.recordUsage('material'); Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const MaterialListScreen())); },
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const MaterialListScreen())),
             ),
           ),
           const SizedBox(height: 12),
@@ -1855,7 +1784,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
               title: const Text('Roof Area Calculator', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               subtitle: const Text('Calculate roof area from length, width and pitch'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () { ToolUsageService.recordUsage('area'); Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const RoofAreaCalculator())); },
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const RoofAreaCalculator())),
             ),
           ),
           const SizedBox(height: 12),
@@ -1871,7 +1800,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
               title: const Text('Perimeter Area Tool', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               subtitle: const Text('Draw building outline and enter wall lengths to calculate area'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () { ToolUsageService.recordUsage('perimeter'); Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PerimeterAreaTool())); },
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PerimeterAreaTool())),
             ),
           ),
           const SizedBox(height: 12),
@@ -1887,224 +1816,74 @@ class _ToolsScreenState extends State<ToolsScreen> {
               title: const Text('Rafter Calculator', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               subtitle: const Text('Calculate rafter length, ridge height and number of rafters'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () { ToolUsageService.recordUsage('rafter'); Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const RafterCalculator())); },
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const RafterCalculator())),
             ),
           ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
-}
+          const SizedBox(height: 24),
 
-// ═══════════════════════════════════════════════════════════════
-// My Apps Screen
-// ═══════════════════════════════════════════════════════════════
-
-class MyAppsScreen extends StatefulWidget {
-  const MyAppsScreen({super.key});
-  @override
-  State<MyAppsScreen> createState() => _MyAppsScreenState();
-}
-
-class _MyAppsScreenState extends State<MyAppsScreen> {
-  List<Map<String, String>> _customApps = [];
-
-  // Popular app suggestions with their URL schemes
-  static const List<Map<String, String>> _suggestions = [
-    {'name': 'BBC Weather', 'url': 'https://bbc.co.uk/weather', 'icon': '🌤️'},
-    {'name': 'Met Office', 'url': 'https://metoffice.gov.uk', 'icon': '🌦️'},
-    {'name': 'Google Maps', 'url': 'https://maps.google.com', 'icon': '🗺️'},
-    {'name': 'WhatsApp', 'url': 'whatsapp://', 'icon': '💬'},
-    {'name': 'Jewson', 'url': 'https://jewson.co.uk', 'icon': '🏗️'},
-    {'name': 'Travis Perkins', 'url': 'https://travisperkins.co.uk', 'icon': '🔨'},
-    {'name': 'Roofing Superstore', 'url': 'https://roofingsuperstore.co.uk', 'icon': '🏠'},
-    {'name': 'Calculator', 'url': 'calculator://', 'icon': '🔢'},
-    {'name': 'Camera', 'url': 'photos://', 'icon': '📷'},
-    {'name': 'Phone', 'url': 'tel:', 'icon': '📞'},
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCustomApps();
-  }
-
-  Future<void> _loadCustomApps() async {
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> raw = prefs.getStringList('custom_apps') ?? [];
-    setState(() {
-      _customApps = raw.map((e) => Map<String, String>.from(jsonDecode(e) as Map)).toList();
-    });
-  }
-
-  Future<void> _saveCustomApps() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('custom_apps', _customApps.map((e) => jsonEncode(e)).toList());
-  }
-
-  Future<void> _addApp({Map<String, String>? suggestion}) async {
-    final nameController = TextEditingController(text: suggestion?['name'] ?? '');
-    final urlController = TextEditingController(text: suggestion?['url'] ?? '');
-    final result = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
-      title: const Text('Add App'),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(
-          controller: nameController,
-          textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(labelText: 'App Name', hintText: 'e.g. BBC Weather', border: OutlineInputBorder(), prefixIcon: Icon(Icons.apps)),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: urlController,
-          keyboardType: TextInputType.url,
-          decoration: const InputDecoration(labelText: 'URL or App Link', hintText: 'e.g. https://bbc.co.uk/weather', border: OutlineInputBorder(), prefixIcon: Icon(Icons.link)),
-        ),
-        const SizedBox(height: 8),
-        const Text('Use any website URL or app URL scheme', style: TextStyle(fontSize: 11, color: Colors.grey)),
-      ]),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(ctx, true),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple.shade400, foregroundColor: Colors.white),
-          child: const Text('Add'),
-        ),
-      ],
-    ));
-    if (result == true && nameController.text.isNotEmpty && urlController.text.isNotEmpty) {
-      setState(() { _customApps.add({'name': nameController.text.trim(), 'url': urlController.text.trim()}); });
-      await _saveCustomApps();
-    }
-  }
-
-  Future<void> _editApp(int index) async {
-    final nameController = TextEditingController(text: _customApps[index]['name']);
-    final urlController = TextEditingController(text: _customApps[index]['url']);
-    final result = await showDialog<String>(context: context, builder: (ctx) => AlertDialog(
-      title: const Text('Edit App'),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: nameController, textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(labelText: 'App Name', border: OutlineInputBorder(), prefixIcon: Icon(Icons.apps))),
-        const SizedBox(height: 12),
-        TextField(controller: urlController, keyboardType: TextInputType.url,
-          decoration: const InputDecoration(labelText: 'URL', border: OutlineInputBorder(), prefixIcon: Icon(Icons.link))),
-      ]),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, 'delete'), child: const Text('Delete', style: TextStyle(color: Colors.red))),
-        TextButton(onPressed: () => Navigator.pop(ctx, 'cancel'), child: const Text('Cancel')),
-        ElevatedButton(onPressed: () => Navigator.pop(ctx, 'save'),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple.shade400, foregroundColor: Colors.white),
-          child: const Text('Save')),
-      ],
-    ));
-    if (result == 'delete') {
-      setState(() { _customApps.removeAt(index); });
-      await _saveCustomApps();
-    } else if (result == 'save' && nameController.text.isNotEmpty) {
-      setState(() { _customApps[index] = {'name': nameController.text.trim(), 'url': urlController.text.trim()}; });
-      await _saveCustomApps();
-    }
-  }
-
-  Future<void> _launchApp(String url) async {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return;
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not open: $url')));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Apps'),
-        backgroundColor: Colors.deepPurple.shade400,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            tooltip: 'Add app',
-            icon: const Icon(Icons.add),
-            onPressed: () => _addApp(),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Saved apps
-          if (_customApps.isNotEmpty) ...[
-            const Text('My Saved Apps', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            ..._customApps.asMap().entries.map((entry) {
-              final i = entry.key;
-              final app = entry.value;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    leading: Container(
-                      width: 48, height: 48,
-                      decoration: BoxDecoration(color: Colors.deepPurple.shade400, borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.open_in_new, color: Colors.white, size: 24),
-                    ),
-                    title: Text(app['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(app['url'] ?? '', style: const TextStyle(fontSize: 11, color: Colors.grey), overflow: TextOverflow.ellipsis),
-                    trailing: IconButton(
-                      icon: Icon(Icons.edit, size: 18, color: Colors.grey.shade400),
-                      onPressed: () => _editApp(i),
-                    ),
-                    onTap: () => _launchApp(app['url'] ?? ''),
-                  ),
-                ),
-              );
-            }),
-            const SizedBox(height: 24),
-          ],
-
-          // Suggestions
-          const Text('Popular Apps for Roofers', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          // My Apps section
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Text('My Apps', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            TextButton.icon(
+              onPressed: () => _addOrEditApp(),
+              icon: const Icon(Icons.add_circle_outline, size: 18),
+              label: const Text('Add App'),
+              style: TextButton.styleFrom(foregroundColor: Colors.blue.shade700),
+            ),
+          ]),
           const SizedBox(height: 4),
-          const Text('Tap + to add any of these to your list', style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const Text('Add quick links to apps you use on site like weather, maps or suppliers.', style: TextStyle(fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 12),
-          ..._suggestions.map((s) {
-            final alreadyAdded = _customApps.any((a) => a['name'] == s['name']);
+
+          // Custom app cards
+          ..._customApps.asMap().entries.map((entry) {
+            final i = entry.key;
+            final app = entry.value;
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: 12),
               child: Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                color: alreadyAdded ? Colors.grey.shade50 : Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
-                  leading: Text(s['icon'] ?? '📱', style: const TextStyle(fontSize: 28)),
-                  title: Text(s['name'] ?? '', style: TextStyle(fontWeight: FontWeight.w600, color: alreadyAdded ? Colors.grey : Colors.black)),
-                  subtitle: Text(s['url'] ?? '', style: const TextStyle(fontSize: 11, color: Colors.grey), overflow: TextOverflow.ellipsis),
-                  trailing: alreadyAdded
-                    ? Icon(Icons.check_circle, color: Colors.green.shade400, size: 20)
-                    : IconButton(
-                        icon: Icon(Icons.add_circle_outline, color: Colors.deepPurple.shade400),
-                        onPressed: () => _addApp(suggestion: s),
-                      ),
-                  onTap: alreadyAdded ? null : () => _addApp(suggestion: s),
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: Container(
+                    width: 52, height: 52,
+                    decoration: BoxDecoration(color: Colors.deepPurple.shade400, borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.open_in_new, color: Colors.white, size: 28),
+                  ),
+                  title: Text(app['name'] ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  subtitle: Text(app['url'] ?? '', style: const TextStyle(fontSize: 11, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                  trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                    IconButton(
+                      icon: Icon(Icons.edit, size: 18, color: Colors.grey.shade400),
+                      onPressed: () => _addOrEditApp(index: i),
+                      padding: EdgeInsets.zero, constraints: const BoxConstraints(),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward_ios, size: 16),
+                  ]),
+                  onTap: () => _launchCustomApp(app['url'] ?? ''),
                 ),
               ),
             );
           }),
-          const SizedBox(height: 12),
 
-          // Custom add button
-          OutlinedButton.icon(
-            onPressed: () => _addApp(),
-            icon: const Icon(Icons.add),
-            label: const Text('Add Custom App or Website'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.deepPurple.shade400,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+          // Add app placeholder button
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            color: Colors.grey.shade50,
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(16),
+              leading: Container(
+                width: 52, height: 52,
+                decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(10)),
+                child: Icon(Icons.add, color: Colors.grey.shade400, size: 28),
+              ),
+              title: Text('Add your own app...', style: TextStyle(fontSize: 16, color: Colors.grey.shade400)),
+              subtitle: Text('Tap to add a quick link', style: TextStyle(color: Colors.grey.shade300)),
+              onTap: () => _addOrEditApp(),
             ),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 16),
         ],
       ),
     );
