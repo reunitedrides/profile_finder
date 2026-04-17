@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 const String _donateUrl = 'https://ko-fi.com/weddingfund';
 const String _appVersion = '1.0.0';
@@ -804,7 +805,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
         title: const Text('Recent History'),
         backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white,
         actions: [
-          if (_history.isNotEmpty)
+          if (_history.isNotEmpty) ...[
+            IconButton(
+              tooltip: 'View on map',
+              icon: const Icon(Icons.map),
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (_) => RoofMapScreen(history: _history))),
+            ),
             IconButton(
               tooltip: 'Clear history',
               icon: const Icon(Icons.delete_outline),
@@ -820,6 +827,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 if (confirm == true) _clearHistory();
               },
             ),
+          ],
         ],
       ),
       body: _loading
@@ -1520,6 +1528,22 @@ class ToolsScreen extends StatelessWidget {
               subtitle: const Text('Build a material takeoff list for any roofing job'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const MaterialListScreen())),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(16),
+              leading: Container(
+                width: 52, height: 52,
+                decoration: BoxDecoration(color: Colors.teal.shade700, borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.calculate, color: Colors.white, size: 28),
+              ),
+              title: const Text('Roof Area Calculator', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              subtitle: const Text('Calculate roof area from length, width and pitch'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const RoofAreaCalculator())),
             ),
           ),
           const SizedBox(height: 12),
@@ -2487,6 +2511,329 @@ class _TorchScreenState extends State<TorchScreen> {
           Text('Tap the button to toggle torch', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
         ]),
       ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Roof Map Screen
+// ═══════════════════════════════════════════════════════════════
+
+class RoofMapScreen extends StatefulWidget {
+  final List<HistoryEntry> history;
+  const RoofMapScreen({super.key, required this.history});
+  @override
+  State<RoofMapScreen> createState() => _RoofMapScreenState();
+}
+
+class _RoofMapScreenState extends State<RoofMapScreen> {
+  GoogleMapController? _mapController;
+  final Set<Marker> _markers = {};
+  HistoryEntry? _selectedEntry;
+
+  @override
+  void initState() {
+    super.initState();
+    _buildMarkers();
+  }
+
+  void _buildMarkers() {
+    for (int i = 0; i < widget.history.length; i++) {
+      final entry = widget.history[i];
+      if (!entry.hasGps) continue;
+      _markers.add(Marker(
+        markerId: MarkerId('marker_$i'),
+        position: LatLng(entry.gpsLat!, entry.gpsLng!),
+        infoWindow: InfoWindow(
+          title: entry.buildingName ?? entry.profile.displayTitle,
+          snippet: '${entry.profile.displayTitle}${entry.roofPitch != null ? ' • ${entry.roofPitch!.toStringAsFixed(1)}°' : ''}',
+        ),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        onTap: () => setState(() { _selectedEntry = entry; }),
+      ));
+    }
+  }
+
+  LatLng get _initialPosition {
+    final withGps = widget.history.where((e) => e.hasGps).toList();
+    if (withGps.isEmpty) return const LatLng(52.5, -1.9); // UK centre
+    return LatLng(withGps.first.gpsLat!, withGps.first.gpsLng!);
+  }
+
+  int get _pinCount => widget.history.where((e) => e.hasGps).length;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Roof Locations'),
+        backgroundColor: Colors.blue.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: _pinCount == 0
+          ? const Center(child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Icon(Icons.location_off, size: 64, color: Colors.grey),
+                SizedBox(height: 16),
+                Text('No GPS locations saved yet.\n\nTap the GPS button when saving a profile to add a map pin.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+              ]),
+            ))
+          : Stack(children: [
+              GoogleMap(
+                initialCameraPosition: CameraPosition(target: _initialPosition, zoom: 13),
+                markers: _markers,
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+                mapType: MapType.normal,
+                onMapCreated: (controller) {
+                  _mapController = controller;
+                  // Fit all markers
+                  if (_pinCount > 1) {
+                    final points = widget.history.where((e) => e.hasGps)
+                        .map((e) => LatLng(e.gpsLat!, e.gpsLng!)).toList();
+                    double minLat = points.map((p) => p.latitude).reduce(math.min);
+                    double maxLat = points.map((p) => p.latitude).reduce(math.max);
+                    double minLng = points.map((p) => p.longitude).reduce(math.min);
+                    double maxLng = points.map((p) => p.longitude).reduce(math.max);
+                    controller.animateCamera(CameraUpdate.newLatLngBounds(
+                      LatLngBounds(southwest: LatLng(minLat, minLng), northeast: LatLng(maxLat, maxLng)), 80));
+                  }
+                },
+                onTap: (_) => setState(() { _selectedEntry = null; }),
+              ),
+
+              // Pin count badge
+              Positioned(top: 12, left: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(color: Colors.blue.shade700, borderRadius: BorderRadius.circular(20)),
+                  child: Text('$_pinCount roof${_pinCount == 1 ? '' : 's'} saved',
+                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+                ),
+              ),
+
+              // Selected entry card
+              if (_selectedEntry != null)
+                Positioned(
+                  bottom: 16, left: 16, right: 16,
+                  child: Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 6,
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Row(children: [
+                          const Icon(Icons.roofing, color: Colors.blue, size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(_selectedEntry!.profile.displayTitle,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),
+                          IconButton(onPressed: () => setState(() { _selectedEntry = null; }),
+                            icon: const Icon(Icons.close, size: 18), padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints()),
+                        ]),
+                        if ((_selectedEntry!.buildingName ?? '').isNotEmpty)
+                          Text(_selectedEntry!.buildingName!, style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.w500)),
+                        if ((_selectedEntry!.location ?? '').isNotEmpty)
+                          Text(_selectedEntry!.location!, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                        const SizedBox(height: 6),
+                        Row(children: [
+                          const Icon(Icons.access_time, size: 12, color: Colors.grey),
+                          const SizedBox(width: 4),
+                          Text(_selectedEntry!.formattedDate, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                          if (_selectedEntry!.roofPitch != null) ...[
+                            const SizedBox(width: 12),
+                            const Icon(Icons.architecture, size: 12, color: Colors.deepOrange),
+                            const SizedBox(width: 4),
+                            Text('${_selectedEntry!.roofPitch!.toStringAsFixed(1)}°',
+                              style: const TextStyle(fontSize: 11, color: Colors.deepOrange)),
+                          ],
+                        ]),
+                        const SizedBox(height: 8),
+                        SizedBox(width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                              builder: (_) => ResultsScreen(title: 'Profile', results: [SearchResult(profile: _selectedEntry!.profile, score: 0)]))),
+                            icon: const Icon(Icons.search, size: 16),
+                            label: const Text('View Profile'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 10)),
+                          ),
+                        ),
+                      ]),
+                    ),
+                  ),
+                ),
+            ]),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Roof Area Calculator Screen
+// ═══════════════════════════════════════════════════════════════
+
+class RoofAreaCalculator extends StatefulWidget {
+  const RoofAreaCalculator({super.key});
+  @override
+  State<RoofAreaCalculator> createState() => _RoofAreaCalculatorState();
+}
+
+class _RoofAreaCalculatorState extends State<RoofAreaCalculator> {
+  final _lengthController = TextEditingController();
+  final _widthController = TextEditingController();
+  final _pitchController = TextEditingController();
+  final _wastageController = TextEditingController(text: '10');
+  double? _flatArea;
+  double? _pitchedArea;
+  double? _totalWithWastage;
+
+  @override
+  void dispose() {
+    _lengthController.dispose(); _widthController.dispose();
+    _pitchController.dispose(); _wastageController.dispose();
+    super.dispose();
+  }
+
+  void _calculate() {
+    final length = double.tryParse(_lengthController.text);
+    final width = double.tryParse(_widthController.text);
+    final pitch = double.tryParse(_pitchController.text);
+    final wastage = double.tryParse(_wastageController.text) ?? 10;
+    if (length == null || width == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter length and width to calculate')));
+      return;
+    }
+    final flat = length * width;
+    double pitched = flat;
+    if (pitch != null && pitch > 0) {
+      final pitchFactor = 1 / math.cos(pitch * math.pi / 180);
+      pitched = flat * pitchFactor;
+    }
+    final total = pitched * (1 + wastage / 100);
+    setState(() { _flatArea = flat; _pitchedArea = pitched; _totalWithWastage = total; });
+  }
+
+  void _clear() {
+    _lengthController.clear(); _widthController.clear();
+    _pitchController.clear(); _wastageController.text = '10';
+    setState(() { _flatArea = null; _pitchedArea = null; _totalWithWastage = null; });
+  }
+
+  Widget _inputField(String label, TextEditingController controller, {String? suffix, String? hint}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(children: [
+        Expanded(flex: 3, child: Text(label, style: const TextStyle(fontSize: 14))),
+        Expanded(flex: 2, child: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            hintText: hint ?? '0.0',
+            suffixText: suffix,
+            border: const OutlineInputBorder(),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          ),
+        )),
+      ]),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Roof Area Calculator'),
+        backgroundColor: Colors.teal.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
+          Card(color: Colors.teal.shade50, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Row(children: [
+                Icon(Icons.info_outline, color: Colors.teal, size: 18),
+                SizedBox(width: 8),
+                Expanded(child: Text('Enter roof dimensions. Add pitch angle for accurate area calculation.', style: TextStyle(fontSize: 13))),
+              ]),
+            ])),
+          ),
+          const SizedBox(height: 20),
+
+          const Text('Measurements', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          _inputField('Length', _lengthController, suffix: 'm'),
+          _inputField('Width', _widthController, suffix: 'm'),
+          _inputField('Roof Pitch', _pitchController, suffix: '°', hint: 'optional'),
+          _inputField('Wastage', _wastageController, suffix: '%'),
+
+          const SizedBox(height: 8),
+          Row(children: [
+            Expanded(child: ElevatedButton.icon(
+              onPressed: _calculate,
+              icon: const Icon(Icons.calculate),
+              label: const Text('Calculate'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal.shade700, foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14)),
+            )),
+            const SizedBox(width: 12),
+            OutlinedButton.icon(
+              onPressed: _clear,
+              icon: const Icon(Icons.clear),
+              label: const Text('Clear'),
+              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16)),
+            ),
+          ]),
+
+          if (_flatArea != null) ...[
+            const SizedBox(height: 24),
+            const Text('Results', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
+                _resultRow('Flat Area', '${_flatArea!.toStringAsFixed(2)} m²', Colors.grey.shade700),
+                const Divider(),
+                _resultRow('Pitched Area', '${_pitchedArea!.toStringAsFixed(2)} m²', Colors.teal.shade700),
+                const Divider(),
+                _resultRow('Total + Wastage', '${_totalWithWastage!.toStringAsFixed(2)} m²', Colors.blue.shade700, bold: true),
+              ])),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  final text = '📐 Roof Area Calculation\n'
+                    'Length: ${_lengthController.text}m × Width: ${_widthController.text}m\n'
+                    '${_pitchController.text.isNotEmpty ? 'Pitch: ${_pitchController.text}°\n' : ''}'
+                    'Flat Area: ${_flatArea!.toStringAsFixed(2)} m²\n'
+                    'Pitched Area: ${_pitchedArea!.toStringAsFixed(2)} m²\n'
+                    'Total + ${_wastageController.text}% wastage: ${_totalWithWastage!.toStringAsFixed(2)} m²\n\n'
+                    'Calculated by Roof Profile Finder';
+                  Share.share(text);
+                },
+                icon: const Icon(Icons.share),
+                label: const Text('Share Calculation'),
+              ),
+            ),
+          ],
+          const SizedBox(height: 30),
+        ]),
+      ),
+    );
+  }
+
+  Widget _resultRow(String label, String value, Color color, {bool bold = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
+        Text(value, style: TextStyle(fontSize: 16, fontWeight: bold ? FontWeight.bold : FontWeight.w600, color: color)),
+      ]),
     );
   }
 }

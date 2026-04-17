@@ -1,5 +1,6 @@
 import UIKit
 import Flutter
+import GoogleMaps
 import AVFoundation
 
 @main
@@ -8,6 +9,8 @@ import AVFoundation
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    GMSServices.provideAPIKey("AIzaSyBEdH4WO3_PFhASbmWuTxVkjcv4iAJf6jU")
+
     let controller = window?.rootViewController as! FlutterViewController
     let torchChannel = FlutterMethodChannel(name: "torch_channel", binaryMessenger: controller.binaryMessenger)
     torchChannel.setMethodCallHandler { (call, result) in
@@ -28,6 +31,7 @@ import AVFoundation
         }
       }
     }
+
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
