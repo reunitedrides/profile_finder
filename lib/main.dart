@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:share_plus/share_plus.dart';
 
 const String _donateUrl = 'https://ko-fi.com/weddingfund';
 const String _appVersion = '1.0.0';
@@ -46,8 +47,9 @@ class HistoryEntry {
   final double? roofPitch;
   final double? gpsLat;
   final double? gpsLng;
+  final String? notes;
 
-  const HistoryEntry({required this.profile, required this.savedAt, this.buildingName, this.location, this.roofPitch, this.gpsLat, this.gpsLng});
+  const HistoryEntry({required this.profile, required this.savedAt, this.buildingName, this.location, this.roofPitch, this.gpsLat, this.gpsLng, this.notes});
 
   Map<String, dynamic> toJson() => {
     'profile': profile.toJson(),
@@ -57,6 +59,7 @@ class HistoryEntry {
     'roofPitch': roofPitch,
     'gpsLat': gpsLat,
     'gpsLng': gpsLng,
+    'notes': notes,
   };
 
   factory HistoryEntry.fromJson(Map<String, dynamic> json) {
@@ -69,6 +72,7 @@ class HistoryEntry {
       roofPitch: toD(json['roofPitch']),
       gpsLat: toD(json['gpsLat']),
       gpsLng: toD(json['gpsLng']),
+      notes: json['notes']?.toString(),
     );
   }
 
@@ -111,6 +115,15 @@ class HistoryService {
   static Future<void> clearHistory() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
+  }
+
+  static Future<void> deleteEntry(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> history = prefs.getStringList(_key) ?? [];
+    if (index >= 0 && index < history.length) {
+      history.removeAt(index);
+      await prefs.setStringList(_key, history);
+    }
   }
 }
 
@@ -825,7 +838,37 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   itemBuilder: (context, index) {
                     final HistoryEntry entry = _history[index];
                     final ProfileRecord p = entry.profile;
-                    return ListTile(
+                    return Dismissible(
+                      key: Key('${entry.savedAt.millisecondsSinceEpoch}_$index'),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        color: Colors.red.shade400,
+                        child: const Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                          Icon(Icons.delete, color: Colors.white, size: 28),
+                          Text('Delete', style: TextStyle(color: Colors.white, fontSize: 12)),
+                        ]),
+                      ),
+                      confirmDismiss: (direction) async {
+                        return await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Delete Entry'),
+                            content: Text('Remove ${p.displayTitle} from history?'),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+                            ],
+                          ),
+                        );
+                      },
+                      onDismissed: (direction) async {
+                        await HistoryService.deleteEntry(index);
+                        setState(() { _history.removeAt(index); });
+                        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry deleted'), duration: Duration(seconds: 1)));
+                      },
+                      child: ListTile(
                       leading: p.imageFile != null
                           ? ClipRRect(borderRadius: BorderRadius.circular(6),
                               child: Image.asset(p.imageFile!, width: 48, height: 48, fit: BoxFit.contain,
@@ -879,11 +922,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             Text('Pitch: ${entry.roofPitch!.toStringAsFixed(1)}°', style: const TextStyle(fontSize: 11, color: Colors.deepOrange)),
                           ]),
                         ],
+                        if ((entry.notes ?? '').isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Row(children: [
+                            const Icon(Icons.notes, size: 12, color: Colors.purple),
+                            const SizedBox(width: 4),
+                            Expanded(child: Text(entry.notes!, style: const TextStyle(fontSize: 11, color: Colors.purple), overflow: TextOverflow.ellipsis)),
+                          ]),
+                        ],
                       ]),
                       isThreeLine: true,
                       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                       onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
                         builder: (_) => ResultsScreen(title: 'Profile', results: [SearchResult(profile: p, score: 0)]))),
+                    ),
                     );
                   }),
     );
@@ -911,6 +963,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
     final TextEditingController buildingController = TextEditingController();
     final TextEditingController locationController = TextEditingController();
     final TextEditingController pitchController = TextEditingController();
+    final TextEditingController notesController = TextEditingController();
     double? gpsLat;
     double? gpsLng;
     bool gpsLoading = false;
@@ -1082,6 +1135,22 @@ class _ResultsScreenState extends State<ResultsScreen> {
             ),
             const SizedBox(height: 24),
 
+            // Notes field
+            const Text('Notes', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 6),
+            TextField(
+              controller: notesController,
+              textCapitalization: TextCapitalization.sentences,
+              maxLines: 2,
+              decoration: const InputDecoration(
+                hintText: 'e.g. Needs replacing, Match confirmed, Check ridge...',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.notes),
+                isDense: true,
+              ),
+            ),
+            const SizedBox(height: 24),
+
             // Save / Cancel buttons — Cancel is compact, Save takes more space
             Row(children: [
               OutlinedButton(
@@ -1095,6 +1164,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   'buildingName': buildingController.text.trim(),
                   'location': locationController.text.trim(),
                   'pitch': pitchController.text.trim(),
+                  'notes': notesController.text.trim(),
                   'gpsLat': gpsLat,
                   'gpsLng': gpsLng,
                 }),
@@ -1116,6 +1186,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
     final String buildingName = result['buildingName'] as String? ?? '';
     final String location = result['location'] as String? ?? '';
     final double? pitch = double.tryParse(result['pitch'] as String? ?? '');
+    final String notes = result['notes'] as String? ?? '';
     await HistoryService.saveEntry(HistoryEntry(
       profile: profile,
       savedAt: DateTime.now(),
@@ -1124,6 +1195,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
       roofPitch: pitch,
       gpsLat: result['gpsLat'] as double?,
       gpsLng: result['gpsLng'] as double?,
+      notes: notes.isEmpty ? null : notes,
     ));
     setState(() { _savedKeys.add(_profileKey(profile)); });
     if (context.mounted) {
@@ -1199,6 +1271,47 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 
+  void _shareProfile(ProfileRecord p) {
+    final StringBuffer sb = StringBuffer();
+    sb.writeln('🏠 Roof Profile Finder');
+    sb.writeln('─────────────────────');
+    sb.writeln(p.displayTitle);
+    sb.writeln('Manufacturer: ${p.manufacturer}');
+    if (p.isTileCategory) {
+      sb.writeln('Material: ${p.materialLabel}');
+      sb.writeln('Type: ${p.tileTypeLabel}');
+      if (p.nominalLengthMm != null) sb.writeln('Size: ${p.nominalLengthMm!.toInt()} x ${p.nominalWidthMm?.toInt()} mm');
+      if (p.minimumPitchDegMin != null) sb.writeln('Min Pitch: ${p.minimumPitchDegMin!.toStringAsFixed(1)}°');
+    } else {
+      sb.writeln('Shape: ${p.shape}');
+      if (p.pitch != null) sb.writeln('Pitch: ${p.pitch!.toStringAsFixed(1)} mm');
+      if (p.depth != null) sb.writeln('Depth: ${p.depth!.toStringAsFixed(1)} mm');
+      if (p.coverWidth != null) sb.writeln('Cover Width: ${p.coverWidth!.toStringAsFixed(1)} mm');
+      if (p.overallWidth != null) sb.writeln('Overall Width: ${p.overallWidth!.toStringAsFixed(1)} mm');
+    }
+    if ((p.sourceUrl ?? '').isNotEmpty) sb.writeln('Source: ${p.sourceUrl}');
+    sb.writeln('─────────────────────');
+    sb.writeln('Shared via Roof Profile Finder');
+    Share.share(sb.toString(), subject: p.displayTitle);
+  }
+
+  Widget _shareButton(ProfileRecord p) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: SizedBox(width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: () => _shareProfile(p),
+          icon: const Icon(Icons.share, size: 18),
+          label: const Text('Share Profile'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.blue.shade700,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _sheetResultCard(BuildContext context, SearchResult result) {
     final ProfileRecord p = result.profile;
     return Card(margin: const EdgeInsets.only(top: 10),
@@ -1219,6 +1332,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
           Text('Overall Width: ${_formatNumber(p.overallWidth)} mm'),
           Text('Match Score: ${result.score.toStringAsFixed(1)}'),
           _saveButton(context, p),
+          _shareButton(p),
         ])));
   }
 
@@ -1254,6 +1368,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
             TextButton.icon(onPressed: () => _openSourceUrl(context, p.sourceUrl!), icon: const Icon(Icons.open_in_new), label: const Text('Open manufacturer source')),
           ],
           _saveButton(context, p),
+          _shareButton(p),
         ])));
   }
 
@@ -1360,6 +1475,22 @@ class ToolsScreen extends StatelessWidget {
               subtitle: const Text('Use your phone to measure roof pitch in degrees and ratio'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PitchAngleScreen())),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(16),
+              leading: Container(
+                width: 52, height: 52,
+                decoration: BoxDecoration(color: Colors.amber.shade700, borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.flashlight_on, color: Colors.white, size: 28),
+              ),
+              title: const Text('Torch', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              subtitle: const Text('Turn on your phone torch for working in dark roof spaces'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const TorchScreen())),
             ),
           ),
           const SizedBox(height: 12),
@@ -1738,6 +1869,109 @@ class _RoofDiagramPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Torch Screen
+// ═══════════════════════════════════════════════════════════════
+
+class TorchScreen extends StatefulWidget {
+  const TorchScreen({super.key});
+  @override
+  State<TorchScreen> createState() => _TorchScreenState();
+}
+
+class _TorchScreenState extends State<TorchScreen> {
+  bool _torchOn = false;
+  bool _supported = true;
+
+  static const _channel = MethodChannel('torch_channel');
+
+  Future<void> _toggleTorch() async {
+    try {
+      await _channel.invokeMethod('setTorch', {'on': !_torchOn});
+      setState(() { _torchOn = !_torchOn; });
+    } catch (e) {
+      // Fallback — use camera torch via URL scheme on iOS
+      try {
+        if (!_torchOn) {
+          // Try turning on via platform
+          await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+        }
+        setState(() { _torchOn = !_torchOn; });
+      } catch (_) {
+        setState(() { _supported = false; });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    // Make sure torch is off when leaving
+    if (_torchOn) {
+      try { _channel.invokeMethod('setTorch', {'on': false}); } catch (_) {}
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: _torchOn ? Colors.white : Colors.grey.shade900,
+      appBar: AppBar(
+        title: const Text('Torch'),
+        backgroundColor: Colors.amber.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          // Big torch button
+          GestureDetector(
+            onTap: _toggleTorch,
+            child: Container(
+              width: 180, height: 180,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _torchOn ? Colors.amber.shade400 : Colors.grey.shade700,
+                boxShadow: _torchOn ? [
+                  BoxShadow(color: Colors.amber.withOpacity(0.6), blurRadius: 40, spreadRadius: 20),
+                ] : [],
+              ),
+              child: Icon(
+                _torchOn ? Icons.flashlight_on : Icons.flashlight_off,
+                size: 80,
+                color: _torchOn ? Colors.white : Colors.grey.shade400,
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+          Text(
+            _torchOn ? 'Torch ON' : 'Torch OFF',
+            style: TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold,
+              color: _torchOn ? Colors.amber.shade700 : Colors.grey.shade400,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Tap to ${_torchOn ? 'turn off' : 'turn on'}',
+            style: TextStyle(fontSize: 14, color: _torchOn ? Colors.grey.shade700 : Colors.grey.shade500),
+          ),
+          if (!_supported) ...[
+            const SizedBox(height: 24),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: Colors.orange.shade50, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.orange.shade300)),
+              child: const Text('Torch not supported on this device', textAlign: TextAlign.center, style: TextStyle(color: Colors.orange)),
+            ),
+          ],
+          const SizedBox(height: 48),
+          Text('Tap the button to toggle torch', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+        ]),
+      ),
+    );
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
