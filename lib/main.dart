@@ -14,6 +14,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'firebase_options.dart';
 
 const String _donateUrl = 'https://ko-fi.com/weddingfund';
@@ -176,6 +178,142 @@ class HistoryService {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// PDF Service
+// ═══════════════════════════════════════════════════════════════
+
+class PdfService {
+
+  static pw.TextStyle _heading() => pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColors.blue800);
+  static pw.TextStyle _subheading() => pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.blueGrey800);
+  static pw.TextStyle _body() => const pw.TextStyle(fontSize: 11);
+  static pw.TextStyle _label() => pw.TextStyle(fontSize: 10, color: PdfColors.grey600);
+  static pw.TextStyle _value() => pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold);
+
+  static pw.Widget _divider() => pw.Container(height: 1, color: PdfColors.grey300, margin: const pw.EdgeInsets.symmetric(vertical: 6));
+
+  static pw.Widget _header() => pw.Container(
+    padding: const pw.EdgeInsets.all(16),
+    decoration: pw.BoxDecoration(color: PdfColors.blue800, borderRadius: pw.BorderRadius.circular(8)),
+    child: pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+      pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+        pw.Text('ROOF PROFILE FINDER', style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
+        pw.Text('Professional Roofing Report', style: const pw.TextStyle(fontSize: 11, color: PdfColors.grey300)),
+      ]),
+      pw.Text(_formatDate(DateTime.now()), style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey300)),
+    ]),
+  );
+
+  static String _formatDate(DateTime d) =>
+    '${d.day.toString().padLeft(2,'0')}/${d.month.toString().padLeft(2,'0')}/${d.year}';
+
+  static pw.Widget _infoRow(String label, String value) => pw.Padding(
+    padding: const pw.EdgeInsets.symmetric(vertical: 3),
+    child: pw.Row(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+      pw.SizedBox(width: 140, child: pw.Text(label, style: _label())),
+      pw.Expanded(child: pw.Text(value, style: _value())),
+    ]),
+  );
+
+  // Generate history PDF
+  static Future<Uint8List> generateHistoryPdf(List<HistoryEntry> history) async {
+    final pdf = pw.Document();
+    pdf.addPage(pw.MultiPage(
+      pageFormat: PdfPageFormat.a4,
+      margin: const pw.EdgeInsets.all(24),
+      header: (_) => _header(),
+      footer: (ctx) => pw.Container(
+        alignment: pw.Alignment.centerRight,
+        child: pw.Text('Page ${ctx.pageNumber} of ${ctx.pagesCount}',
+          style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey500)),
+      ),
+      build: (context) => [
+        pw.SizedBox(height: 16),
+        pw.Text('Roof Inspection History', style: _heading()),
+        pw.SizedBox(height: 4),
+        pw.Text('${history.length} saved ${history.length == 1 ? 'profile' : 'profiles'}',
+          style: _label()),
+        pw.SizedBox(height: 12),
+        ...history.asMap().entries.map((entry) {
+          final i = entry.key;
+          final e = entry.value;
+          final p = e.profile;
+          return pw.Container(
+            margin: const pw.EdgeInsets.only(bottom: 12),
+            padding: const pw.EdgeInsets.all(12),
+            decoration: pw.BoxDecoration(
+              border: pw.Border.all(color: PdfColors.grey300),
+              borderRadius: pw.BorderRadius.circular(6),
+              color: i % 2 == 0 ? PdfColors.grey50 : PdfColors.white,
+            ),
+            child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+                pw.Text(p.displayTitle, style: _subheading()),
+                pw.Text(e.formattedDate, style: _label()),
+              ]),
+              _divider(),
+              if ((e.buildingName ?? '').isNotEmpty) _infoRow('Building / Job:', e.buildingName!),
+              _infoRow('Manufacturer:', p.manufacturer),
+              _infoRow('Category:', p.isTileCategory ? 'Tile / Slate' : p.category.toUpperCase()),
+              if (!p.isTileCategory) ...[
+                if (p.pitch != null) _infoRow('Pitch:', '${p.pitch!.toStringAsFixed(0)} mm'),
+                if (p.depth != null) _infoRow('Depth:', '${p.depth!.toStringAsFixed(0)} mm'),
+                if (p.coverWidth != null) _infoRow('Cover Width:', '${p.coverWidth!.toStringAsFixed(0)} mm'),
+              ] else ...[
+                if (p.nominalLengthMm != null) _infoRow('Length:', '${p.nominalLengthMm!.toStringAsFixed(0)} mm'),
+                if (p.nominalWidthMm != null) _infoRow('Width:', '${p.nominalWidthMm!.toStringAsFixed(0)} mm'),
+              ],
+              if (e.roofPitch != null) _infoRow('Roof Pitch:', '${e.roofPitch!.toStringAsFixed(1)}°'),
+              if ((e.location ?? '').isNotEmpty) _infoRow('Location:', e.location!),
+              if (e.hasGps) _infoRow('GPS:', '${e.gpsLat!.toStringAsFixed(5)}, ${e.gpsLng!.toStringAsFixed(5)}'),
+              if ((e.notes ?? '').isNotEmpty) ...[
+                pw.SizedBox(height: 4),
+                pw.Text('Notes:', style: _label()),
+                pw.Text(e.notes!, style: _body()),
+              ],
+            ]),
+          );
+        }),
+      ],
+    ));
+    return pdf.save();
+  }
+
+  // Generate material list PDF
+  static Future<Uint8List> generateMaterialPdf({
+    required String buildingName,
+    required String date,
+    required String type, // 'Industrial' or 'Domestic'
+    required String content,
+  }) async {
+    final pdf = pw.Document();
+    pdf.addPage(pw.MultiPage(
+      pageFormat: PdfPageFormat.a4,
+      margin: const pw.EdgeInsets.all(24),
+      header: (_) => _header(),
+      footer: (ctx) => pw.Container(
+        alignment: pw.Alignment.centerRight,
+        child: pw.Text('Page ${ctx.pageNumber} of ${ctx.pagesCount}',
+          style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey500)),
+      ),
+      build: (context) => [
+        pw.SizedBox(height: 16),
+        pw.Text('$type Material List', style: _heading()),
+        if (buildingName.isNotEmpty) ...[
+          pw.SizedBox(height: 4),
+          pw.Text(buildingName, style: _subheading()),
+        ],
+        pw.SizedBox(height: 4),
+        pw.Text('Date: $date', style: _label()),
+        _divider(),
+        pw.SizedBox(height: 8),
+        pw.Text(content, style: _body()),
+      ],
+    ));
+    return pdf.save();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // Auth Service
 // ═══════════════════════════════════════════════════════════════
 
@@ -240,8 +378,11 @@ class AuthService {
     final batch = _db.batch();
     final col = _db.collection('users').doc(uid).collection('history');
     for (int i = 0; i < history.length; i++) {
+      final data = history[i].toJson();
+      // Add a numeric sort key so we can order correctly on restore
+      data['sortIndex'] = i;
       final ref = col.doc('entry_$i');
-      batch.set(ref, history[i].toJson());
+      batch.set(ref, data);
     }
     await batch.commit();
   }
@@ -250,7 +391,8 @@ class AuthService {
   static Future<List<HistoryEntry>> loadHistoryFromCloud() async {
     if (!isLoggedIn) return [];
     final uid = currentUser!.uid;
-    final snap = await _db.collection('users').doc(uid).collection('history').orderBy('savedAt', descending: true).get();
+    // Order by sortIndex so we get them back in the right order
+    final snap = await _db.collection('users').doc(uid).collection('history').orderBy('sortIndex').get();
     final List<HistoryEntry> results = [];
     for (final doc in snap.docs) {
       try { results.add(HistoryEntry.fromJson(doc.data())); } catch (_) {}
@@ -611,6 +753,136 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       case 'help': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen())); break;
       case 'about': _showAboutDialogBox(); break;
       case 'suggest': _showSuggestProfileDialog(); break;
+      case 'backup': _backupAllData(); break;
+      case 'restore': _restoreAllData(); break;
+    }
+  }
+
+  Future<void> _backupAllData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> matLists = prefs.getStringList('saved_material_lists') ?? [];
+
+    if (AuthService.isLoggedIn) {
+      // Logged in — backup everything to Firestore
+      try {
+        final history = await HistoryService.loadHistory();
+        await AuthService.syncHistoryToCloud(history);
+        // Save material lists to Firestore
+        final uid = AuthService.currentUser!.uid;
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'materialLists': matLists,
+          'backupAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('✓ ${history.length} history entries + material lists backed up to cloud!'),
+          backgroundColor: Colors.green.shade700,
+          duration: const Duration(seconds: 3),
+        ));
+      } catch (e) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Cloud backup failed: $e'), backgroundColor: Colors.red));
+      }
+    } else {
+      // Not logged in — share JSON file
+      try {
+        final String historyBackup = await HistoryService.exportBackup();
+        final Map<String, dynamic> fullBackup = {
+          'version': 2,
+          'exportedAt': DateTime.now().toIso8601String(),
+          'history': historyBackup,
+          'materialLists': matLists,
+        };
+        final String filename = 'roof_finder_backup_${DateTime.now().millisecondsSinceEpoch}.json';
+        await Share.shareXFiles(
+          [XFile.fromData(utf8.encode(jsonEncode(fullBackup)), name: filename, mimeType: 'application/json')],
+          subject: 'Roof Profile Finder — Full Backup',
+          text: 'Sign in to back up to the cloud automatically!',
+        );
+      } catch (e) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Backup failed: $e'), backgroundColor: Colors.red));
+      }
+    }
+  }
+
+  Future<void> _restoreAllData() async {
+    // If logged in, offer cloud restore first
+    if (AuthService.isLoggedIn) {
+      final choice = await showDialog<String>(context: context, builder: (ctx) => AlertDialog(
+        title: const Row(children: [Icon(Icons.restore, color: Colors.blue), SizedBox(width: 8), Text('Restore Data')]),
+        content: const Text('How would you like to restore?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, 'cancel'), child: const Text('Cancel')),
+          OutlinedButton.icon(onPressed: () => Navigator.pop(ctx, 'paste'), icon: const Icon(Icons.paste), label: const Text('Paste JSON')),
+          ElevatedButton.icon(onPressed: () => Navigator.pop(ctx, 'cloud'),
+            icon: const Icon(Icons.cloud_download),
+            label: const Text('From Cloud'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white)),
+        ],
+      ));
+      if (choice == 'cloud') {
+        try {
+          final cloudHistory = await AuthService.loadHistoryFromCloud();
+          // Restore material lists from Firestore
+          final uid = AuthService.currentUser!.uid;
+          final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+          final mats = doc.data()?['materialLists'] as List<dynamic>? ?? [];
+          for (final entry in cloudHistory.reversed) { await HistoryService.saveEntry(entry); }
+          if (mats.isNotEmpty) {
+            final prefs = await SharedPreferences.getInstance();
+            final existing = prefs.getStringList('saved_material_lists') ?? [];
+            for (final m in mats) { if (!existing.contains(m.toString())) existing.add(m.toString()); }
+            await prefs.setStringList('saved_material_lists', existing);
+          }
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('✓ Restored ${cloudHistory.length} entries + material lists!'),
+            backgroundColor: Colors.green));
+        } catch (e) {
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cloud restore failed: \$e'), backgroundColor: Colors.red));
+        }
+        return;
+      }
+      if (choice != 'paste') return;
+    }
+
+    final TextEditingController pasteController = TextEditingController();
+    final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Row(children: [Icon(Icons.restore, color: Colors.blue), SizedBox(width: 8), Text('Restore All Data')]),
+      content: Column(mainAxisSize: MainAxisSize.min, children: [
+        const Text('Paste your backup JSON below to restore history and material lists:'),
+        const SizedBox(height: 12),
+        TextField(controller: pasteController, maxLines: 5,
+          decoration: const InputDecoration(hintText: 'Paste backup JSON here...', border: OutlineInputBorder())),
+      ]),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+        ElevatedButton(onPressed: () => Navigator.pop(ctx, true),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
+          child: const Text('Restore')),
+      ],
+    ));
+    if (confirm != true || pasteController.text.trim().isEmpty) return;
+    try {
+      final Map<String, dynamic> backup = jsonDecode(pasteController.text.trim()) as Map<String, dynamic>;
+      int restored = 0;
+      // Restore history
+      if (backup['history'] != null) {
+        restored += await HistoryService.importBackup(backup['history'] as String);
+      }
+      // Restore material lists
+      if (backup['materialLists'] != null) {
+        final prefs = await SharedPreferences.getInstance();
+        final List<dynamic> mats = backup['materialLists'] as List<dynamic>;
+        final existing = prefs.getStringList('saved_material_lists') ?? [];
+        for (final m in mats) { if (!existing.contains(m.toString())) existing.add(m.toString()); }
+        await prefs.setStringList('saved_material_lists', existing);
+      }
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('✓ Restored $restored history entries + material lists!'),
+        backgroundColor: Colors.green));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Restore failed: $e'), backgroundColor: Colors.red));
     }
   }
 
@@ -942,11 +1214,13 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                   tooltip: 'Menu',
                   onSelected: _handleTopMenu,
                   icon: const Icon(Icons.more_vert, color: Colors.white),
-                  itemBuilder: (context) => const [
-                    PopupMenuItem<String>(value: 'tools', child: Text('Tools')),
-                    PopupMenuItem<String>(value: 'help', child: Text('How to use')),
-                    PopupMenuItem<String>(value: 'about', child: Text('About')),
-                    PopupMenuItem<String>(value: 'suggest', child: Text('Suggest missing profile')),
+                  itemBuilder: (context) => [
+                    const PopupMenuItem<String>(value: 'tools', child: Row(children: [Icon(Icons.build, size: 18), SizedBox(width: 10), Text('Tools')])),
+                    const PopupMenuItem<String>(value: 'help', child: Row(children: [Icon(Icons.help_outline, size: 18), SizedBox(width: 10), Text('How to use')])),
+                    const PopupMenuItem<String>(value: 'backup', child: Row(children: [Icon(Icons.backup, size: 18), SizedBox(width: 10), Text('Backup All Data')])),
+                    const PopupMenuItem<String>(value: 'restore', child: Row(children: [Icon(Icons.restore, size: 18), SizedBox(width: 10), Text('Restore Backup')])),
+                    const PopupMenuItem<String>(value: 'about', child: Row(children: [Icon(Icons.info_outline, size: 18), SizedBox(width: 10), Text('About')])),
+                    const PopupMenuItem<String>(value: 'suggest', child: Row(children: [Icon(Icons.lightbulb_outline, size: 18), SizedBox(width: 10), Text('Suggest missing profile')])),
                   ],
                 ),
               ]),
@@ -1124,6 +1398,67 @@ class _HistoryScreenState extends State<HistoryScreen> {
     setState(() { _history = []; });
   }
 
+  Future<void> _exportPdf() async {
+    // Let user pick entries
+    final Set<int> selected = Set.from(List.generate(_history.length, (i) => i));
+    final confirm = await showDialog<bool>(context: context, builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setS) => AlertDialog(
+        title: const Row(children: [Icon(Icons.picture_as_pdf, color: Colors.red), SizedBox(width: 8), Text('Export to PDF')]),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text('${selected.length} of ${_history.length} selected', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              TextButton(
+                onPressed: () => setS(() => selected.length == _history.length
+                  ? selected.clear()
+                  : selected.addAll(List.generate(_history.length, (i) => i))),
+                child: Text(selected.length == _history.length ? 'Deselect all' : 'Select all'),
+              ),
+            ]),
+            const Divider(),
+            Flexible(child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _history.length,
+              itemBuilder: (ctx, i) {
+                final e = _history[i];
+                return CheckboxListTile(
+                  dense: true,
+                  value: selected.contains(i),
+                  onChanged: (v) => setS(() => v! ? selected.add(i) : selected.remove(i)),
+                  title: Text(e.profile.displayTitle, style: const TextStyle(fontSize: 13)),
+                  subtitle: Text('${e.buildingName ?? ''} ${e.formattedDate}', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                );
+              },
+            )),
+          ]),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: selected.isEmpty ? null : () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            child: const Text('Export PDF'),
+          ),
+        ],
+      ),
+    ));
+    if (confirm != true || selected.isEmpty) return;
+    try {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF...')));
+      final selectedHistory = selected.toList()..sort();
+      final entries = selectedHistory.map((i) => _history[i]).toList();
+      final Uint8List pdfBytes = await PdfService.generateHistoryPdf(entries);
+      final String filename = 'roof_history_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      await Share.shareXFiles(
+        [XFile.fromData(pdfBytes, name: filename, mimeType: 'application/pdf')],
+        subject: 'Roof Profile History',
+      );
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: $e'), backgroundColor: Colors.red));
+    }
+  }
+
   Future<void> _backupHistory() async {
     try {
       final String backup = await HistoryService.exportBackup();
@@ -1220,6 +1555,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             icon: const Icon(Icons.more_vert, color: Colors.white),
             onSelected: (value) async {
               switch (value) {
+                case 'pdf': _exportPdf(); break;
                 case 'backup': _backupHistory(); break;
                 case 'restore': _restoreHistory(); break;
                 case 'clear':
@@ -1236,6 +1572,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               }
             },
             itemBuilder: (context) => [
+              if (_history.isNotEmpty)
+                const PopupMenuItem(value: 'pdf', child: Row(children: [Icon(Icons.picture_as_pdf, size: 18, color: Colors.red), SizedBox(width: 10), Text('Export as PDF')])),
               const PopupMenuItem(value: 'backup', child: Row(children: [Icon(Icons.backup, size: 18), SizedBox(width: 10), Text('Backup History')])),
               const PopupMenuItem(value: 'restore', child: Row(children: [Icon(Icons.restore, size: 18), SizedBox(width: 10), Text('Restore Backup')])),
               if (_history.isNotEmpty)
@@ -1374,7 +1712,30 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ],
                       ]),
                       isThreeLine: true,
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                        IconButton(
+                          tooltip: 'Export as PDF',
+                          icon: const Icon(Icons.picture_as_pdf, color: Colors.red, size: 20),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () async {
+                            try {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF...'), duration: Duration(seconds: 1)));
+                              final pdfBytes = await PdfService.generateHistoryPdf([entry]);
+                              final safeName = p.displayTitle.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
+                              final safeDate = DateTime.now().millisecondsSinceEpoch.toString();
+                              await Share.shareXFiles(
+                                [XFile.fromData(pdfBytes, name: '${safeName}_$safeDate.pdf', mimeType: 'application/pdf')],
+                                subject: 'Roof Profile — ${p.displayTitle}',
+                              );
+                            } catch (e) {
+                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: \$e'), backgroundColor: Colors.red));
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.arrow_forward_ios, size: 16),
+                      ]),
                       onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
                         builder: (_) => ResultsScreen(title: 'Profile', results: [SearchResult(profile: p, score: 0)]))),
                     ),
@@ -2988,6 +3349,61 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
     );
   }
 
+  Future<void> _exportPdf() async {
+    try {
+      final StringBuffer sb = StringBuffer();
+      for (int i = 0; i < _sheetItems.length; i++) {
+        final item = _sheetItems[i];
+        if (item.qtyController.text.isNotEmpty || item.lengthController.text.isNotEmpty) {
+          sb.writeln('${item.materialController.text.isNotEmpty ? item.materialController.text : 'Sheet ${i+1}'}: Qty ${item.qtyController.text} x ${item.lengthController.text}m');
+        }
+      }
+      if (_insulationController.text.isNotEmpty) sb.writeln('Insulation: ${_insulationController.text} m2');
+      if (_feltController.text.isNotEmpty) sb.writeln('Felt/Underlay: ${_feltController.text} rolls');
+      if (_battensController.text.isNotEmpty) sb.writeln('Battens: ${_battensController.text} m');
+      if (_spacingBarsController.text.isNotEmpty) sb.writeln('Spacing Bars: ${_spacingBarsController.text}');
+      sb.writeln('');
+      bool hasFixings = _fixingItems.any((i) => i.headController.text.isNotEmpty || i.qtyController.text.isNotEmpty);
+      if (hasFixings) {
+        sb.writeln('FIXINGS');
+        for (final f in _fixingItems) {
+          if (f.headController.text.isNotEmpty || f.qtyController.text.isNotEmpty) {
+            sb.writeln('${f.headController.text} ${f.lengthController.text}mm - Qty: ${f.qtyController.text}');
+          }
+        }
+        sb.writeln('');
+      }
+      bool hasFlashings = _flashingItems.any((i) => i.typeController.text.isNotEmpty || i.qtyController.text.isNotEmpty);
+      if (hasFlashings) {
+        sb.writeln('FLASHINGS');
+        for (final f in _flashingItems) {
+          if (f.typeController.text.isNotEmpty || f.qtyController.text.isNotEmpty) {
+            sb.writeln('${f.typeController.text}: Qty ${f.qtyController.text} ${f.colourController.text} ${f.materialController.text}');
+          }
+        }
+        sb.writeln('');
+      }
+      if (_sealantsController.text.isNotEmpty) sb.writeln('Sealants: ${_sealantsController.text} tubes');
+      if (_fillerBlocksController.text.isNotEmpty) sb.writeln('Filler Blocks: ${_fillerBlocksController.text}');
+      if (_ventsController.text.isNotEmpty) sb.writeln('Vents: ${_ventsController.text}');
+      if (_gutteringController.text.isNotEmpty) sb.writeln('Guttering: ${_gutteringController.text} m');
+      if (_downpipesController.text.isNotEmpty) sb.writeln('Downpipes: ${_downpipesController.text}');
+      if (_notesController.text.isNotEmpty) { sb.writeln(''); sb.writeln('NOTES'); sb.writeln(_notesController.text); }
+      final pdfBytes = await PdfService.generateMaterialPdf(
+        buildingName: _buildingController.text,
+        date: _date,
+        type: 'Industrial',
+        content: sb.toString(),
+      );
+      await Share.shareXFiles(
+        [XFile.fromData(pdfBytes, name: 'industrial_list_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf')],
+        subject: 'Industrial Material List',
+      );
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: $e'), backgroundColor: Colors.red));
+    }
+  }
+
   void _shareList() {
     final StringBuffer sb = StringBuffer();
     sb.writeln('╔══════════════════════════╗');
@@ -3131,6 +3547,7 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             TextButton.icon(onPressed: _openSavedLists, icon: const Icon(Icons.folder_open, size: 16), label: const Text('Saved')),
             TextButton.icon(onPressed: _saveList, icon: const Icon(Icons.save, size: 16), label: const Text('Save')),
+            TextButton.icon(onPressed: _exportPdf, icon: const Icon(Icons.picture_as_pdf, size: 16, color: Colors.red), label: const Text('PDF', style: TextStyle(color: Colors.red))),
             TextButton.icon(onPressed: _shareList, icon: const Icon(Icons.share, size: 16), label: const Text('Share')),
             IconButton(tooltip: 'Clear all', icon: const Icon(Icons.delete_outline), onPressed: _clearAll),
           ]),
