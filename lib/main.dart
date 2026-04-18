@@ -193,7 +193,8 @@ class AuthService {
   static Future<UserCredential> registerWithEmail(String email, String password, String name) async {
     final cred = await _auth.createUserWithEmailAndPassword(email: email, password: password);
     await cred.user?.updateDisplayName(name);
-    await _saveUserProfile(cred.user!, name, email);
+    // Fire and forget - don't block on Firestore write
+    unawaited(_saveUserProfile(cred.user!, name, email));
     return cred;
   }
 
@@ -212,7 +213,8 @@ class AuthService {
       idToken: googleAuth.idToken,
     );
     final cred = await _auth.signInWithCredential(credential);
-    await _saveUserProfile(cred.user!, cred.user!.displayName ?? '', cred.user!.email ?? '');
+    // Fire and forget - don't block on Firestore write
+    unawaited(_saveUserProfile(cred.user!, cred.user!.displayName ?? '', cred.user!.email ?? ''));
     return cred;
   }
 
@@ -502,6 +504,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   static const double _baseTileCoverageTolerance = 1;
 
   final Uri _donateUri = Uri.parse(_donateUrl);
+  StreamSubscription<dynamic>? _authSub;
 
   @override
   void initState() {
@@ -509,6 +512,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     _loadProfilesForCategory(_selectedCategory);
     _profileSearchController.addListener(_updateNameSuggestions);
     _loadMostUsed();
+    _authSub = AuthService.authStateChanges.listen((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   Future<void> _loadMostUsed() async {
@@ -535,6 +541,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   @override
   void dispose() {
+    _authSub?.cancel();
     _profileSearchController.removeListener(_updateNameSuggestions);
     _profileSearchController.dispose();
     _pitchController.dispose(); _depthController.dispose();
@@ -916,8 +923,15 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                 ),
                 IconButton(
                   tooltip: AuthService.isLoggedIn ? 'Account (${AuthService.userEmail})' : 'Sign In',
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AccountScreen())),
-                  icon: Icon(AuthService.isLoggedIn ? Icons.account_circle : Icons.account_circle_outlined, size: 26, color: Colors.white),
+                  onPressed: () async {
+                    final result = await Navigator.of(context).push<bool>(MaterialPageRoute<bool>(builder: (_) => const AccountScreen()));
+                    if (result == true && mounted) setState(() {});
+                  },
+                  icon: Icon(
+                    AuthService.isLoggedIn ? Icons.account_circle : Icons.account_circle_outlined,
+                    size: 26,
+                    color: AuthService.isLoggedIn ? Colors.greenAccent : Colors.white,
+                  ),
                 ),
                 IconButton(
                   tooltip: 'Donate',
@@ -1021,7 +1035,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
               offset: const Offset(0, 44),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               itemBuilder: (context) => [
-                PopupMenuItem(value: 'steel', child: Row(children: [Icon(Icons.roofing, color: Colors.blue.shade700, size: 20), const SizedBox(width: 10), const Text('Steel Sheets')])),
+                PopupMenuItem(value: 'steel', child: Row(children: [Icon(Icons.factory_outlined, color: Colors.blue.shade700, size: 20), const SizedBox(width: 10), const Text('Steel Sheets')])),
                 PopupMenuItem(value: 'cement', child: Row(children: [Icon(Icons.layers, color: Colors.grey.shade700, size: 20), const SizedBox(width: 10), const Text('Cement Sheets')])),
                 PopupMenuItem(value: 'tile', child: Row(children: [Icon(Icons.home, color: Colors.orange.shade700, size: 20), const SizedBox(width: 10), const Text('Tiles / Slates')])),
               ],
@@ -1032,7 +1046,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(children: [
-                  Icon(_selectedCategory == 'tile' ? Icons.home : _selectedCategory == 'cement' ? Icons.layers : Icons.roofing, color: Colors.white, size: 18),
+                  Icon(_selectedCategory == 'tile' ? Icons.home : _selectedCategory == 'cement' ? Icons.layers : Icons.factory_outlined, color: Colors.white, size: 18),
                   const SizedBox(width: 8),
                   Text(_selectedCategory == 'tile' ? 'Tiles / Slates' : _selectedCategory == 'cement' ? 'Cement Sheets' : 'Steel Sheets',
                     style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
@@ -4828,10 +4842,12 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
   bool _busy = false;
   bool _obscure = true;
   String? _error;
+  late bool _isLoggedIn;
 
   @override
   void initState() {
     super.initState();
+    _isLoggedIn = AuthService.isLoggedIn;
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -4847,10 +4863,13 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
     setState(() { _busy = true; _error = null; });
     try {
       await AuthService.loginWithEmail(_emailController.text.trim(), _passwordController.text);
-      if (mounted) { Navigator.pop(context); _showSnack('✓ Signed in!', Colors.green); }
+      if (mounted) {
+        setState(() { _busy = false; });
+        Navigator.pop(context, true);
+      }
     } on FirebaseAuthException catch (e) {
-      setState(() { _error = _friendlyError(e.code); });
-    } finally { if (mounted) setState(() { _busy = false; }); }
+      if (mounted) setState(() { _error = _friendlyError(e.code); _busy = false; });
+    }
   }
 
   Future<void> _registerEmail() async {
@@ -4860,25 +4879,33 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
     setState(() { _busy = true; _error = null; });
     try {
       await AuthService.registerWithEmail(_emailController.text.trim(), _passwordController.text, _nameController.text.trim());
-      if (mounted) { Navigator.pop(context); _showSnack('✓ Account created!', Colors.green); }
+      if (mounted) {
+        setState(() { _busy = false; });
+        Navigator.pop(context, true);
+      }
     } on FirebaseAuthException catch (e) {
-      setState(() { _error = _friendlyError(e.code); });
-    } finally { if (mounted) setState(() { _busy = false; }); }
+      if (mounted) setState(() { _error = _friendlyError(e.code); _busy = false; });
+    }
   }
 
   Future<void> _googleSignIn() async {
     setState(() { _busy = true; _error = null; });
     try {
       final result = await AuthService.signInWithGoogle();
-      if (result != null && mounted) { Navigator.pop(context); _showSnack('✓ Signed in with Google!', Colors.green); }
+      if (result != null && mounted) {
+        setState(() { _busy = false; });
+        Navigator.pop(context, true);
+      } else {
+        if (mounted) setState(() { _busy = false; });
+      }
     } catch (e) {
-      setState(() { _error = 'Google sign in failed'; });
-    } finally { if (mounted) setState(() { _busy = false; }); }
+      if (mounted) setState(() { _error = 'Google sign in failed. Please try again.'; _busy = false; });
+    }
   }
 
   Future<void> _signOut() async {
     await AuthService.signOut();
-    if (mounted) { Navigator.pop(context); _showSnack('Signed out', Colors.grey); }
+    if (mounted) Navigator.pop(context, true);
   }
 
   Future<void> _syncNow() async {
@@ -4940,14 +4967,12 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final isLoggedIn = AuthService.isLoggedIn;
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(isLoggedIn ? 'My Account' : 'Sign In / Register'),
+        title: Text(_isLoggedIn ? 'My Account' : 'Sign In / Register'),
         backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
-        bottom: isLoggedIn ? null : TabBar(
+        bottom: _isLoggedIn ? null : TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
@@ -4955,7 +4980,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
           tabs: const [Tab(text: 'Sign In'), Tab(text: 'Register')],
         ),
       ),
-      body: isLoggedIn ? _buildLoggedIn() : _buildAuth(),
+      body: _isLoggedIn ? _buildLoggedIn() : _buildAuth(),
     );
   }
 

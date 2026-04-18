@@ -1,7 +1,7 @@
 name: profile_finder
 description: "Roof Profile Finder App"
 publish_to: 'none'
-version: 1.0.0+15
+version: 1.0.0+16
 
 environment:
   sdk: ^3.11.4
@@ -39,6 +39,6 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/icon.png"
-  image_path_android: "assets/images/icon.png"
+  min_sdk_android: 21
   adaptive_icon_background: "#1565C0"
-  adaptive_icon_foreground: "assets/images/icon.png"
+  adaptive_icon_foreground: "assets/images/icon_foreground.png"
