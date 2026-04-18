@@ -3124,12 +3124,13 @@ class _MaterialListScreenState2 extends State<MaterialListScreen> with SingleTic
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
         actions: [
+          // Folder icon — view saved lists
           Stack(
             alignment: Alignment.center,
             children: [
               IconButton(
-                tooltip: 'Saved lists',
-                icon: const Icon(Icons.save),
+                tooltip: 'View saved lists',
+                icon: const Icon(Icons.folder_open),
                 onPressed: () async {
                   await Navigator.of(context).push(MaterialPageRoute<void>(
                     builder: (_) => const _SavedListsScreen()));
@@ -3147,6 +3148,14 @@ class _MaterialListScreenState2 extends State<MaterialListScreen> with SingleTic
                   ),
                 ),
             ],
+          ),
+          // Save icon — save current list
+          IconButton(
+            tooltip: 'Save list',
+            icon: const Icon(Icons.save),
+            onPressed: () {
+              _handleMenu('save');
+            },
           ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: Colors.white),
