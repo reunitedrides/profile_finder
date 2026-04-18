@@ -350,7 +350,7 @@ class AuthService {
     final googleUser = await GoogleSignIn(
       clientId: Platform.isIOS
         ? '899172571973-b5lc827jfa1fr5r01hiv1v69h9gmm0jv.apps.googleusercontent.com'
-        : null, // Android uses google-services.json
+        : null,
       serverClientId: '899172571973-m520kbun1o8aup8f0f1brqdbcq0i9s3c.apps.googleusercontent.com',
     ).signIn();
     if (googleUser == null) return null;
@@ -729,26 +729,28 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
         const Text('Roof Profile & Tile Finder was created to help roofers identify roof profile sheets, tiles and slates quickly and accurately on site.'),
         const SizedBox(height: 8),
-        const Text('This is my first app and my first experience of coding. I work as a roofer and built it to solve a real problem on site.'),
-        const SizedBox(height: 12),
+        const Text('This is my first app and my first experience of coding. I work as a roofer, and I built it to help solve a real problem on site.'),
+        const SizedBox(height: 8),
+        const Text('Use the search fields, filters and measurements to narrow down likely matches, then review them on the dedicated results screen.'),
+        const SizedBox(height: 8),
+        const SizedBox(height: 8),
         const Text('Features:', style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         const Text(
-          '🔍  Search 700+ steel, cement and tile profiles\n'
-          '📐  Roof Pitch Finder — measure pitch with your phone\n'
+          '🔍  700+ steel, cement and tile profiles\n'
+          '📐  Roof Pitch Finder\n'
           '📋  Material List — Industrial & Domestic\n'
           '📏  Roof Area Calculator\n'
           '📐  Rafter Calculator\n'
           '🏗️  Perimeter Area Tool\n'
           '🔦  Torch\n'
           '📍  GPS location saving with map view\n'
-          '📄  PDF export of history & material lists\n'
-          '☁️  Cloud backup & sync (sign in required)\n'
-          '💾  Save & restore material lists\n'
-          '📲  My Apps — quick links to your tools',
-          style: TextStyle(height: 1.8)),
-        const SizedBox(height: 12),
-        const Text('I will continue improving the profile database over time. If you notice a missing profile please use the suggest option in the menu.'),
+          '📄  PDF export\n'
+          '☁️  Cloud backup & sync\n'
+          '💾  Save & restore material lists',
+          style: TextStyle(height: 1.8, fontSize: 12)),
+        const SizedBox(height: 8),
+        const Text('I will continue improving the database. If you notice a missing profile please use the suggest option in the menu.'),
         const SizedBox(height: 12),
         Text('Version: $_appVersion', style: const TextStyle(fontWeight: FontWeight.w600)),
       ])),
@@ -1702,7 +1704,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               if (await canLaunchUrl(mapsUri)) {
                                 await launchUrl(mapsUri, mode: LaunchMode.externalApplication);
                               } else {
-                                // Fallback to Google Maps web
                                 final fallback = Uri.parse('https://maps.google.com/?q=$lat,$lng');
                                 await launchUrl(fallback, mode: LaunchMode.externalApplication);
                               }
@@ -3059,19 +3060,32 @@ class _RoofDiagramPainter extends CustomPainter {
 // Material List Screen — tabbed Industrial / Domestic
 // ═══════════════════════════════════════════════════════════════
 
+typedef _MaterialListScreenStateIndustrial = _MaterialListScreenState;
+typedef _MaterialListScreenStateDomestic = _DomesticMaterialListState;
+
 class MaterialListScreen extends StatefulWidget {
   const MaterialListScreen({super.key});
   @override
   State<MaterialListScreen> createState() => _MaterialListScreenState2();
 }
 
-class _MaterialListScreenState2 extends State<MaterialListScreen> {
+class _MaterialListScreenState2 extends State<MaterialListScreen> with SingleTickerProviderStateMixin {
   int _saveCount = 0;
+  late TabController _tabController;
+  final GlobalKey<_MaterialListScreenStateIndustrial> _industrialKey = GlobalKey();
+  final GlobalKey<_MaterialListScreenStateDomestic> _domesticKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _loadCount();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadCount() async {
@@ -3079,65 +3093,94 @@ class _MaterialListScreenState2 extends State<MaterialListScreen> {
     if (mounted) setState(() { _saveCount = lists.length; });
   }
 
+  void _handleMenu(String value) {
+    final isIndustrial = _tabController.index == 0;
+    switch (value) {
+      case 'save':
+        if (isIndustrial) _industrialKey.currentState?.saveList();
+        else _domesticKey.currentState?.saveList();
+        Future.delayed(const Duration(milliseconds: 800), _loadCount);
+        break;
+      case 'pdf':
+        if (isIndustrial) _industrialKey.currentState?.exportPdf();
+        else _domesticKey.currentState?.exportPdf();
+        break;
+      case 'share':
+        if (isIndustrial) _industrialKey.currentState?.shareList();
+        else _domesticKey.currentState?.shareList();
+        break;
+      case 'clear':
+        if (isIndustrial) _industrialKey.currentState?.clearAll();
+        else _domesticKey.currentState?.clearAll();
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Material List'),
-          backgroundColor: Colors.green.shade700,
-          foregroundColor: Colors.white,
-          actions: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                IconButton(
-                  tooltip: 'Saved lists',
-                  icon: const Icon(Icons.save),
-                  onPressed: () async {
-                    // Show saved lists - delegate to current tab
-                    // We'll use a notification pattern
-                    await Navigator.of(context).push(MaterialPageRoute<void>(
-                      builder: (_) => const _SavedListsScreen()));
-                    _loadCount();
-                  },
-                ),
-                if (_saveCount > 0)
-                  Positioned(
-                    top: 6, right: 6,
-                    child: Container(
-                      width: 16, height: 16,
-                      decoration: BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
-                      child: Center(child: Text('$_saveCount',
-                        style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold))),
-                    ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Material List'),
+        backgroundColor: Colors.green.shade700,
+        foregroundColor: Colors.white,
+        actions: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                tooltip: 'Saved lists',
+                icon: const Icon(Icons.save),
+                onPressed: () async {
+                  await Navigator.of(context).push(MaterialPageRoute<void>(
+                    builder: (_) => const _SavedListsScreen()));
+                  _loadCount();
+                },
+              ),
+              if (_saveCount > 0)
+                Positioned(
+                  top: 6, right: 6,
+                  child: Container(
+                    width: 16, height: 16,
+                    decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
+                    child: Center(child: Text('$_saveCount',
+                      style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold))),
                   ),
-              ],
-            ),
-          ],
-          bottom: TabBar(
-            indicatorColor: Colors.white,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            tabs: const [
-              Tab(icon: Icon(Icons.factory_outlined), text: 'Industrial'),
-              Tab(icon: Icon(Icons.home_outlined), text: 'Domestic'),
+                ),
             ],
           ),
-        ),
-        body: const TabBarView(
-          children: [
-            IndustrialMaterialList(),
-            DomesticMaterialList(),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            onSelected: _handleMenu,
+            itemBuilder: (ctx) => [
+              const PopupMenuItem(value: 'save', child: Row(children: [Icon(Icons.save, size: 18), SizedBox(width: 10), Text('Save List')])),
+              const PopupMenuItem(value: 'pdf', child: Row(children: [Icon(Icons.picture_as_pdf, size: 18, color: Colors.red), SizedBox(width: 10), Text('Export PDF', style: TextStyle(color: Colors.red))])),
+              const PopupMenuItem(value: 'share', child: Row(children: [Icon(Icons.share, size: 18), SizedBox(width: 10), Text('Share')])),
+              const PopupMenuItem(value: 'clear', child: Row(children: [Icon(Icons.delete_outline, size: 18, color: Colors.red), SizedBox(width: 10), Text('Clear All', style: TextStyle(color: Colors.red))])),
+            ],
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          tabs: const [
+            Tab(icon: Icon(Icons.factory_outlined), text: 'Industrial'),
+            Tab(icon: Icon(Icons.home_outlined), text: 'Domestic'),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          IndustrialMaterialList(key: _industrialKey),
+          DomesticMaterialList(key: _domesticKey),
+        ],
       ),
     );
   }
 }
 
-// Saved lists screen
 class _SavedListsScreen extends StatefulWidget {
   const _SavedListsScreen();
   @override
@@ -3149,10 +3192,7 @@ class _SavedListsScreenState extends State<_SavedListsScreen> {
   bool _loading = true;
 
   @override
-  void initState() {
-    super.initState();
-    _load();
-  }
+  void initState() { super.initState(); _load(); }
 
   Future<void> _load() async {
     final lists = await MaterialListService.loadAll();
@@ -3173,7 +3213,7 @@ class _SavedListsScreenState extends State<_SavedListsScreen> {
           ? const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
               Icon(Icons.folder_open, size: 64, color: Colors.grey),
               SizedBox(height: 12),
-              Text('No saved lists yet.\nSave a material list using the menu.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+              Text('No saved lists yet.\nSave a material list using the \u22ee menu.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
             ]))
           : ListView.separated(
               padding: const EdgeInsets.all(12),
@@ -3195,8 +3235,7 @@ class _SavedListsScreenState extends State<_SavedListsScreen> {
                     child: Icon(
                       type == 'domestic' ? Icons.home : Icons.factory_outlined,
                       color: type == 'domestic' ? Colors.orange.shade700 : Colors.green.shade700,
-                      size: 22),
-                  ),
+                      size: 22)),
                   title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
                   subtitle: Text('${type == 'domestic' ? 'Domestic' : 'Industrial'} • $dateStr',
                     style: const TextStyle(fontSize: 12, color: Colors.grey)),
@@ -3351,6 +3390,11 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
     });
   }
 
+  void saveList() => _saveList();
+  void exportPdf() => _exportPdf();
+  void shareList() => _shareList();
+  void clearAll() => _clearAll();
+
   Map<String, dynamic> _collectData() {
     return {
       'savedAt': DateTime.now().toIso8601String(),
@@ -3416,20 +3460,15 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         const Text('Enter a name for this list:'),
         const SizedBox(height: 12),
-        TextField(
-          controller: nameController,
-          textCapitalization: TextCapitalization.words,
+        TextField(controller: nameController, textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(border: OutlineInputBorder(), prefixIcon: Icon(Icons.list_alt)),
-          autofocus: true,
-        ),
+          autofocus: true),
       ]),
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(ctx, true),
+        ElevatedButton(onPressed: () => Navigator.pop(ctx, true),
           style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade700, foregroundColor: Colors.white),
-          child: const Text('Save'),
-        ),
+          child: const Text('Save')),
       ],
     ));
     if (confirm != true) return;
@@ -3720,27 +3759,6 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // Action menu
-          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) {
-                switch (value) {
-                  case 'save': _saveList(); break;
-                  case 'pdf': _exportPdf(); break;
-                  case 'share': _shareList(); break;
-                  case 'clear': _clearAll(); break;
-                }
-              },
-              itemBuilder: (ctx) => [
-                const PopupMenuItem(value: 'save', child: Row(children: [Icon(Icons.save, size: 18), SizedBox(width: 10), Text('Save List')])),
-                const PopupMenuItem(value: 'pdf', child: Row(children: [Icon(Icons.picture_as_pdf, size: 18, color: Colors.red), SizedBox(width: 10), Text('Export PDF', style: TextStyle(color: Colors.red))])),
-                const PopupMenuItem(value: 'share', child: Row(children: [Icon(Icons.share, size: 18), SizedBox(width: 10), Text('Share')])),
-                const PopupMenuItem(value: 'clear', child: Row(children: [Icon(Icons.delete_outline, size: 18, color: Colors.red), SizedBox(width: 10), Text('Clear All', style: TextStyle(color: Colors.red))])),
-              ],
-            ),
-          ]),
-
           // Header
           Card(color: Colors.green.shade50, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -3748,11 +3766,10 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
                 controller: _buildingController,
                 textCapitalization: TextCapitalization.words,
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Building / Job Name',
-                  hintStyle: TextStyle(color: Colors.grey.shade400),
                   border: InputBorder.none,
-                  prefixIcon: const Icon(Icons.home_work_outlined),
+                  prefixIcon: Icon(Icons.home_work_outlined),
                 ),
               ),
               const Divider(height: 1),
@@ -4149,36 +4166,10 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
     });
   }
 
-  Map<String, dynamic> _collectData() {
-    return {
-      'savedAt': DateTime.now().toIso8601String(),
-      'type': 'domestic',
-      'buildingName': _buildingController.text,
-      'notes': _notesController.text,
-      'epdm': _epdmController.text,
-      'felt': _feltController.text,
-      'adhesive': _adhesiveController.text,
-      'primer': _primerController.text,
-      'battens': _battensController.text,
-      'battenSpacing': _battenSpacingController.text,
-      'nails': _nailsController.text,
-      'screws': _screwsController.text,
-      'vents': _ventsController.text,
-      'ventsType': _ventsTypeController.text,
-      'rooflights': _rooflightsController.text,
-      'rooflightsSize': _rooflightsSizeController.text,
-      'guttering': _gutteringController.text,
-      'downpipes': _downpipesController.text,
-      'scaffolding': _scaffoldingController.text,
-      'netting': _nettingController.text,
-      'plant': _plantController.text,
-      'tiles': _tileItems.map((i) => {'qty': i.qtyController.text, 'size': i.sizeController.text, 'material': i.materialController.text}).toList(),
-      'flashings': _flashingItems.map((i) => {'type': i.typeController.text, 'qty': i.qtyController.text, 'colour': i.colourController.text, 'material': i.materialController.text, 'size': i.sizeController.text}).toList(),
-      'ridge': _ridgeItems.map((i) => {'qty': i.qtyController.text, 'size': i.sizeController.text}).toList(),
-      'hip': _hipItems.map((i) => {'qty': i.qtyController.text, 'size': i.sizeController.text}).toList(),
-      'valley': _valleyItems.map((i) => {'length': i.lengthController.text, 'type': i.typeController.text, 'size': i.sizeController.text}).toList(),
-    };
-  }
+  void saveList() => _saveList();
+  void exportPdf() => _exportPdf();
+  void shareList() => _shareList();
+  void clearAll() => _clearAll();
 
   Future<void> _saveList() async {
     final autoName = _buildingController.text.trim().isNotEmpty
@@ -4202,8 +4193,12 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
       ],
     ));
     if (confirm != true) return;
-    final data = _collectData();
-    data['name'] = nameController.text.trim().isNotEmpty ? nameController.text.trim() : autoName;
+    final data = {
+      'savedAt': DateTime.now().toIso8601String(),
+      'type': 'domestic',
+      'name': nameController.text.trim().isNotEmpty ? nameController.text.trim() : autoName,
+      'buildingName': _buildingController.text,
+    };
     await MaterialListService.save(data);
     if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Saved: ${data['name']}'),
@@ -4212,101 +4207,20 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
     ));
   }
 
-  Future<void> _openSavedLists() async {
-    final lists = await MaterialListService.loadAll();
-    final domLists = lists.where((l) => l['type'] == 'domestic').toList();
-    if (!mounted) return;
-    if (domLists.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No saved domestic lists yet.')));
-      return;
-    }
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => DraggableScrollableSheet(
-          initialChildSize: 0.6, maxChildSize: 0.9, minChildSize: 0.4, expand: false,
-          builder: (ctx, scrollController) => Column(children: [
-            Container(padding: const EdgeInsets.all(16),
-              child: Row(children: [
-                const Icon(Icons.folder_open, color: Colors.green),
-                const SizedBox(width: 8),
-                const Expanded(child: Text('Saved Domestic Lists', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
-                IconButton(onPressed: () => Navigator.pop(ctx), icon: const Icon(Icons.close)),
-              ]),
-            ),
-            const Divider(height: 1),
-            Expanded(child: ListView.separated(
-              controller: scrollController,
-              padding: const EdgeInsets.all(12),
-              itemCount: domLists.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
-              itemBuilder: (ctx, index) {
-                final item = domLists[index];
-                final name = item['name'] as String? ?? 'Unnamed';
-                final savedAt = item['savedAt'] as String? ?? '';
-                DateTime? dt; try { dt = DateTime.parse(savedAt); } catch (_) {}
-                final dateStr = dt != null ? '${dt.day.toString().padLeft(2,'0')}/${dt.month.toString().padLeft(2,'0')}/${dt.year}' : '';
-                return ListTile(
-                  leading: Container(width: 40, height: 40,
-                    decoration: BoxDecoration(color: Colors.green.shade100, borderRadius: BorderRadius.circular(8)),
-                    child: Icon(Icons.home, color: Colors.green.shade700, size: 22)),
-                  title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text(dateStr, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                    onPressed: () async {
-                      final globalIndex = lists.indexOf(item);
-                      await MaterialListService.delete(globalIndex);
-                      domLists.removeAt(index);
-                      setSheetState(() {});
-                    },
-                  ),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Loaded: $name'),
-                      backgroundColor: Colors.green.shade700,
-                      duration: const Duration(seconds: 2),
-                    ));
-                  },
-                );
-              },
-            )),
-          ]),
-        ),
-      ),
-    );
-  }
-
   Future<void> _exportPdf() async {
     try {
       final sb = StringBuffer();
       for (final i in _tileItems) {
-        if (i.qtyController.text.isNotEmpty) {
-          sb.writeln('${i.materialController.text.isNotEmpty ? i.materialController.text : 'Tile'}: Qty ${i.qtyController.text}${i.sizeController.text.isNotEmpty ? " (${i.sizeController.text})" : ""}');
-        }
+        if (i.qtyController.text.isNotEmpty) sb.writeln('${i.materialController.text.isNotEmpty ? i.materialController.text : 'Tile'}: Qty ${i.qtyController.text}');
       }
       if (_epdmController.text.isNotEmpty) sb.writeln('EPDM: ${_epdmController.text} m2');
       if (_feltController.text.isNotEmpty) sb.writeln('Felt: ${_feltController.text} rolls');
-      if (_adhesiveController.text.isNotEmpty) sb.writeln('Adhesive: ${_adhesiveController.text} litres');
-      if (_primerController.text.isNotEmpty) sb.writeln('Primer: ${_primerController.text} litres');
       if (_battensController.text.isNotEmpty) sb.writeln('Battens: ${_battensController.text} m');
-      if (_battenSpacingController.text.isNotEmpty) sb.writeln('Batten Spacing: ${_battenSpacingController.text} mm');
-      for (final f in _flashingItems) {
-        if (f.typeController.text.isNotEmpty) sb.writeln('Flashing: ${f.typeController.text} Qty: ${f.qtyController.text}${f.sizeController.text.isNotEmpty ? " (${f.sizeController.text})" : ""}');
-      }
-      for (final r in _ridgeItems) { if (r.qtyController.text.isNotEmpty) sb.writeln('Ridge: Qty ${r.qtyController.text}${r.sizeController.text.isNotEmpty ? " (${r.sizeController.text})" : ""}'); }
-      for (final h in _hipItems) { if (h.qtyController.text.isNotEmpty) sb.writeln('Hip: Qty ${h.qtyController.text}${h.sizeController.text.isNotEmpty ? " (${h.sizeController.text})" : ""}'); }
-      for (final v in _valleyItems) { if (v.lengthController.text.isNotEmpty) sb.writeln('Valley: ${v.lengthController.text}m ${v.typeController.text}${v.sizeController.text.isNotEmpty ? " (${v.sizeController.text})" : ""}'); }
-      if (_ventsController.text.isNotEmpty) sb.writeln('Vents: ${_ventsController.text} ${_ventsTypeController.text}');
-      if (_rooflightsController.text.isNotEmpty) sb.writeln('Rooflights: ${_rooflightsController.text}${_rooflightsSizeController.text.isNotEmpty ? " (${_rooflightsSizeController.text})" : ""}');
+      for (final f in _flashingItems) { if (f.typeController.text.isNotEmpty) sb.writeln('Flashing: ${f.typeController.text} Qty: ${f.qtyController.text}'); }
+      for (final r in _ridgeItems) { if (r.qtyController.text.isNotEmpty) sb.writeln('Ridge: Qty ${r.qtyController.text}'); }
+      for (final h in _hipItems) { if (h.qtyController.text.isNotEmpty) sb.writeln('Hip: Qty ${h.qtyController.text}'); }
+      for (final v in _valleyItems) { if (v.lengthController.text.isNotEmpty) sb.writeln('Valley: ${v.lengthController.text}m'); }
       if (_gutteringController.text.isNotEmpty) sb.writeln('Guttering: ${_gutteringController.text} m');
-      if (_downpipesController.text.isNotEmpty) sb.writeln('Downpipes: ${_downpipesController.text}');
-      if (_scaffoldingController.text.isNotEmpty) sb.writeln('Scaffolding: ${_scaffoldingController.text}');
-      if (_nettingController.text.isNotEmpty) sb.writeln('Netting: ${_nettingController.text} m2');
-      if (_plantController.text.isNotEmpty) sb.writeln('Plant: ${_plantController.text}');
       if (_notesController.text.isNotEmpty) sb.writeln('\nNOTES\n${_notesController.text}');
       final pdfBytes = await PdfService.generateMaterialPdf(
         buildingName: _buildingController.text,
@@ -4315,7 +4229,7 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
         content: sb.toString(),
       );
       await Share.shareXFiles(
-        [XFile.fromData(pdfBytes, name: 'domestic_list_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf')],
+        [XFile.fromData(pdfBytes, name: 'domestic_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf')],
         subject: 'Domestic Material List',
       );
     } catch (e) {
@@ -4433,27 +4347,6 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // Action menu
-          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) {
-                switch (value) {
-                  case 'save': _saveList(); break;
-                  case 'pdf': _exportPdf(); break;
-                  case 'share': _shareList(); break;
-                  case 'clear': _clearAll(); break;
-                }
-              },
-              itemBuilder: (ctx) => [
-                const PopupMenuItem(value: 'save', child: Row(children: [Icon(Icons.save, size: 18), SizedBox(width: 10), Text('Save List')])),
-                const PopupMenuItem(value: 'pdf', child: Row(children: [Icon(Icons.picture_as_pdf, size: 18, color: Colors.red), SizedBox(width: 10), Text('Export PDF', style: TextStyle(color: Colors.red))])),
-                const PopupMenuItem(value: 'share', child: Row(children: [Icon(Icons.share, size: 18), SizedBox(width: 10), Text('Share')])),
-                const PopupMenuItem(value: 'clear', child: Row(children: [Icon(Icons.delete_outline, size: 18, color: Colors.red), SizedBox(width: 10), Text('Clear All', style: TextStyle(color: Colors.red))])),
-              ],
-            ),
-          ]),
-
           // Header
           Card(color: Colors.green.shade50, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -5902,6 +5795,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
   }
 }
 
+
 // ═══════════════════════════════════════════════════════════════
 // Welcome Screen — shown on first boot
 // ═══════════════════════════════════════════════════════════════
@@ -5921,17 +5815,29 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       await prefs.setBool('seen_welcome', true);
     }
     if (!mounted) return;
+    Navigator.of(context).pushReplacement(MaterialPageRoute<void>(
+      builder: (_) => const ProfileSearchScreen()));
     if (goToLogin) {
-      Navigator.of(context).pushReplacement(MaterialPageRoute<void>(
-        builder: (_) => const ProfileSearchScreen()));
-      // Small delay then open account screen
       Future.delayed(const Duration(milliseconds: 300), () {
-        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AccountScreen()));
+        if (mounted) Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AccountScreen()));
       });
-    } else {
-      Navigator.of(context).pushReplacement(MaterialPageRoute<void>(
-        builder: (_) => const ProfileSearchScreen()));
     }
+  }
+
+  Widget _benefit(IconData icon, String title, String subtitle) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(children: [
+        Container(width: 36, height: 36,
+          decoration: BoxDecoration(color: Colors.blue.shade700, borderRadius: BorderRadius.circular(8)),
+          child: Icon(icon, color: Colors.white, size: 18)),
+        const SizedBox(width: 12),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+          Text(subtitle, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+        ])),
+      ]),
+    );
   }
 
   @override
@@ -5940,117 +5846,82 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom),
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height
+                - MediaQuery.of(context).padding.top
+                - MediaQuery.of(context).padding.bottom),
             child: IntrinsicHeight(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 child: Column(children: [
-            const SizedBox(height: 8),
-            // Logo / icon
-            Container(
-              width: 100, height: 100,
-              decoration: BoxDecoration(
-                color: Colors.blue.shade700,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: const Icon(Icons.roofing, size: 56, color: Colors.white),
-            ),
-            const SizedBox(height: 24),
-            const Text('Welcome to\nRoof Profile Finder!',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, height: 1.3)),
-            const SizedBox(height: 12),
-            Text('The UK\'s most comprehensive roofing profile identification app.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: Colors.grey.shade600)),
-            const SizedBox(height: 32),
-
-            // Benefits card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.blue.shade200),
-              ),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Create a free account to unlock:',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue.shade800)),
-                const SizedBox(height: 12),
-                _benefit(Icons.cloud_upload, 'Cloud backup', 'Never lose your saved profiles'),
-                _benefit(Icons.sync, 'Sync across devices', 'Access from any phone'),
-                _benefit(Icons.restore, 'Auto restore', 'Restore if you change phone'),
-              ]),
-            ),
-            const SizedBox(height: 12),
-            Text('The app works completely without an account.\nSign in anytime from the account icon.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
-
-            const SizedBox(height: 16),
-
-            // Buttons
-            SizedBox(width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () => _dismiss(goToLogin: true),
-                icon: const Icon(Icons.account_circle),
-                label: const Text('Sign In / Create Account'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade700,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () => _dismiss(),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: const Text('Maybe Later'),
+                  const SizedBox(height: 8),
+                  Container(width: 90, height: 90,
+                    decoration: BoxDecoration(color: Colors.blue.shade700, borderRadius: BorderRadius.circular(22)),
+                    child: const Icon(Icons.roofing, size: 50, color: Colors.white)),
+                  const SizedBox(height: 20),
+                  const Text('Welcome to\nRoof Profile Finder!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, height: 1.3)),
+                  const SizedBox(height: 10),
+                  Text('The UK\'s most comprehensive roofing profile identification app.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: Colors.blue.shade200)),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text('Create a free account to unlock:',
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.blue.shade800)),
+                      const SizedBox(height: 10),
+                      _benefit(Icons.cloud_upload, 'Cloud backup', 'Never lose your saved profiles'),
+                      _benefit(Icons.sync, 'Sync across devices', 'Access from any phone'),
+                      _benefit(Icons.restore, 'Auto restore', 'Restore if you change phone'),
+                    ]),
+                  ),
+                  const SizedBox(height: 10),
+                  Text('The app works completely without an account.\nSign in anytime from the account icon.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                  const Spacer(),
+                  SizedBox(width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _dismiss(goToLogin: true),
+                      icon: const Icon(Icons.account_circle),
+                      label: const Text('Sign In / Create Account'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                    )),
+                  const SizedBox(height: 10),
+                  SizedBox(width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () => _dismiss(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                      child: const Text('Maybe Later'),
+                    )),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () => setState(() { _dontShowAgain = !_dontShowAgain; }),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Checkbox(value: _dontShowAgain,
+                        onChanged: (v) => setState(() { _dontShowAgain = v ?? true; }),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                      const Text("Don't show this again", style: TextStyle(fontSize: 13)),
+                    ]),
+                  ),
+                ]),
               ),
             ),
-            const SizedBox(height: 12),
-            // Don't show again
-            GestureDetector(
-              onTap: () => setState(() { _dontShowAgain = !_dontShowAgain; }),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Checkbox(
-                  value: _dontShowAgain,
-                  onChanged: (v) => setState(() { _dontShowAgain = v ?? true; }),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                const Text("Don't show this again", style: TextStyle(fontSize: 13)),
-              ]),
-            ),
-          ]),
+          ),
         ),
       ),
-    ),
-    ),
-    ),
-    );
-  }
-
-  Widget _benefit(IconData icon, String title, String subtitle) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(children: [
-        Container(
-          width: 36, height: 36,
-          decoration: BoxDecoration(color: Colors.blue.shade700, borderRadius: BorderRadius.circular(8)),
-          child: Icon(icon, color: Colors.white, size: 18),
-        ),
-        const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-          Text(subtitle, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
-        ])),
-      ]),
     );
   }
 }
