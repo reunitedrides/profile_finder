@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "899172571973",
+    "project_id": "roof-profile-finder-ef05e",
+    "storage_bucket": "roof-profile-finder-ef05e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899172571973:android:2e1b3e85221dcfe97dbc2c",
+        "android_client_info": {
+          "package_name": "com.marksamazingapps.profilefinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "899172571973-2u1dec7an5rbn222v6cfsuia6632phfa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.marksamazingapps.profilefinder",
+            "certificate_hash": "f7c57b4ffb1dc68f40808600b4cd5e67e71ad7e0"
+          }
+        },
+        {
+          "client_id": "899172571973-q50ngh8pinceu2g1qoqblvtqfn2a5atk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.marksamazingapps.profilefinder",
+            "certificate_hash": "d101703aaa497bd3aa046109d3d7b779cd391e9e"
+          }
+        },
+        {
+          "client_id": "899172571973-m520kbun1o8aup8f0f1brqdbcq0i9s3c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd_MBdT62wOUAschJgB7PNeGvPACKImn8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "899172571973-m520kbun1o8aup8f0f1brqdbcq0i9s3c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "899172571973-b5lc827jfa1fr5r01hiv1v69h9gmm0jv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.marksamazingapps.profilefinder"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

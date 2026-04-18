@@ -10,13 +10,19 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'firebase_options.dart';
 
 const String _donateUrl = 'https://ko-fi.com/weddingfund';
 const String _appVersion = '1.0.0';
 const String _contactEmail = 'marksjones73@gmail.com';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const RoofProfileFinderApp());
 }
 
@@ -170,6 +176,88 @@ class HistoryService {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// Auth Service
+// ═══════════════════════════════════════════════════════════════
+
+class AuthService {
+  static FirebaseAuth get _auth => FirebaseAuth.instance;
+  static FirebaseFirestore get _db => FirebaseFirestore.instance;
+
+  static User? get currentUser => _auth.currentUser;
+  static Stream<User?> get authStateChanges => _auth.authStateChanges();
+  static bool get isLoggedIn => _auth.currentUser != null;
+  static String? get userEmail => _auth.currentUser?.email;
+  static String? get displayName => _auth.currentUser?.displayName;
+
+  // Email/password register
+  static Future<UserCredential> registerWithEmail(String email, String password, String name) async {
+    final cred = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    await cred.user?.updateDisplayName(name);
+    await _saveUserProfile(cred.user!, name, email);
+    return cred;
+  }
+
+  // Email/password login
+  static Future<UserCredential> loginWithEmail(String email, String password) async {
+    return await _auth.signInWithEmailAndPassword(email: email, password: password);
+  }
+
+  // Google sign in
+  static Future<UserCredential?> signInWithGoogle() async {
+    final googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) return null;
+    final googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    final cred = await _auth.signInWithCredential(credential);
+    await _saveUserProfile(cred.user!, cred.user!.displayName ?? '', cred.user!.email ?? '');
+    return cred;
+  }
+
+  // Save user profile to Firestore
+  static Future<void> _saveUserProfile(User user, String name, String email) async {
+    await _db.collection('users').doc(user.uid).set({
+      'name': name,
+      'email': email,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  // Sign out
+  static Future<void> signOut() async {
+    await GoogleSignIn().signOut();
+    await _auth.signOut();
+  }
+
+  // Sync history to cloud
+  static Future<void> syncHistoryToCloud(List<HistoryEntry> history) async {
+    if (!isLoggedIn) return;
+    final uid = currentUser!.uid;
+    final batch = _db.batch();
+    final col = _db.collection('users').doc(uid).collection('history');
+    for (int i = 0; i < history.length; i++) {
+      final ref = col.doc('entry_$i');
+      batch.set(ref, history[i].toJson());
+    }
+    await batch.commit();
+  }
+
+  // Load history from cloud
+  static Future<List<HistoryEntry>> loadHistoryFromCloud() async {
+    if (!isLoggedIn) return [];
+    final uid = currentUser!.uid;
+    final snap = await _db.collection('users').doc(uid).collection('history').orderBy('savedAt', descending: true).get();
+    final List<HistoryEntry> results = [];
+    for (final doc in snap.docs) {
+      try { results.add(HistoryEntry.fromJson(doc.data())); } catch (_) {}
+    }
+    return results;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // Tool Usage Service — tracks most used tools
 // ═══════════════════════════════════════════════════════════════
 
@@ -198,6 +286,36 @@ class ToolUsageService {
     final Map<String, dynamic> counts = jsonDecode(prefs.getString(_key) ?? '{}') as Map<String, dynamic>;
     final sorted = counts.entries.toList()..sort((a, b) => (b.value as int).compareTo(a.value as int));
     return sorted.take(limit).map((e) => e.key).toList();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Material List Service — save/load/delete material lists
+// ═══════════════════════════════════════════════════════════════
+
+class MaterialListService {
+  static const String _key = 'saved_material_lists';
+
+  static Future<List<Map<String, dynamic>>> loadAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> raw = prefs.getStringList(_key) ?? [];
+    return raw.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
+  }
+
+  static Future<void> save(Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> raw = prefs.getStringList(_key) ?? [];
+    raw.insert(0, jsonEncode(data));
+    await prefs.setStringList(_key, raw);
+  }
+
+  static Future<void> delete(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> raw = prefs.getStringList(_key) ?? [];
+    if (index >= 0 && index < raw.length) {
+      raw.removeAt(index);
+      await prefs.setStringList(_key, raw);
+    }
   }
 }
 
@@ -797,6 +915,11 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                   icon: const Icon(Icons.history, size: 26, color: Colors.white),
                 ),
                 IconButton(
+                  tooltip: AuthService.isLoggedIn ? 'Account (${AuthService.userEmail})' : 'Sign In',
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AccountScreen())),
+                  icon: Icon(AuthService.isLoggedIn ? Icons.account_circle : Icons.account_circle_outlined, size: 26, color: Colors.white),
+                ),
+                IconButton(
                   tooltip: 'Donate',
                   onPressed: _openDonate,
                   icon: const Icon(Icons.volunteer_activism, size: 26, color: Colors.white),
@@ -823,14 +946,38 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
           children: [
           // Quick Access Buttons
           Row(children: [
-            Expanded(child: ElevatedButton.icon(
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen())),
-              icon: const Icon(Icons.build, size: 18),
-              label: const Text('Tools'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white,
+            Expanded(child: PopupMenuButton<String>(
+              onSelected: (id) => _openTool(id),
+              offset: const Offset(0, 48),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              itemBuilder: (context) => ToolUsageService.toolInfo.entries.map((entry) {
+                final color = Color(entry.value['color'] as int);
+                return PopupMenuItem<String>(
+                  value: entry.key,
+                  child: Row(children: [
+                    Container(
+                      width: 32, height: 32,
+                      decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
+                      child: Icon(entry.value['icon'] as IconData, size: 18, color: color),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(entry.value['label'] as String, style: const TextStyle(fontSize: 14)),
+                  ]),
+                );
+              }).toList(),
+              child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade700,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Icon(Icons.build, size: 18, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('Tools', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
+                  SizedBox(width: 6),
+                  Icon(Icons.arrow_drop_down, color: Colors.white, size: 20),
+                ]),
               ),
             )),
           ]),
@@ -839,7 +986,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
             const SizedBox(height: 10),
             Row(children: [
               Text('Most used: ', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-              Expanded(child: Wrap(spacing: 6, children: _mostUsedTools.map((id) {
+              Expanded(child: Wrap(spacing: 6, children: _mostUsedTools.take(2).map((id) {
                 final info = ToolUsageService.toolInfo[id];
                 if (info == null) return const SizedBox.shrink();
                 final color = Color(info['color'] as int);
@@ -865,13 +1012,36 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
           const SizedBox(height: 14),
           const Divider(height: 1),
           const SizedBox(height: 14),
-          const Text('Choose profile type', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Wrap(spacing: 8, runSpacing: 8, children: [
-              _categoryButton('Steel', 'steel'),
-              _categoryButton('Cement', 'cement'),
-              _categoryButton('Tiles / Slates', 'tile'),
-            ]),
+          // Profile type dropdown
+          Row(children: [
+            const Text('Profile type:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(width: 12),
+            Expanded(child: PopupMenuButton<String>(
+              onSelected: (cat) => _loadProfilesForCategory(cat),
+              offset: const Offset(0, 44),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              itemBuilder: (context) => [
+                PopupMenuItem(value: 'steel', child: Row(children: [Icon(Icons.roofing, color: Colors.blue.shade700, size: 20), const SizedBox(width: 10), const Text('Steel Sheets')])),
+                PopupMenuItem(value: 'cement', child: Row(children: [Icon(Icons.layers, color: Colors.grey.shade700, size: 20), const SizedBox(width: 10), const Text('Cement Sheets')])),
+                PopupMenuItem(value: 'tile', child: Row(children: [Icon(Icons.home, color: Colors.orange.shade700, size: 20), const SizedBox(width: 10), const Text('Tiles / Slates')])),
+              ],
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: _selectedCategory == 'tile' ? Colors.orange.shade700 : _selectedCategory == 'cement' ? Colors.grey.shade700 : Colors.blue.shade700,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(children: [
+                  Icon(_selectedCategory == 'tile' ? Icons.home : _selectedCategory == 'cement' ? Icons.layers : Icons.roofing, color: Colors.white, size: 18),
+                  const SizedBox(width: 8),
+                  Text(_selectedCategory == 'tile' ? 'Tiles / Slates' : _selectedCategory == 'cement' ? 'Cement Sheets' : 'Steel Sheets',
+                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                  const SizedBox(width: 6),
+                  const Icon(Icons.arrow_drop_down, color: Colors.white, size: 20),
+                ]),
+              ),
+            )),
+          ]),
             const SizedBox(height: 18),
             Text(_categoryTitle(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
             const SizedBox(height: 16),
@@ -1145,7 +1315,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ]),
                         ],
                         if (entry.hasGps) ...[
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 4),
                           GestureDetector(
                             onTap: () async {
                               final Uri mapsUri = Uri.parse('https://maps.google.com/?q=${entry.gpsLat},${entry.gpsLng}');
@@ -1153,14 +1323,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 await launchUrl(mapsUri, mode: LaunchMode.externalApplication);
                               }
                             },
-                            child: Row(children: [
-                              const Icon(Icons.map, size: 12, color: Colors.green),
-                              const SizedBox(width: 4),
-                              Text('${entry.gpsLat!.toStringAsFixed(4)}, ${entry.gpsLng!.toStringAsFixed(4)}',
-                                style: const TextStyle(fontSize: 11, color: Colors.green, decoration: TextDecoration.underline)),
-                              const SizedBox(width: 4),
-                              const Text('(tap to open map)', style: TextStyle(fontSize: 10, color: Colors.grey)),
-                            ]),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.green.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.green.shade300),
+                              ),
+                              child: Row(children: [
+                                Icon(Icons.map, size: 16, color: Colors.green.shade700),
+                                const SizedBox(width: 6),
+                                Expanded(child: Text(
+                                  '📍 ${entry.gpsLat!.toStringAsFixed(4)}, ${entry.gpsLng!.toStringAsFixed(4)}',
+                                  style: TextStyle(fontSize: 13, color: Colors.green.shade700, fontWeight: FontWeight.w600),
+                                )),
+                                Icon(Icons.open_in_new, size: 14, color: Colors.green.shade600),
+                              ]),
+                            ),
                           ),
                         ],
                         if (entry.roofPitch != null) ...[
@@ -2470,13 +2649,39 @@ class _RoofDiagramPainter extends CustomPainter {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Material List Screen
+// Material List Screen — tabbed Industrial / Domestic
 // ═══════════════════════════════════════════════════════════════
 
-class MaterialListScreen extends StatefulWidget {
+class MaterialListScreen extends StatelessWidget {
   const MaterialListScreen({super.key});
   @override
-  State<MaterialListScreen> createState() => _MaterialListScreenState();
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Material List'),
+          backgroundColor: Colors.green.shade700,
+          foregroundColor: Colors.white,
+          bottom: TabBar(
+            indicatorColor: Colors.white,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
+            tabs: const [
+              Tab(icon: Icon(Icons.factory_outlined), text: 'Industrial'),
+              Tab(icon: Icon(Icons.home_outlined), text: 'Domestic'),
+            ],
+          ),
+        ),
+        body: const TabBarView(
+          children: [
+            IndustrialMaterialList(),
+            DomesticMaterialList(),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _SheetItem {
@@ -2513,7 +2718,13 @@ class _FlashingItem {
   void dispose() { typeController.dispose(); qtyController.dispose(); colourController.dispose(); materialController.dispose(); }
 }
 
-class _MaterialListScreenState extends State<MaterialListScreen> {
+class IndustrialMaterialList extends StatefulWidget {
+  const IndustrialMaterialList({super.key});
+  @override
+  State<IndustrialMaterialList> createState() => _MaterialListScreenState();
+}
+
+class _MaterialListScreenState extends State<IndustrialMaterialList> {
   final _buildingController = TextEditingController();
   final _notesController = TextEditingController();
 
@@ -2539,6 +2750,15 @@ class _MaterialListScreenState extends State<MaterialListScreen> {
   final _ventsController = TextEditingController();
   final _gutteringController = TextEditingController();
   final _downpipesController = TextEditingController();
+
+  static InputDecoration _hintDec(String hint, {String? suffix}) => InputDecoration(
+    hintText: hint,
+    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+    suffixText: suffix,
+    border: const OutlineInputBorder(),
+    isDense: true,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+  );
 
   String _date = '';
 
@@ -2589,6 +2809,169 @@ class _MaterialListScreenState extends State<MaterialListScreen> {
         setState(() {});
       }
     });
+  }
+
+  Map<String, dynamic> _collectData() {
+    return {
+      'savedAt': DateTime.now().toIso8601String(),
+      'buildingName': _buildingController.text,
+      'notes': _notesController.text,
+      'insulation': _insulationController.text,
+      'felt': _feltController.text,
+      'battens': _battensController.text,
+      'spacingBars': _spacingBarsController.text,
+      'rafterFixings': _rafterFixingsController.text,
+      'sealants': _sealantsController.text,
+      'fillerBlocks': _fillerBlocksController.text,
+      'vents': _ventsController.text,
+      'guttering': _gutteringController.text,
+      'downpipes': _downpipesController.text,
+      'sheets': _sheetItems.map((i) => {'qty': i.qtyController.text, 'length': i.lengthController.text, 'material': i.materialController.text}).toList(),
+      'fixings': _fixingItems.map((i) => {'head': i.headController.text, 'length': i.lengthController.text, 'washer': i.washerController.text, 'qty': i.qtyController.text}).toList(),
+      'flashings': _flashingItems.map((i) => {'type': i.typeController.text, 'qty': i.qtyController.text, 'colour': i.colourController.text, 'material': i.materialController.text}).toList(),
+    };
+  }
+
+  void _loadData(Map<String, dynamic> data) {
+    _buildingController.text = data['buildingName'] ?? '';
+    _notesController.text = data['notes'] ?? '';
+    _insulationController.text = data['insulation'] ?? '';
+    _feltController.text = data['felt'] ?? '';
+    _battensController.text = data['battens'] ?? '';
+    _spacingBarsController.text = data['spacingBars'] ?? '';
+    _rafterFixingsController.text = data['rafterFixings'] ?? '';
+    _sealantsController.text = data['sealants'] ?? '';
+    _fillerBlocksController.text = data['fillerBlocks'] ?? '';
+    _ventsController.text = data['vents'] ?? '';
+    _gutteringController.text = data['guttering'] ?? '';
+    _downpipesController.text = data['downpipes'] ?? '';
+    // Sheets
+    for (final item in _sheetItems) { item.dispose(); }
+    _sheetItems.clear();
+    final sheets = data['sheets'] as List<dynamic>? ?? [];
+    if (sheets.isEmpty) { _sheetItems.add(_SheetItem()); }
+    else { for (final s in sheets) { final i = _SheetItem(); i.qtyController.text = s['qty'] ?? ''; i.lengthController.text = s['length'] ?? ''; i.materialController.text = s['material'] ?? ''; _sheetItems.add(i); } }
+    // Fixings
+    for (final item in _fixingItems) { item.dispose(); }
+    _fixingItems.clear();
+    final fixings = data['fixings'] as List<dynamic>? ?? [];
+    if (fixings.isEmpty) { _fixingItems.add(_FixingItem()); }
+    else { for (final f in fixings) { final i = _FixingItem(); i.headController.text = f['head'] ?? ''; i.lengthController.text = f['length'] ?? ''; i.washerController.text = f['washer'] ?? ''; i.qtyController.text = f['qty'] ?? ''; _fixingItems.add(i); } }
+    // Flashings
+    for (final item in _flashingItems) { item.dispose(); }
+    _flashingItems.clear();
+    final flashings = data['flashings'] as List<dynamic>? ?? [];
+    if (flashings.isEmpty) { _flashingItems.add(_FlashingItem()); }
+    else { for (final f in flashings) { final i = _FlashingItem(); i.typeController.text = f['type'] ?? ''; i.qtyController.text = f['qty'] ?? ''; i.colourController.text = f['colour'] ?? ''; i.materialController.text = f['material'] ?? ''; _flashingItems.add(i); } }
+    setState(() {});
+  }
+
+  Future<void> _saveList() async {
+    final name = _buildingController.text.trim().isNotEmpty ? _buildingController.text.trim() : 'List ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}';
+    final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('Save Material List'),
+      content: Text('Save "$name" to your saved lists?'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade700, foregroundColor: Colors.white),
+          child: const Text('Save'),
+        ),
+      ],
+    ));
+    if (confirm != true) return;
+    final data = _collectData();
+    data['name'] = name;
+    await MaterialListService.save(data);
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('✓ Saved: $name'),
+      backgroundColor: Colors.green.shade700,
+      duration: const Duration(seconds: 2),
+    ));
+  }
+
+  Future<void> _openSavedLists() async {
+    final lists = await MaterialListService.loadAll();
+    if (!mounted) return;
+    if (lists.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No saved lists yet. Fill in a list and tap Save.')));
+      return;
+    }
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          maxChildSize: 0.9,
+          minChildSize: 0.4,
+          expand: false,
+          builder: (ctx, scrollController) => Column(children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(children: [
+                const Icon(Icons.folder_open, color: Colors.green),
+                const SizedBox(width: 8),
+                const Expanded(child: Text('Saved Lists', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+                IconButton(onPressed: () => Navigator.pop(ctx), icon: const Icon(Icons.close)),
+              ]),
+            ),
+            const Divider(height: 1),
+            Expanded(child: ListView.separated(
+              controller: scrollController,
+              padding: const EdgeInsets.all(12),
+              itemCount: lists.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (ctx, index) {
+                final item = lists[index];
+                final name = item['name'] as String? ?? 'Unnamed';
+                final savedAt = item['savedAt'] as String? ?? '';
+                DateTime? dt; try { dt = DateTime.parse(savedAt); } catch (_) {}
+                final dateStr = dt != null ? '${dt.day.toString().padLeft(2,'0')}/${dt.month.toString().padLeft(2,'0')}/${dt.year}' : '';
+                return ListTile(
+                  leading: Container(
+                    width: 40, height: 40,
+                    decoration: BoxDecoration(color: Colors.green.shade100, borderRadius: BorderRadius.circular(8)),
+                    child: Icon(Icons.list_alt, color: Colors.green.shade700, size: 22),
+                  ),
+                  title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Text(dateStr, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(context: ctx, builder: (d) => AlertDialog(
+                        title: const Text('Delete List'),
+                        content: Text('Delete "$name"?'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Cancel')),
+                          TextButton(onPressed: () => Navigator.pop(d, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+                        ],
+                      ));
+                      if (confirm == true) {
+                        await MaterialListService.delete(index);
+                        lists.removeAt(index);
+                        setSheetState(() {});
+                      }
+                    },
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _loadData(item);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Loaded: $name'),
+                      backgroundColor: Colors.green.shade700,
+                      duration: const Duration(seconds: 2),
+                    ));
+                  },
+                );
+              },
+            )),
+          ]),
+        ),
+      ),
+    );
   }
 
   void _shareList() {
@@ -2713,6 +3096,7 @@ class _MaterialListScreenState extends State<MaterialListScreen> {
           textCapitalization: isLabel ? TextCapitalization.words : TextCapitalization.none,
           decoration: InputDecoration(
             hintText: hint ?? (isLabel ? 'Label' : '0'),
+            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
             suffixText: suffix,
             border: const OutlineInputBorder(),
             isDense: true,
@@ -2726,18 +3110,16 @@ class _MaterialListScreenState extends State<MaterialListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Material List'),
-        backgroundColor: Colors.green.shade700,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(tooltip: 'Clear all', icon: const Icon(Icons.delete_outline), onPressed: _clearAll),
-          IconButton(tooltip: 'Share list', icon: const Icon(Icons.share), onPressed: _shareList),
-        ],
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          // Action buttons row
+          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            TextButton.icon(onPressed: _openSavedLists, icon: const Icon(Icons.folder_open, size: 16), label: const Text('Saved')),
+            TextButton.icon(onPressed: _saveList, icon: const Icon(Icons.save, size: 16), label: const Text('Save')),
+            TextButton.icon(onPressed: _shareList, icon: const Icon(Icons.share, size: 16), label: const Text('Share')),
+            IconButton(tooltip: 'Clear all', icon: const Icon(Icons.delete_outline), onPressed: _clearAll),
+          ]),
 
           // Header
           Card(color: Colors.green.shade50, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -2784,22 +3166,19 @@ class _MaterialListScreenState extends State<MaterialListScreen> {
                 Expanded(flex: 2, child: TextField(
                   controller: item.qtyController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(hintText: '0', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 10)),
+                  decoration: _hintDec('0'),
                 )),
                 const SizedBox(width: 6),
                 Expanded(flex: 2, child: TextField(
                   controller: item.lengthController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(hintText: '0.0', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 10)),
+                  decoration: _hintDec('0.0'),
                 )),
                 const SizedBox(width: 6),
                 Expanded(flex: 3, child: TextField(
                   controller: item.materialController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(hintText: 'Steel', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 10)),
+                  decoration: _hintDec('Steel'),
                 )),
                 const SizedBox(width: 4),
                 IconButton(
@@ -2846,23 +3225,19 @@ class _MaterialListScreenState extends State<MaterialListScreen> {
               child: Row(children: [
                 Expanded(flex: 2, child: TextField(controller: item.headController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(hintText: 'Hex', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 10)))),
+                  decoration: _hintDec('Hex'))),
                 const SizedBox(width: 4),
                 Expanded(flex: 2, child: TextField(controller: item.lengthController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(hintText: '51mm', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 10)))),
+                  decoration: _hintDec('51mm'))),
                 const SizedBox(width: 4),
                 Expanded(flex: 2, child: TextField(controller: item.washerController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(hintText: 'EPDM', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 10)))),
+                  decoration: _hintDec('EPDM'))),
                 const SizedBox(width: 4),
                 Expanded(flex: 2, child: TextField(controller: item.qtyController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: false),
-                  decoration: const InputDecoration(hintText: '0', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 10)))),
+                  decoration: _hintDec('0'))),
                 const SizedBox(width: 4),
                 IconButton(
                   onPressed: _fixingItems.length > 1 ? () => setState(() { _fixingItems[i].dispose(); _fixingItems.removeAt(i); }) : null,
@@ -2903,23 +3278,19 @@ class _MaterialListScreenState extends State<MaterialListScreen> {
               child: Row(children: [
                 Expanded(flex: 3, child: TextField(controller: item.typeController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(hintText: 'Ridge', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 10)))),
+                  decoration: _hintDec('Ridge'))),
                 const SizedBox(width: 4),
                 Expanded(flex: 2, child: TextField(controller: item.qtyController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(hintText: '0', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 10)))),
+                  decoration: _hintDec('0'))),
                 const SizedBox(width: 4),
                 Expanded(flex: 2, child: TextField(controller: item.colourController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(hintText: 'Grey', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 10)))),
+                  decoration: _hintDec('Grey'))),
                 const SizedBox(width: 4),
                 Expanded(flex: 2, child: TextField(controller: item.materialController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(hintText: 'Steel', border: OutlineInputBorder(), isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 10)))),
+                  decoration: _hintDec('Steel'))),
                 const SizedBox(width: 4),
                 IconButton(
                   onPressed: _flashingItems.length > 1 ? () => setState(() { _flashingItems[i].dispose(); _flashingItems.removeAt(i); }) : null,
@@ -2981,6 +3352,517 @@ class _MaterialListScreenState extends State<MaterialListScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 30),
+        ]),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Domestic Material List
+// ═══════════════════════════════════════════════════════════════
+
+class _TileItem {
+  final TextEditingController qtyController;
+  final TextEditingController sizeController;
+  final TextEditingController materialController;
+  _TileItem() : qtyController = TextEditingController(), sizeController = TextEditingController(), materialController = TextEditingController();
+  void dispose() { qtyController.dispose(); sizeController.dispose(); materialController.dispose(); }
+}
+
+class _RidgeItem {
+  final TextEditingController qtyController;
+  final TextEditingController sizeController;
+  _RidgeItem() : qtyController = TextEditingController(), sizeController = TextEditingController();
+  void dispose() { qtyController.dispose(); sizeController.dispose(); }
+}
+
+class _ValleyItem {
+  final TextEditingController lengthController;
+  final TextEditingController typeController;
+  final TextEditingController sizeController;
+  _ValleyItem() : lengthController = TextEditingController(), typeController = TextEditingController(), sizeController = TextEditingController();
+  void dispose() { lengthController.dispose(); typeController.dispose(); sizeController.dispose(); }
+}
+
+class _DomFlashingItem {
+  final TextEditingController typeController;
+  final TextEditingController qtyController;
+  final TextEditingController colourController;
+  final TextEditingController materialController;
+  final TextEditingController sizeController;
+  _DomFlashingItem() : typeController = TextEditingController(), qtyController = TextEditingController(), colourController = TextEditingController(), materialController = TextEditingController(), sizeController = TextEditingController();
+  void dispose() { typeController.dispose(); qtyController.dispose(); colourController.dispose(); materialController.dispose(); sizeController.dispose(); }
+}
+
+class DomesticMaterialList extends StatefulWidget {
+  const DomesticMaterialList({super.key});
+  @override
+  State<DomesticMaterialList> createState() => _DomesticMaterialListState();
+}
+
+class _DomesticMaterialListState extends State<DomesticMaterialList> {
+  final _buildingController = TextEditingController();
+  final _notesController = TextEditingController();
+
+  // Tiles/Slates
+  final List<_TileItem> _tileItems = [_TileItem()];
+
+  // Underlay
+  final _epdmController = TextEditingController();
+  final _feltController = TextEditingController();
+  final _adhesiveController = TextEditingController();
+  final _primerController = TextEditingController();
+
+  // Battens
+  final _battensController = TextEditingController();
+  final _battenSpacingController = TextEditingController();
+
+  // Fixings
+  final _nailsController = TextEditingController();
+  final _screwsController = TextEditingController();
+
+  // Flashings
+  final List<_DomFlashingItem> _flashingItems = [_DomFlashingItem()];
+
+  // Ridge / Hip / Valley
+  final List<_RidgeItem> _ridgeItems = [_RidgeItem()];
+  final List<_RidgeItem> _hipItems = [_RidgeItem()];
+  final List<_ValleyItem> _valleyItems = [_ValleyItem()];
+
+  // Extras
+  final _ventsController = TextEditingController();
+  final _ventsTypeController = TextEditingController();
+  final _rooflightsController = TextEditingController();
+  final _rooflightsSizeController = TextEditingController();
+  final _gutteringController = TextEditingController();
+  final _downpipesController = TextEditingController();
+
+  // Safety
+  final _scaffoldingController = TextEditingController();
+  final _nettingController = TextEditingController();
+  final _plantController = TextEditingController();
+
+  String _date = '';
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _date = '${now.day.toString().padLeft(2,'0')}/${now.month.toString().padLeft(2,'0')}/${now.year}';
+  }
+
+  @override
+  void dispose() {
+    for (final i in _tileItems) { i.dispose(); }
+    for (final i in _flashingItems) { i.dispose(); }
+    for (final i in _ridgeItems) { i.dispose(); }
+    for (final i in _hipItems) { i.dispose(); }
+    for (final i in _valleyItems) { i.dispose(); }
+    for (final c in [_buildingController, _notesController, _epdmController, _feltController,
+      _adhesiveController, _primerController, _battensController, _battenSpacingController,
+      _nailsController, _screwsController, _ventsController, _ventsTypeController,
+      _rooflightsController, _rooflightsSizeController, _gutteringController,
+      _downpipesController, _scaffoldingController, _nettingController, _plantController]) { c.dispose(); }
+    super.dispose();
+  }
+
+  static InputDecoration _hintDec(String hint, {String? suffix}) => InputDecoration(
+    hintText: hint, hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+    suffixText: suffix, border: const OutlineInputBorder(), isDense: true,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+  );
+
+  Widget _sectionHeader(String title, IconData icon, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 10),
+      child: Row(children: [
+        Icon(icon, color: color, size: 20),
+        const SizedBox(width: 8),
+        Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
+      ]),
+    );
+  }
+
+  Widget _field(String label, TextEditingController controller, {String? suffix, String? hint}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(children: [
+        Expanded(flex: 3, child: Text(label, style: const TextStyle(fontSize: 13))),
+        Expanded(flex: 2, child: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            hintText: hint ?? '0', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+            suffixText: suffix, border: const OutlineInputBorder(), isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          ),
+        )),
+      ]),
+    );
+  }
+
+  void _clearAll() {
+    showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('Clear All'),
+      content: const Text('Clear all fields?'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Clear', style: TextStyle(color: Colors.red))),
+      ],
+    )).then((confirm) {
+      if (confirm == true) {
+        for (final i in _tileItems) { i.dispose(); } _tileItems.clear(); _tileItems.add(_TileItem());
+        for (final i in _flashingItems) { i.dispose(); } _flashingItems.clear(); _flashingItems.add(_DomFlashingItem());
+        for (final i in _ridgeItems) { i.dispose(); } _ridgeItems.clear(); _ridgeItems.add(_RidgeItem());
+        for (final i in _hipItems) { i.dispose(); } _hipItems.clear(); _hipItems.add(_RidgeItem());
+        for (final i in _valleyItems) { i.dispose(); } _valleyItems.clear(); _valleyItems.add(_ValleyItem());
+        for (final c in [_buildingController, _notesController, _epdmController, _feltController,
+          _adhesiveController, _primerController, _battensController, _battenSpacingController,
+          _nailsController, _screwsController, _ventsController, _ventsTypeController,
+          _rooflightsController, _rooflightsSizeController, _gutteringController,
+          _downpipesController, _scaffoldingController, _nettingController, _plantController]) { c.clear(); }
+        setState(() {});
+      }
+    });
+  }
+
+  void _shareList() {
+    final sb = StringBuffer();
+    sb.writeln('╔══════════════════════════╗');
+    sb.writeln('║  🏠 DOMESTIC ROOF LIST   ║');
+    sb.writeln('╚══════════════════════════╝');
+    if (_buildingController.text.isNotEmpty) sb.writeln('📍 Job:  ${_buildingController.text}');
+    sb.writeln('📅 Date: $_date\n');
+
+    bool hasTiles = _tileItems.any((i) => i.qtyController.text.isNotEmpty);
+    if (hasTiles) {
+      sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      sb.writeln('🏠 TILES / SLATES');
+      sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      for (final i in _tileItems) {
+        if (i.qtyController.text.isNotEmpty) {
+          sb.writeln('  • ${i.materialController.text.isNotEmpty ? i.materialController.text : 'Tile'}');
+          sb.writeln('    Qty: ${i.qtyController.text}${i.sizeController.text.isNotEmpty ? '  |  Size: ${i.sizeController.text}' : ''}');
+        }
+      }
+      sb.writeln('');
+    }
+
+    sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    sb.writeln('🛡️ UNDERLAY / WATERPROOFING');
+    sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    if (_epdmController.text.isNotEmpty) sb.writeln('  • EPDM: ${_epdmController.text} m²');
+    if (_feltController.text.isNotEmpty) sb.writeln('  • Felt: ${_feltController.text} rolls');
+    if (_adhesiveController.text.isNotEmpty) sb.writeln('  • Adhesive: ${_adhesiveController.text} litres');
+    if (_primerController.text.isNotEmpty) sb.writeln('  • Primer: ${_primerController.text} litres');
+    sb.writeln('');
+
+    if (_battensController.text.isNotEmpty || _battenSpacingController.text.isNotEmpty) {
+      sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      sb.writeln('🪵 BATTENS');
+      sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      if (_battensController.text.isNotEmpty) sb.writeln('  • Battens: ${_battensController.text} m');
+      if (_battenSpacingController.text.isNotEmpty) sb.writeln('  • Spacing: ${_battenSpacingController.text} mm');
+      sb.writeln('');
+    }
+
+    bool hasFlashings = _flashingItems.any((i) => i.typeController.text.isNotEmpty);
+    if (hasFlashings) {
+      sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      sb.writeln('⚡ FLASHINGS');
+      sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      for (final i in _flashingItems) {
+        if (i.typeController.text.isNotEmpty || i.qtyController.text.isNotEmpty) {
+          sb.writeln('  • ${i.typeController.text.isNotEmpty ? i.typeController.text : 'Flashing'}');
+          sb.writeln('    Qty: ${i.qtyController.text}${i.sizeController.text.isNotEmpty ? '  |  Size: ${i.sizeController.text}' : ''}${i.colourController.text.isNotEmpty ? '  |  ${i.colourController.text}' : ''}${i.materialController.text.isNotEmpty ? '  |  ${i.materialController.text}' : ''}');
+        }
+      }
+      sb.writeln('');
+    }
+
+    bool hasRidge = _ridgeItems.any((i) => i.qtyController.text.isNotEmpty);
+    bool hasHip = _hipItems.any((i) => i.qtyController.text.isNotEmpty);
+    bool hasValley = _valleyItems.any((i) => i.lengthController.text.isNotEmpty);
+    if (hasRidge || hasHip || hasValley) {
+      sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      sb.writeln('🔺 RIDGE / HIP / VALLEY');
+      sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      for (final i in _ridgeItems) { if (i.qtyController.text.isNotEmpty) sb.writeln('  • Ridge: Qty ${i.qtyController.text}${i.sizeController.text.isNotEmpty ? '  |  ${i.sizeController.text}' : ''}'); }
+      for (final i in _hipItems) { if (i.qtyController.text.isNotEmpty) sb.writeln('  • Hip: Qty ${i.qtyController.text}${i.sizeController.text.isNotEmpty ? '  |  ${i.sizeController.text}' : ''}'); }
+      for (final i in _valleyItems) { if (i.lengthController.text.isNotEmpty) sb.writeln('  • Valley: ${i.lengthController.text}m${i.typeController.text.isNotEmpty ? '  |  ${i.typeController.text}' : ''}${i.sizeController.text.isNotEmpty ? '  |  ${i.sizeController.text}' : ''}'); }
+      sb.writeln('');
+    }
+
+    if (_notesController.text.isNotEmpty) {
+      sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      sb.writeln('📝 NOTES');
+      sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      sb.writeln(_notesController.text);
+    }
+    sb.writeln('\n──────────────────────────');
+    sb.writeln('Generated by Roof Profile Finder');
+    Share.share(sb.toString(), subject: 'Domestic Material List - ${_buildingController.text.isNotEmpty ? _buildingController.text : _date}');
+  }
+
+  Widget _dynamicRows<T>({
+    required List<T> items,
+    required List<String> headers,
+    required Widget Function(T item, int index) rowBuilder,
+    required VoidCallback onAdd,
+    required String addLabel,
+    required Color color,
+  }) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: Row(children: [
+          ...headers.map((h) => Expanded(child: Text(h, style: const TextStyle(fontSize: 12, color: Colors.grey)))),
+          const SizedBox(width: 32),
+        ]),
+      ),
+      ...items.asMap().entries.map((e) => rowBuilder(e.value, e.key)),
+      TextButton.icon(
+        onPressed: onAdd,
+        icon: const Icon(Icons.add_circle_outline, size: 18),
+        label: Text(addLabel),
+        style: TextButton.styleFrom(foregroundColor: color),
+      ),
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          // Action row
+          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            TextButton.icon(onPressed: _shareList, icon: const Icon(Icons.share, size: 16), label: const Text('Share')),
+            IconButton(tooltip: 'Clear all', icon: const Icon(Icons.delete_outline), onPressed: _clearAll),
+          ]),
+
+          // Header
+          Card(color: Colors.green.shade50, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              TextField(controller: _buildingController, textCapitalization: TextCapitalization.words,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                decoration: InputDecoration(hintText: 'Building / Job Name', border: InputBorder.none,
+                  prefixIcon: const Icon(Icons.home_work_outlined),
+                  hintStyle: TextStyle(color: Colors.grey.shade400))),
+              const Divider(height: 1),
+              Padding(padding: const EdgeInsets.only(top: 8, left: 12),
+                child: Text('Date: $_date', style: TextStyle(fontSize: 13, color: Colors.grey.shade600))),
+            ])),
+          ),
+
+          // Tiles / Slates
+          _sectionHeader('Tiles / Slates', Icons.roofing, Colors.blue.shade700),
+          Padding(padding: const EdgeInsets.only(bottom: 6),
+            child: Row(children: const [
+              Expanded(flex: 2, child: Text('Qty', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              SizedBox(width: 6),
+              Expanded(flex: 2, child: Text('Size', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              SizedBox(width: 6),
+              Expanded(flex: 3, child: Text('Material', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              SizedBox(width: 32),
+            ]),
+          ),
+          ..._tileItems.asMap().entries.map((entry) {
+            final i = entry.key; final item = entry.value;
+            return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
+              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
+              const SizedBox(width: 6),
+              Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('265x165'))),
+              const SizedBox(width: 6),
+              Expanded(flex: 3, child: TextField(controller: item.materialController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Concrete'))),
+              const SizedBox(width: 4),
+              IconButton(onPressed: _tileItems.length > 1 ? () => setState(() { _tileItems[i].dispose(); _tileItems.removeAt(i); }) : null,
+                icon: Icon(Icons.remove_circle_outline, color: _tileItems.length > 1 ? Colors.red : Colors.grey, size: 22),
+                padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+            ]));
+          }),
+          TextButton.icon(onPressed: () => setState(() { _tileItems.add(_TileItem()); }),
+            icon: const Icon(Icons.add_circle_outline, size: 18), label: const Text('Add tile/slate'),
+            style: TextButton.styleFrom(foregroundColor: Colors.blue.shade700)),
+
+          // Underlay
+          _sectionHeader('Underlay / Waterproofing', Icons.water_drop, Colors.cyan.shade700),
+          _field('EPDM', _epdmController, suffix: 'm²'),
+          _field('Felt / Underlay', _feltController, suffix: 'rolls'),
+          _field('Adhesive', _adhesiveController, suffix: 'litres'),
+          _field('Primer', _primerController, suffix: 'litres'),
+
+          // Battens
+          _sectionHeader('Battens', Icons.view_column, Colors.brown.shade600),
+          _field('Battens', _battensController, suffix: 'm'),
+          Row(children: [
+            const Expanded(flex: 3, child: Text('Batten Spacing', style: TextStyle(fontSize: 13))),
+            Expanded(flex: 2, child: TextField(controller: _battenSpacingController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(hintText: '100', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                suffixText: 'mm', border: const OutlineInputBorder(), isDense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10)))),
+          ]),
+          const SizedBox(height: 10),
+
+          // Fixings
+          _sectionHeader('Fixings', Icons.settings, Colors.orange.shade700),
+          _field('Nails', _nailsController, suffix: 'qty'),
+          _field('Screws', _screwsController, suffix: 'qty'),
+
+          // Flashings
+          _sectionHeader('Flashings', Icons.water, Colors.purple.shade700),
+          Padding(padding: const EdgeInsets.only(bottom: 6),
+            child: Row(children: const [
+              Expanded(flex: 3, child: Text('Type', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              SizedBox(width: 4),
+              Expanded(flex: 2, child: Text('Qty', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              SizedBox(width: 4),
+              Expanded(flex: 2, child: Text('Size', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              SizedBox(width: 4),
+              Expanded(flex: 2, child: Text('Colour', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              SizedBox(width: 32),
+            ]),
+          ),
+          ..._flashingItems.asMap().entries.map((entry) {
+            final i = entry.key; final item = entry.value;
+            return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
+              Expanded(flex: 3, child: TextField(controller: item.typeController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Lead'))),
+              const SizedBox(width: 4),
+              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
+              const SizedBox(width: 4),
+              Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('150mm'))),
+              const SizedBox(width: 4),
+              Expanded(flex: 2, child: TextField(controller: item.colourController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Grey'))),
+              const SizedBox(width: 4),
+              IconButton(onPressed: _flashingItems.length > 1 ? () => setState(() { _flashingItems[i].dispose(); _flashingItems.removeAt(i); }) : null,
+                icon: Icon(Icons.remove_circle_outline, color: _flashingItems.length > 1 ? Colors.red : Colors.grey, size: 20),
+                padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+            ]));
+          }),
+          TextButton.icon(onPressed: () => setState(() { _flashingItems.add(_DomFlashingItem()); }),
+            icon: const Icon(Icons.add_circle_outline, size: 18), label: const Text('Add flashing'),
+            style: TextButton.styleFrom(foregroundColor: Colors.purple.shade700)),
+
+          // Ridge / Hip / Valley
+          _sectionHeader('Ridge / Hip / Valley', Icons.change_history, Colors.red.shade700),
+          const Text('Ridge Tiles', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey)),
+          const SizedBox(height: 6),
+          ..._ridgeItems.asMap().entries.map((entry) {
+            final i = entry.key; final item = entry.value;
+            return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
+              const Expanded(flex: 2, child: Text('Qty', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              const SizedBox(width: 8),
+              const Expanded(flex: 2, child: Text('Size', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              const SizedBox(width: 32),
+            ]));
+          }),
+          ..._ridgeItems.asMap().entries.map((entry) {
+            final i = entry.key; final item = entry.value;
+            return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
+              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
+              const SizedBox(width: 8),
+              Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('200mm'))),
+              const SizedBox(width: 4),
+              IconButton(onPressed: _ridgeItems.length > 1 ? () => setState(() { _ridgeItems[i].dispose(); _ridgeItems.removeAt(i); }) : null,
+                icon: Icon(Icons.remove_circle_outline, color: _ridgeItems.length > 1 ? Colors.red : Colors.grey, size: 20),
+                padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+            ]));
+          }),
+          TextButton.icon(onPressed: () => setState(() { _ridgeItems.add(_RidgeItem()); }),
+            icon: const Icon(Icons.add_circle_outline, size: 18), label: const Text('Add ridge'),
+            style: TextButton.styleFrom(foregroundColor: Colors.red.shade700)),
+
+          const SizedBox(height: 8),
+          const Text('Hip Tiles', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey)),
+          const SizedBox(height: 6),
+          ..._hipItems.asMap().entries.map((entry) {
+            final i = entry.key; final item = entry.value;
+            return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
+              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
+              const SizedBox(width: 8),
+              Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('200mm'))),
+              const SizedBox(width: 4),
+              IconButton(onPressed: _hipItems.length > 1 ? () => setState(() { _hipItems[i].dispose(); _hipItems.removeAt(i); }) : null,
+                icon: Icon(Icons.remove_circle_outline, color: _hipItems.length > 1 ? Colors.red : Colors.grey, size: 20),
+                padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+            ]));
+          }),
+          TextButton.icon(onPressed: () => setState(() { _hipItems.add(_RidgeItem()); }),
+            icon: const Icon(Icons.add_circle_outline, size: 18), label: const Text('Add hip'),
+            style: TextButton.styleFrom(foregroundColor: Colors.red.shade700)),
+
+          const SizedBox(height: 8),
+          const Text('Valley', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey)),
+          const SizedBox(height: 6),
+          ..._valleyItems.asMap().entries.map((entry) {
+            final i = entry.key; final item = entry.value;
+            return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
+              Expanded(flex: 2, child: TextField(controller: item.lengthController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0', suffix: 'm'))),
+              const SizedBox(width: 6),
+              Expanded(flex: 2, child: TextField(controller: item.typeController, textCapitalization: TextCapitalization.words, decoration: _hintDec('GRP'))),
+              const SizedBox(width: 6),
+              Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('150mm'))),
+              const SizedBox(width: 4),
+              IconButton(onPressed: _valleyItems.length > 1 ? () => setState(() { _valleyItems[i].dispose(); _valleyItems.removeAt(i); }) : null,
+                icon: Icon(Icons.remove_circle_outline, color: _valleyItems.length > 1 ? Colors.red : Colors.grey, size: 20),
+                padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+            ]));
+          }),
+          TextButton.icon(onPressed: () => setState(() { _valleyItems.add(_ValleyItem()); }),
+            icon: const Icon(Icons.add_circle_outline, size: 18), label: const Text('Add valley'),
+            style: TextButton.styleFrom(foregroundColor: Colors.red.shade700)),
+
+          // Extras
+          _sectionHeader('Extras', Icons.construction, Colors.teal.shade700),
+          Row(children: [
+            const Expanded(flex: 3, child: Text('Vents', style: TextStyle(fontSize: 13))),
+            Expanded(flex: 2, child: TextField(controller: _ventsController, keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(hintText: '0', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                suffixText: 'qty', border: const OutlineInputBorder(), isDense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10)))),
+            const SizedBox(width: 8),
+            Expanded(flex: 2, child: TextField(controller: _ventsTypeController, textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(hintText: 'Type', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                border: const OutlineInputBorder(), isDense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10)))),
+          ]),
+          const SizedBox(height: 10),
+          Row(children: [
+            const Expanded(flex: 3, child: Text('Rooflights', style: TextStyle(fontSize: 13))),
+            Expanded(flex: 2, child: TextField(controller: _rooflightsController, keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(hintText: '0', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                suffixText: 'qty', border: const OutlineInputBorder(), isDense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10)))),
+            const SizedBox(width: 8),
+            Expanded(flex: 2, child: TextField(controller: _rooflightsSizeController,
+              decoration: InputDecoration(hintText: '1000x1000', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                border: const OutlineInputBorder(), isDense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10)))),
+          ]),
+          const SizedBox(height: 10),
+          _field('Guttering', _gutteringController, suffix: 'm'),
+          _field('Downpipes', _downpipesController, suffix: 'qty'),
+
+          // Safety
+          _sectionHeader('Safety', Icons.health_and_safety, Colors.red.shade700),
+          _field('Scaffolding', _scaffoldingController, hint: 'weeks/days'),
+          _field('Netting', _nettingController, suffix: 'm²'),
+          _field('Plant / Equipment', _plantController, hint: 'description'),
+
+          // Notes
+          _sectionHeader('Notes', Icons.notes, Colors.grey.shade700),
+          TextField(controller: _notesController, maxLines: 4, textCapitalization: TextCapitalization.sentences,
+            decoration: InputDecoration(hintText: 'Any additional notes...', hintStyle: TextStyle(color: Colors.grey.shade400), border: const OutlineInputBorder())),
+
+          const SizedBox(height: 24),
+          SizedBox(width: double.infinity,
+            child: ElevatedButton.icon(onPressed: _shareList, icon: const Icon(Icons.share),
+              label: const Text('Share Domestic List'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade700, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16)))),
           const SizedBox(height: 30),
         ]),
       ),
@@ -3925,6 +4807,278 @@ class _PerimeterPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PerimeterPainter old) => old.points != points || old.isClosed != isClosed;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Account Screen
+// ═══════════════════════════════════════════════════════════════
+
+class AccountScreen extends StatefulWidget {
+  const AccountScreen({super.key});
+  @override
+  State<AccountScreen> createState() => _AccountScreenState();
+}
+
+class _AccountScreenState extends State<AccountScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _confirmController = TextEditingController();
+  bool _busy = false;
+  bool _obscure = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _emailController.dispose(); _passwordController.dispose();
+    _nameController.dispose(); _confirmController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loginEmail() async {
+    setState(() { _busy = true; _error = null; });
+    try {
+      await AuthService.loginWithEmail(_emailController.text.trim(), _passwordController.text);
+      if (mounted) { Navigator.pop(context); _showSnack('✓ Signed in!', Colors.green); }
+    } on FirebaseAuthException catch (e) {
+      setState(() { _error = _friendlyError(e.code); });
+    } finally { if (mounted) setState(() { _busy = false; }); }
+  }
+
+  Future<void> _registerEmail() async {
+    if (_passwordController.text != _confirmController.text) {
+      setState(() { _error = 'Passwords do not match'; }); return;
+    }
+    setState(() { _busy = true; _error = null; });
+    try {
+      await AuthService.registerWithEmail(_emailController.text.trim(), _passwordController.text, _nameController.text.trim());
+      if (mounted) { Navigator.pop(context); _showSnack('✓ Account created!', Colors.green); }
+    } on FirebaseAuthException catch (e) {
+      setState(() { _error = _friendlyError(e.code); });
+    } finally { if (mounted) setState(() { _busy = false; }); }
+  }
+
+  Future<void> _googleSignIn() async {
+    setState(() { _busy = true; _error = null; });
+    try {
+      final result = await AuthService.signInWithGoogle();
+      if (result != null && mounted) { Navigator.pop(context); _showSnack('✓ Signed in with Google!', Colors.green); }
+    } catch (e) {
+      setState(() { _error = 'Google sign in failed'; });
+    } finally { if (mounted) setState(() { _busy = false; }); }
+  }
+
+  Future<void> _signOut() async {
+    await AuthService.signOut();
+    if (mounted) { Navigator.pop(context); _showSnack('Signed out', Colors.grey); }
+  }
+
+  Future<void> _syncNow() async {
+    setState(() { _busy = true; });
+    try {
+      final history = await HistoryService.loadHistory();
+      await AuthService.syncHistoryToCloud(history);
+      if (mounted) _showSnack('✓ History synced to cloud!', Colors.green);
+    } catch (e) {
+      if (mounted) _showSnack('Sync failed: $e', Colors.red);
+    } finally { if (mounted) setState(() { _busy = false; }); }
+  }
+
+  Future<void> _restoreFromCloud() async {
+    setState(() { _busy = true; });
+    try {
+      final cloudHistory = await AuthService.loadHistoryFromCloud();
+      if (cloudHistory.isEmpty) { _showSnack('No cloud history found', Colors.orange); return; }
+      for (final entry in cloudHistory.reversed) { await HistoryService.saveEntry(entry); }
+      if (mounted) _showSnack('✓ Restored ${cloudHistory.length} entries!', Colors.green);
+    } catch (e) {
+      if (mounted) _showSnack('Restore failed: $e', Colors.red);
+    } finally { if (mounted) setState(() { _busy = false; }); }
+  }
+
+  void _showSnack(String msg, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: color));
+  }
+
+  String _friendlyError(String code) {
+    switch (code) {
+      case 'user-not-found': return 'No account found with this email';
+      case 'wrong-password': return 'Incorrect password';
+      case 'email-already-in-use': return 'Email already registered';
+      case 'weak-password': return 'Password must be at least 6 characters';
+      case 'invalid-email': return 'Invalid email address';
+      default: return 'Something went wrong. Please try again';
+    }
+  }
+
+  Widget _textField(String label, TextEditingController controller, {bool obscure = false, TextInputType? keyboard}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TextField(
+        controller: controller,
+        obscureText: obscure && _obscure,
+        keyboardType: keyboard,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          suffixIcon: obscure ? IconButton(
+            icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
+            onPressed: () => setState(() { _obscure = !_obscure; }),
+          ) : null,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isLoggedIn = AuthService.isLoggedIn;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(isLoggedIn ? 'My Account' : 'Sign In / Register'),
+        backgroundColor: Colors.blue.shade700,
+        foregroundColor: Colors.white,
+        bottom: isLoggedIn ? null : TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          tabs: const [Tab(text: 'Sign In'), Tab(text: 'Register')],
+        ),
+      ),
+      body: isLoggedIn ? _buildLoggedIn() : _buildAuth(),
+    );
+  }
+
+  Widget _buildLoggedIn() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(children: [
+        const SizedBox(height: 20),
+        CircleAvatar(
+          radius: 40,
+          backgroundColor: Colors.blue.shade100,
+          child: Icon(Icons.account_circle, size: 60, color: Colors.blue.shade700),
+        ),
+        const SizedBox(height: 16),
+        Text(AuthService.displayName ?? 'User', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        Text(AuthService.userEmail ?? '', style: TextStyle(color: Colors.grey.shade600)),
+        const SizedBox(height: 32),
+        Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
+            const Text('Cloud Sync', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            const Text('Keep your history backed up and accessible across devices.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+            const SizedBox(height: 16),
+            SizedBox(width: double.infinity, child: ElevatedButton.icon(
+              onPressed: _busy ? null : _syncNow,
+              icon: const Icon(Icons.cloud_upload),
+              label: const Text('Sync History to Cloud'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 12)),
+            )),
+            const SizedBox(height: 8),
+            SizedBox(width: double.infinity, child: OutlinedButton.icon(
+              onPressed: _busy ? null : _restoreFromCloud,
+              icon: const Icon(Icons.cloud_download),
+              label: const Text('Restore from Cloud'),
+              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
+            )),
+          ])),
+        ),
+        const SizedBox(height: 16),
+        if (_busy) const CircularProgressIndicator(),
+        const SizedBox(height: 24),
+        SizedBox(width: double.infinity, child: OutlinedButton.icon(
+          onPressed: _signOut,
+          icon: const Icon(Icons.logout, color: Colors.red),
+          label: const Text('Sign Out', style: TextStyle(color: Colors.red)),
+          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
+        )),
+      ]),
+    );
+  }
+
+  Widget _buildAuth() {
+    return TabBarView(
+      controller: _tabController,
+      children: [
+        // Sign In tab
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(children: [
+            const SizedBox(height: 16),
+            if (_error != null) ...[
+              Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.red.shade200)),
+                child: Row(children: [const Icon(Icons.error_outline, color: Colors.red, size: 18), const SizedBox(width: 8), Expanded(child: Text(_error!, style: const TextStyle(color: Colors.red)))])),
+              const SizedBox(height: 12),
+            ],
+            _textField('Email', _emailController, keyboard: TextInputType.emailAddress),
+            _textField('Password', _passwordController, obscure: true),
+            const SizedBox(height: 4),
+            SizedBox(width: double.infinity, child: ElevatedButton(
+              onPressed: _busy ? null : _loginEmail,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14)),
+              child: _busy ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Sign In'),
+            )),
+            const SizedBox(height: 16),
+            const Row(children: [Expanded(child: Divider()), Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('or')), Expanded(child: Divider())]),
+            const SizedBox(height: 16),
+            SizedBox(width: double.infinity, child: OutlinedButton.icon(
+              onPressed: _busy ? null : _googleSignIn,
+              icon: const Icon(Icons.g_mobiledata, size: 24),
+              label: const Text('Continue with Google'),
+              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
+            )),
+            const SizedBox(height: 20),
+            Text('Sign in to sync your history across devices.\nCompletely optional — the app works without an account.', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+          ]),
+        ),
+        // Register tab
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(children: [
+            const SizedBox(height: 16),
+            if (_error != null) ...[
+              Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.red.shade200)),
+                child: Row(children: [const Icon(Icons.error_outline, color: Colors.red, size: 18), const SizedBox(width: 8), Expanded(child: Text(_error!, style: const TextStyle(color: Colors.red)))])),
+              const SizedBox(height: 12),
+            ],
+            _textField('Full Name', _nameController),
+            _textField('Email', _emailController, keyboard: TextInputType.emailAddress),
+            _textField('Password', _passwordController, obscure: true),
+            _textField('Confirm Password', _confirmController, obscure: true),
+            const SizedBox(height: 4),
+            SizedBox(width: double.infinity, child: ElevatedButton(
+              onPressed: _busy ? null : _registerEmail,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14)),
+              child: _busy ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Create Account'),
+            )),
+            const SizedBox(height: 16),
+            const Row(children: [Expanded(child: Divider()), Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('or')), Expanded(child: Divider())]),
+            const SizedBox(height: 16),
+            SizedBox(width: double.infinity, child: OutlinedButton.icon(
+              onPressed: _busy ? null : _googleSignIn,
+              icon: const Icon(Icons.g_mobiledata, size: 24),
+              label: const Text('Continue with Google'),
+              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
+            )),
+            const SizedBox(height: 20),
+            Text('Create a free account to sync your history across devices.\nCompletely optional — the app works without an account.', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+          ]),
+        ),
+      ],
+    );
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════

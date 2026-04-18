@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "899172571973",
+    "project_id": "roof-profile-finder-ef05e",
+    "storage_bucket": "roof-profile-finder-ef05e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899172571973:android:2e1b3e85221dcfe97dbc2c",
+        "android_client_info": {
+          "package_name": "com.marksamazingapps.profilefinder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd_MBdT62wOUAschJgB7PNeGvPACKImn8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
