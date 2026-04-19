@@ -2287,6 +2287,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
           Text('Match Score: ${result.score.toStringAsFixed(1)}'),
           _saveButton(context, p),
           _shareButton(p),
+          _favouriteButton(p),
         ])));
   }
 
@@ -2323,6 +2324,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
           ],
           _saveButton(context, p),
           _shareButton(p),
+          _favouriteButton(p),
         ])));
   }
 
