@@ -379,6 +379,56 @@ class FavouritesService {
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// Rafter Save Service
+// ═══════════════════════════════════════════════════════════════
+
+class RafterSaveService {
+  static const String _key = 'saved_rafter_calculations';
+
+  static Future<List<Map<String, dynamic>>> loadAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getStringList(_key) ?? [];
+    return raw.map((s) {
+      try { return json.decode(s) as Map<String, dynamic>; } catch (_) { return null; }
+    }).whereType<Map<String, dynamic>>().toList();
+  }
+
+  static Future<void> save(Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getStringList(_key) ?? [];
+    raw.insert(0, json.encode(data));
+    await prefs.setStringList(_key, raw);
+  }
+
+  static Future<void> delete(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getStringList(_key) ?? [];
+    if (index >= 0 && index < raw.length) raw.removeAt(index);
+    await prefs.setStringList(_key, raw);
+  }
+
+  static Future<String> exportBackup() async {
+    final all = await loadAll();
+    return json.encode({'version': 1, 'exportedAt': DateTime.now().toIso8601String(), 'rafterCalculations': all});
+  }
+
+  static Future<int> importBackup(String jsonStr) async {
+    final Map<String, dynamic> data = json.decode(jsonStr) as Map<String, dynamic>;
+    final List<dynamic> calcs = data['rafterCalculations'] as List<dynamic>? ?? [];
+    final prefs = await SharedPreferences.getInstance();
+    final existing = prefs.getStringList(_key) ?? [];
+    int count = 0;
+    for (final c in calcs) {
+      existing.add(json.encode(c));
+      count++;
+    }
+    await prefs.setStringList(_key, existing);
+    return count;
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════
 // Auth Service
 // ═══════════════════════════════════════════════════════════════
@@ -5102,9 +5152,8 @@ class _RoofAreaCalculatorState extends State<RoofAreaCalculator> {
                   Share.share(text);
                 },
                 icon: const Icon(Icons.share),
-                label: const Text('Share Calculation'),
-              ),
-            ),
+                label: const Text('Share'),
+              )),
           ],
           const SizedBox(height: 30),
         ]),
@@ -5144,6 +5193,74 @@ class _RafterCalculatorState extends State<RafterCalculator> {
   double? _ridgeHeight;
   double? _halfSpan;
   int? _numberOfRafters;
+  bool _isHip = false;
+
+  double? _hipLength;
+  double? _hipPlumbCut;
+  double? _hipSeatCut;
+  double? _hipDihedral;
+  int _savedCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCount();
+  }
+
+  Future<void> _loadSavedCount() async {
+    final all = await RafterSaveService.loadAll();
+    if (mounted) setState(() { _savedCount = all.length; });
+  }
+
+  Future<void> _saveCalculation() async {
+    final pitch = double.tryParse(_pitchController.text) ?? 0;
+    final autoName = _spanController.text.isNotEmpty
+      ? 'Span ${_spanController.text}m @ ${pitch.toStringAsFixed(0)}°'
+      : 'Rafter ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}';
+    final nameController = TextEditingController(text: autoName);
+    final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Row(children: [Icon(Icons.save, color: Colors.brown), SizedBox(width: 8), Text('Save Calculation')]),
+      content: Column(mainAxisSize: MainAxisSize.min, children: [
+        const Text('Enter a name for this calculation:'),
+        const SizedBox(height: 12),
+        TextField(controller: nameController, textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(border: OutlineInputBorder(), prefixIcon: Icon(Icons.architecture)),
+          autofocus: true),
+      ]),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+        ElevatedButton(onPressed: () => Navigator.pop(ctx, true),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.brown.shade600, foregroundColor: Colors.white),
+          child: const Text('Save')),
+      ],
+    ));
+    if (confirm != true) return;
+    final data = {
+      'name': nameController.text.trim().isNotEmpty ? nameController.text.trim() : autoName,
+      'savedAt': DateTime.now().toIso8601String(),
+      'span': _spanController.text,
+      'pitch': _pitchController.text,
+      'eaves': _eavesController.text,
+      'spacing': _spacingController.text,
+      'buildingLength': _buildingLengthController.text,
+      'isHip': _isHip,
+      'rafterLength': _rafterLength,
+      'ridgeHeight': _ridgeHeight,
+      'halfSpan': _halfSpan,
+      'numberOfRafters': _numberOfRafters,
+      'hipLength': _hipLength,
+      'hipPlumbCut': _hipPlumbCut,
+      'hipSeatCut': _hipSeatCut,
+      'hipDihedral': _hipDihedral,
+    };
+    await RafterSaveService.save(data);
+    await _loadSavedCount();
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('✓ Saved: ${data['name']}'),
+      backgroundColor: Colors.brown.shade600,
+      duration: const Duration(seconds: 2),
+    ));
+  }
 
   @override
   void dispose() {
@@ -5176,11 +5293,23 @@ class _RafterCalculatorState extends State<RafterCalculator> {
       numRafters = ((buildingLength * 1000 / spacing).ceil() + 1) * 2;
     }
 
+    // Hip rafter calculations
+    final double hipRun = half * math.sqrt(2) + eaves;
+    final double hipPitchRad = math.atan(ridgeHt / (half * math.sqrt(2)));
+    final double hipLen = hipRun / math.cos(hipPitchRad);
+    final double hipPlumb = hipPitchRad * 180 / math.pi;
+    final double hipSeat = 90 - hipPlumb;
+    final double dihedral = math.atan(math.sin(pitchRad) / math.tan(math.pi / 4)) * 180 / math.pi;
+
     setState(() {
       _rafterLength = rafterLen;
       _ridgeHeight = ridgeHt;
       _halfSpan = half;
       _numberOfRafters = numRafters;
+      _hipLength = hipLen;
+      _hipPlumbCut = hipPlumb;
+      _hipSeatCut = hipSeat;
+      _hipDihedral = dihedral;
     });
   }
 
@@ -5188,7 +5317,10 @@ class _RafterCalculatorState extends State<RafterCalculator> {
     _spanController.clear(); _pitchController.clear();
     _eavesController.text = '0.3'; _spacingController.text = '600';
     _buildingLengthController.clear();
-    setState(() { _rafterLength = null; _ridgeHeight = null; _halfSpan = null; _numberOfRafters = null; });
+    setState(() {
+      _rafterLength = null; _ridgeHeight = null; _halfSpan = null; _numberOfRafters = null;
+      _hipLength = null; _hipPlumbCut = null; _hipSeatCut = null; _hipDihedral = null;
+    });
   }
 
   Widget _inputField(String label, TextEditingController controller, {String? suffix, String? hint}) {
@@ -5216,6 +5348,25 @@ class _RafterCalculatorState extends State<RafterCalculator> {
         title: const Text('Rafter Calculator'),
         backgroundColor: Colors.brown.shade600,
         foregroundColor: Colors.white,
+        actions: [
+          Stack(alignment: Alignment.center, children: [
+            IconButton(
+              tooltip: 'Saved calculations',
+              icon: const Icon(Icons.folder_open),
+              onPressed: () async {
+                await Navigator.of(context).push(MaterialPageRoute<void>(
+                  builder: (_) => const SavedRafterScreen()));
+                _loadSavedCount();
+              },
+            ),
+            if (_savedCount > 0)
+              Positioned(top: 6, right: 6,
+                child: Container(width: 16, height: 16,
+                  decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
+                  child: Center(child: Text('$_savedCount',
+                    style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold))))),
+          ]),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -5225,10 +5376,30 @@ class _RafterCalculatorState extends State<RafterCalculator> {
             child: const Padding(padding: EdgeInsets.all(14), child: Row(children: [
               Icon(Icons.info_outline, color: Colors.brown, size: 18),
               SizedBox(width: 8),
-              Expanded(child: Text('Enter the full span (wall to wall), pitch angle and eaves overhang to calculate rafter length and ridge height.', style: TextStyle(fontSize: 13))),
+              Expanded(child: Text('Enter the full span (wall to wall), pitch angle and eaves overhang to calculate rafter length and cut angles.', style: TextStyle(fontSize: 13))),
             ])),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
+          // Rafter type toggle
+          Row(children: [
+            const Text('Rafter Type:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            const SizedBox(width: 12),
+            ChoiceChip(
+              label: const Text('Common'),
+              selected: !_isHip,
+              onSelected: (_) => setState(() { _isHip = false; }),
+              selectedColor: Colors.brown.shade200,
+            ),
+            const SizedBox(width: 8),
+            ChoiceChip(
+              label: const Text('Hip'),
+              selected: _isHip,
+              onSelected: (_) => setState(() { _isHip = true; }),
+              selectedColor: Colors.orange.shade200,
+            ),
+          ]),
+          const SizedBox(height: 16),
 
           const Text('Measurements', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
@@ -5259,46 +5430,160 @@ class _RafterCalculatorState extends State<RafterCalculator> {
 
           if (_rafterLength != null) ...[
             const SizedBox(height: 24),
+
             const Text('Results', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
                 _resultRow('Half Span', '${_halfSpan!.toStringAsFixed(3)} m', Colors.grey.shade700),
                 const Divider(),
-                _resultRow('Rafter Length', '${_rafterLength!.toStringAsFixed(3)} m', Colors.brown.shade700, bold: true),
+                _resultRow('Common Rafter Length', '${_rafterLength!.toStringAsFixed(3)} m', Colors.brown.shade700, bold: true),
                 const Divider(),
                 _resultRow('Ridge Height', '${_ridgeHeight!.toStringAsFixed(3)} m', Colors.brown.shade700, bold: true),
                 if (_numberOfRafters != null) ...[
                   const Divider(),
                   _resultRow('Number of Rafters', '$_numberOfRafters rafters', Colors.blue.shade700, bold: true),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text('(both sides, inc. ends)', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
-                  ),
+                  Padding(padding: const EdgeInsets.only(top: 4),
+                    child: Text('(both sides, inc. ends)', style: TextStyle(fontSize: 11, color: Colors.grey.shade500))),
+                ],
+                if (_isHip && _hipLength != null) ...[
+                  const Divider(),
+                  _resultRow('Hip Rafter Length', '${_hipLength!.toStringAsFixed(3)} m', Colors.orange.shade700, bold: true),
                 ],
               ])),
             ),
+
+            const SizedBox(height: 16),
+
+            Text(_isHip ? 'Hip Rafter Cut Sheet' : 'Common Rafter Cut Sheet',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            _buildCutSheet(),
+
+            const SizedBox(height: 20),
+
+            Text(_isHip ? 'Hip Rafter Diagram' : 'Common Rafter Diagram',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: RafterDiagram(
+                  halfSpan: _halfSpan!,
+                  rafterLength: _isHip ? _hipLength! : _rafterLength!,
+                  ridgeHeight: _ridgeHeight!,
+                  pitchDegrees: _isHip ? _hipPlumbCut! : double.tryParse(_pitchController.text) ?? 0,
+                  eavesOverhang: double.tryParse(_eavesController.text) ?? 0.3,
+                  isHip: _isHip,
+                ),
+              ),
+            ),
+
             const SizedBox(height: 12),
-            SizedBox(width: double.infinity,
-              child: OutlinedButton.icon(
+            Row(children: [
+              Expanded(child: ElevatedButton.icon(
+                onPressed: _saveCalculation,
+                icon: const Icon(Icons.save),
+                label: const Text('Save'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown.shade600, foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12)),
+              )),
+              const SizedBox(width: 10),
+              Expanded(child: OutlinedButton.icon(
                 onPressed: () {
-                  final text = '📐 Rafter Calculation\n'
+                  final pitch = double.tryParse(_pitchController.text) ?? 0;
+                  final seatCut = 90 - pitch;
+                  String text = '📐 Rafter Calculation\n'
                     'Span: ${_spanController.text}m  |  Pitch: ${_pitchController.text}°\n'
                     'Eaves: ${_eavesController.text}m\n\n'
-                    'Rafter Length: ${_rafterLength!.toStringAsFixed(3)} m\n'
+                    'Common Rafter Length: ${_rafterLength!.toStringAsFixed(3)} m\n'
                     'Ridge Height: ${_ridgeHeight!.toStringAsFixed(3)} m\n'
-                    '${_numberOfRafters != null ? 'Rafters needed: $_numberOfRafters\n' : ''}'
-                    '\nCalculated by Roof Profile Finder';
+                    'Plumb Cut: ${pitch.toStringAsFixed(1)}°\n'
+                    'Seat Cut: ${seatCut.toStringAsFixed(1)}°\n';
+                  if (_isHip && _hipLength != null) {
+                    text += '\nHip Rafter Length: ${_hipLength!.toStringAsFixed(3)} m\n'
+                      'Hip Plumb Cut: ${_hipPlumbCut!.toStringAsFixed(1)}°\n'
+                      'Hip Seat Cut: ${_hipSeatCut!.toStringAsFixed(1)}°\n'
+                      'Backing Angle: ${_hipDihedral!.toStringAsFixed(1)}°\n';
+                  }
+                  if (_numberOfRafters != null) text += '\nRafters needed: $_numberOfRafters\n';
+                  text += '\nCalculated by Roof Profile Finder';
                   Share.share(text);
                 },
                 icon: const Icon(Icons.share),
-                label: const Text('Share Calculation'),
-              ),
-            ),
+                label: const Text('Share'),
+              )),
+            ]),
           ],
           const SizedBox(height: 30),
         ]),
       ),
+    );
+  }
+
+  Widget _buildCutSheet() {
+    final pitch = double.tryParse(_pitchController.text) ?? 0;
+    final seatCut = 90 - pitch;
+    final pitchRad = pitch * math.pi / 180;
+    final double birdWidth = pitchRad > 0 ? 50.0 / math.tan(pitchRad) : 50.0;
+
+    if (_isHip && _hipLength != null) {
+      return Card(
+        color: Colors.orange.shade50,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [Icon(Icons.content_cut, color: Colors.orange.shade700, size: 18), const SizedBox(width: 8),
+            Text('Hip Rafter Cuts', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange.shade800))]),
+          const SizedBox(height: 12),
+          _cutRow('🔝 Ridge Plumb Cut', '${_hipPlumbCut!.toStringAsFixed(1)}°', 'Set bevel to ${_hipPlumbCut!.toStringAsFixed(1)}° from vertical'),
+          _cutRow('📐 Cheek Cut (Side)', '45°', 'Cut both sides at 45° in plan (double cheek cut)'),
+          _cutRow('🪚 Seat Cut', '${_hipSeatCut!.toStringAsFixed(1)}°', 'Horizontal cut at wall plate'),
+          _cutRow('📏 Seat Depth', '50mm', 'Standard seat depth'),
+          _cutRow('🔄 Backing Angle', '${_hipDihedral!.toStringAsFixed(1)}°', 'Bevel top of hip for jack rafters'),
+          _cutRow('⬇️ Tail Plumb Cut', '${_hipPlumbCut!.toStringAsFixed(1)}°', 'Same angle as ridge plumb cut'),
+          const SizedBox(height: 8),
+          Container(padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: Colors.orange.shade100, borderRadius: BorderRadius.circular(6)),
+            child: Text('Set compound mitre saw to ${_hipPlumbCut!.toStringAsFixed(1)}° bevel and 45° mitre for cheek cuts.',
+              style: TextStyle(fontSize: 11, color: Colors.orange.shade900))),
+        ])),
+      );
+    }
+
+    return Card(
+      color: Colors.brown.shade50,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [Icon(Icons.content_cut, color: Colors.brown.shade700, size: 18), const SizedBox(width: 8),
+          Text('Common Rafter Cuts', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.brown.shade800))]),
+        const SizedBox(height: 12),
+        _cutRow('🔝 Ridge Plumb Cut', '${pitch.toStringAsFixed(1)}°', 'Set bevel to ${pitch.toStringAsFixed(1)}° from vertical'),
+        _cutRow('🪚 Seat Cut (Bird\'s Mouth)', '${seatCut.toStringAsFixed(1)}°', 'Set square to ${seatCut.toStringAsFixed(1)}°'),
+        _cutRow('📏 Bird\'s Mouth Depth', '50mm', 'Plumb depth at wall plate'),
+        _cutRow('📐 Bird\'s Mouth Width', '${birdWidth.toStringAsFixed(0)}mm', 'Horizontal seat width'),
+        _cutRow('⬇️ Tail Plumb Cut', '${pitch.toStringAsFixed(1)}°', 'Same angle as ridge plumb cut'),
+        _cutRow('📏 Rafter Length', '${_rafterLength!.toStringAsFixed(3)}m', 'Ridge centre to tail cut'),
+        const SizedBox(height: 8),
+        Container(padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(color: Colors.brown.shade100, borderRadius: BorderRadius.circular(6)),
+          child: Text('Set circular saw bevel to ${pitch.toStringAsFixed(1)}° for plumb cuts. Bird\'s mouth seat cut is ${seatCut.toStringAsFixed(1)}°.',
+            style: TextStyle(fontSize: 11, color: Colors.brown.shade900))),
+      ])),
+    );
+  }
+
+  Widget _cutRow(String label, String value, String note) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SizedBox(width: 180, child: Text(label, style: const TextStyle(fontSize: 13))),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.brown.shade800)),
+          Text(note, style: TextStyle(fontSize: 10, color: Colors.grey.shade600)),
+        ])),
+      ]),
     );
   }
 
@@ -5309,6 +5594,617 @@ class _RafterCalculatorState extends State<RafterCalculator> {
         Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
         Text(value, style: TextStyle(fontSize: 16, fontWeight: bold ? FontWeight.bold : FontWeight.w600, color: color)),
       ]),
+    );
+  }
+}
+
+class RafterDiagram extends StatefulWidget {
+  final double halfSpan;
+  final double rafterLength;
+  final double ridgeHeight;
+  final double pitchDegrees;
+  final double eavesOverhang;
+  final bool isHip;
+
+  const RafterDiagram({
+    super.key,
+    required this.halfSpan,
+    required this.rafterLength,
+    required this.ridgeHeight,
+    required this.pitchDegrees,
+    required this.eavesOverhang,
+    this.isHip = false,
+  });
+
+  @override
+  State<RafterDiagram> createState() => _RafterDiagramState();
+}
+
+class _RafterDiagramState extends State<RafterDiagram> {
+  String? _zoomedSection;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      if (_zoomedSection == null)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(Icons.touch_app, size: 14, color: Colors.grey.shade500),
+            const SizedBox(width: 4),
+            Text('Tap ridge, bird\'s mouth or tail to zoom in',
+              style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+          ]),
+        )
+      else
+        TextButton.icon(
+          onPressed: () => setState(() { _zoomedSection = null; }),
+          icon: const Icon(Icons.zoom_out, size: 16),
+          label: const Text('Back to full view', style: TextStyle(fontSize: 12)),
+          style: TextButton.styleFrom(padding: EdgeInsets.zero, visualDensity: VisualDensity.compact),
+        ),
+
+      if (_zoomedSection == null)
+        GestureDetector(
+          onTapDown: (details) => _handleTap(details.localPosition, context),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: CustomPaint(
+              painter: _RafterPainter(
+                halfSpan: widget.halfSpan,
+                rafterLength: widget.rafterLength,
+                ridgeHeight: widget.ridgeHeight,
+                pitchDegrees: widget.pitchDegrees,
+                eavesOverhang: widget.eavesOverhang,
+                isHip: widget.isHip,
+                showTapHints: true,
+              ),
+            ),
+          ),
+        )
+      else
+        _buildZoomedView(),
+
+      const SizedBox(height: 12),
+      Wrap(spacing: 16, runSpacing: 6, children: [
+        _legendItem(widget.isHip ? Colors.orange.shade700 : Colors.brown.shade700, widget.isHip ? 'Hip Rafter' : 'Rafter'),
+        _legendItem(Colors.blue.shade700, 'Ridge'),
+        _legendItem(Colors.grey.shade600, 'Wall plate'),
+        _legendItem(Colors.red.shade600, 'Bird\'s mouth'),
+      ]),
+      const SizedBox(height: 8),
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: widget.isHip ? Colors.orange.shade50 : Colors.brown.shade50,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: widget.isHip ? Colors.orange.shade200 : Colors.brown.shade200),
+        ),
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+          _cutInfo('Plumb Cut', '${widget.pitchDegrees.toStringAsFixed(1)}°', Icons.architecture),
+          _cutInfo('Seat Cut', '${(90 - widget.pitchDegrees).toStringAsFixed(1)}°', Icons.architecture),
+          if (widget.isHip) _cutInfo('Cheek Cut', '45°', Icons.rotate_90_degrees_ccw),
+          _cutInfo('Eaves', '${(widget.eavesOverhang * 1000).toStringAsFixed(0)}mm', Icons.straighten),
+        ]),
+      ),
+    ]);
+  }
+
+  void _handleTap(Offset pos, BuildContext context) {
+    final RenderBox? box = context.findRenderObject() as RenderBox?;
+    if (box == null) return;
+    final double width = box.size.width;
+    final double relX = pos.dx / width;
+    if (relX < 0.25) {
+      setState(() { _zoomedSection = 'tail'; });
+    } else if (relX > 0.75) {
+      setState(() { _zoomedSection = 'ridge'; });
+    } else {
+      setState(() { _zoomedSection = 'birdmouth'; });
+    }
+  }
+
+  Widget _buildZoomedView() {
+    final pitch = widget.pitchDegrees;
+    final seatCut = 90 - pitch;
+    final pitchRad = pitch * math.pi / 180;
+    final birdWidth = pitchRad > 0 ? 50.0 / math.tan(pitchRad) : 50.0;
+
+    switch (_zoomedSection) {
+      case 'ridge':
+        return _zoomCard('Ridge / Plumb Cut', Colors.blue.shade700, [
+          AspectRatio(aspectRatio: 2,
+            child: CustomPaint(painter: _RidgeZoomPainter(pitchDegrees: pitch, isHip: widget.isHip))),
+          const SizedBox(height: 8),
+          _zoomDetail('Plumb Cut Angle', '${pitch.toStringAsFixed(1)}°'),
+          _zoomDetail('Set bevel to', '${pitch.toStringAsFixed(1)}° from vertical'),
+          if (widget.isHip) _zoomDetail('Cheek Cut', '45° both sides'),
+        ]);
+      case 'birdmouth':
+        return _zoomCard('Bird\'s Mouth Cut', Colors.red.shade700, [
+          AspectRatio(aspectRatio: 2,
+            child: CustomPaint(painter: _BirdMouthZoomPainter(pitchDegrees: pitch))),
+          const SizedBox(height: 8),
+          _zoomDetail('Plumb Cut Depth', '50mm'),
+          _zoomDetail('Seat Cut Width', '${birdWidth.toStringAsFixed(0)}mm'),
+          _zoomDetail('Seat Angle', '${seatCut.toStringAsFixed(1)}°'),
+          _zoomDetail('Plumb Angle', '${pitch.toStringAsFixed(1)}°'),
+        ]);
+      case 'tail':
+        return _zoomCard('Tail / Eaves Cut', Colors.green.shade700, [
+          AspectRatio(aspectRatio: 2,
+            child: CustomPaint(painter: _TailZoomPainter(pitchDegrees: pitch, eavesOverhang: widget.eavesOverhang))),
+          const SizedBox(height: 8),
+          _zoomDetail('Tail Plumb Cut', '${pitch.toStringAsFixed(1)}°'),
+          _zoomDetail('Eaves Overhang', '${(widget.eavesOverhang * 1000).toStringAsFixed(0)}mm'),
+          _zoomDetail('Fascia Cut', 'Square or plumb to suit'),
+        ]);
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Widget _zoomCard(String title, Color color, List<Widget> children) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color)),
+        const SizedBox(height: 8),
+        ...children,
+      ]),
+    );
+  }
+
+  Widget _zoomDetail(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(children: [
+        Expanded(child: Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade700))),
+        Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+      ]),
+    );
+  }
+
+  Widget _legendItem(Color color, String label) {
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      Container(width: 20, height: 3, color: color),
+      const SizedBox(width: 4),
+      Text(label, style: const TextStyle(fontSize: 11)),
+    ]);
+  }
+
+  Widget _cutInfo(String label, String value, IconData icon) {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Icon(icon, size: 16, color: Colors.brown.shade600),
+      const SizedBox(height: 2),
+      Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.brown.shade700)),
+      Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+    ]);
+  }
+}
+
+class _RafterPainter extends CustomPainter {
+  final double halfSpan;
+  final double rafterLength;
+  final double ridgeHeight;
+  final double pitchDegrees;
+  final double eavesOverhang;
+  final bool isHip;
+  final bool showTapHints;
+
+  _RafterPainter({
+    required this.halfSpan,
+    required this.rafterLength,
+    required this.ridgeHeight,
+    required this.pitchDegrees,
+    required this.eavesOverhang,
+    this.isHip = false,
+    this.showTapHints = false,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double margin = 40.0;
+    final double w = size.width - margin * 2;
+    final double h = size.height - margin * 2;
+    final double totalRun = halfSpan + eavesOverhang;
+    final double scaleX = w / (totalRun * 1.2);
+    final double scaleY = h / (ridgeHeight * 1.4);
+    final double scale = math.min(scaleX, scaleY);
+
+    final double ox = margin + 10;
+    final double oy = size.height - margin;
+    final double eavesX = ox;
+    final double wallX = ox + eavesOverhang * scale;
+    final double ridgeX = wallX + halfSpan * scale;
+    final double ridgeY = oy - ridgeHeight * scale;
+    final double wallY = oy;
+
+    final double birdDepth = math.min(ridgeHeight * scale * 0.12, 18);
+    final double pitchRad = pitchDegrees * math.pi / 180;
+    final double birdWidth = pitchRad > 0 ? birdDepth / math.tan(pitchRad) : birdDepth;
+
+    final rafterColor = isHip ? Colors.orange.shade700 : Colors.brown.shade700;
+    final rafterPaint = Paint()..color = rafterColor..strokeWidth = 5..strokeCap = StrokeCap.round..style = PaintingStyle.stroke;
+    final wallPaint = Paint()..color = Colors.grey.shade600..strokeWidth = 3..style = PaintingStyle.stroke;
+    final ridgePaint = Paint()..color = Colors.blue.shade700..strokeWidth = 4..style = PaintingStyle.stroke;
+    final birdPaint = Paint()..color = Colors.red.shade600..strokeWidth = 2..style = PaintingStyle.stroke;
+    final dashPaint = Paint()..color = Colors.blue.shade200..strokeWidth = 1;
+    final dimPaint = Paint()..color = Colors.grey.shade500..strokeWidth = 1..style = PaintingStyle.stroke;
+    final textStyle = TextStyle(color: Colors.grey.shade700, fontSize: 10);
+    final boldStyle = TextStyle(color: rafterColor, fontSize: 11, fontWeight: FontWeight.bold);
+
+    canvas.drawLine(Offset(eavesX - 5, wallY), Offset(ridgeX + 10, wallY), wallPaint);
+    canvas.drawLine(Offset(eavesX, wallY), Offset(ridgeX, ridgeY), rafterPaint);
+    canvas.drawLine(Offset(ridgeX - 15, ridgeY), Offset(ridgeX + 15, ridgeY), ridgePaint);
+
+    final birdPath = Path();
+    birdPath.moveTo(wallX - birdWidth, wallY - birdDepth * 2);
+    birdPath.lineTo(wallX, wallY);
+    birdPath.lineTo(wallX + birdDepth, wallY - birdDepth);
+    canvas.drawPath(birdPath, birdPaint);
+
+    double dashY = ridgeY;
+    while (dashY < wallY) {
+      canvas.drawLine(Offset(ridgeX, dashY), Offset(ridgeX, math.min(dashY + 6, wallY)), dashPaint);
+      dashY += 10;
+    }
+    double dashX = wallX;
+    while (dashX < ridgeX) {
+      canvas.drawLine(Offset(dashX, wallY + 15), Offset(math.min(dashX + 6, ridgeX), wallY + 15), dashPaint);
+      dashX += 10;
+    }
+
+    canvas.drawLine(Offset(eavesX, wallY + 8), Offset(wallX, wallY + 8), dimPaint);
+
+    final arcRect = Rect.fromCenter(center: Offset(wallX, wallY), width: 40, height: 40);
+    canvas.drawArc(arcRect, -math.pi, pitchDegrees * math.pi / 180, false,
+      Paint()..color = Colors.orange.shade400..strokeWidth = 1.5..style = PaintingStyle.stroke);
+
+    if (showTapHints) {
+      final hintPaint = Paint()..color = Colors.blue.shade100.withOpacity(0.4)..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(ridgeX, ridgeY + 10), 20, hintPaint);
+      canvas.drawCircle(Offset(wallX, wallY - 12), 20, hintPaint);
+      canvas.drawCircle(Offset(eavesX + 5, wallY - 10), 20, hintPaint);
+    }
+
+    void drawText(String text, Offset pos, {bool bold = false}) {
+      final tp = TextPainter(
+        text: TextSpan(text: text, style: bold ? boldStyle : textStyle),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, pos);
+    }
+
+    drawText('${rafterLength.toStringAsFixed(2)}m', Offset((eavesX + ridgeX) / 2 - 30, (wallY + ridgeY) / 2 - 16), bold: true);
+    drawText('H: ${ridgeHeight.toStringAsFixed(2)}m', Offset(ridgeX + 8, (ridgeY + wallY) / 2), bold: true);
+    drawText('Run: ${halfSpan.toStringAsFixed(2)}m', Offset(wallX + (ridgeX - wallX) / 2 - 25, wallY + 18));
+    if (eavesOverhang > 0) drawText('${(eavesOverhang * 1000).toStringAsFixed(0)}mm', Offset(eavesX, wallY + 18));
+    drawText('${pitchDegrees.toStringAsFixed(0)}°', Offset(wallX + 22, wallY - 14));
+    drawText('Ridge', Offset(ridgeX - 15, ridgeY - 16));
+    drawText("Bird's\nmouth", Offset(wallX - 38, wallY - birdDepth * 3 - 10));
+    if (showTapHints) {
+      final hintStyle = TextStyle(color: Colors.blue.shade600, fontSize: 9);
+      void drawHint(String t, Offset pos) {
+        final tp = TextPainter(text: TextSpan(text: t, style: hintStyle), textDirection: TextDirection.ltr)..layout();
+        tp.paint(canvas, pos);
+      }
+      drawHint('tap', Offset(ridgeX - 8, ridgeY + 22));
+      drawHint('tap', Offset(wallX - 8, wallY - 8));
+      drawHint('tap', Offset(eavesX - 4, wallY - 28));
+    }
+  }
+
+  @override
+  bool shouldRepaint(_RafterPainter old) => true;
+}
+
+class _RidgeZoomPainter extends CustomPainter {
+  final double pitchDegrees;
+  final bool isHip;
+  _RidgeZoomPainter({required this.pitchDegrees, this.isHip = false});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width * 0.5;
+    final cy = size.height * 0.7;
+    final len = size.height * 0.55;
+    final pitchRad = pitchDegrees * math.pi / 180;
+    final paint = Paint()..color = isHip ? Colors.orange.shade700 : Colors.brown.shade700..strokeWidth = 6..strokeCap = StrokeCap.round..style = PaintingStyle.stroke;
+    final ridgePaint = Paint()..color = Colors.blue.shade700..strokeWidth = 4..style = PaintingStyle.stroke;
+
+    canvas.drawLine(Offset(cx - len * math.cos(pitchRad), cy + len * math.sin(pitchRad)), Offset(cx, cy), paint);
+    canvas.drawLine(Offset(cx - 20, cy), Offset(cx + 20, cy), ridgePaint);
+    canvas.drawLine(Offset(cx, cy), Offset(cx, cy - 30),
+      Paint()..color = Colors.red.shade600..strokeWidth = 1.5..style = PaintingStyle.stroke);
+
+    final arcRect = Rect.fromCenter(center: Offset(cx, cy), width: 50, height: 50);
+    canvas.drawArc(arcRect, -math.pi / 2, -pitchRad, false,
+      Paint()..color = Colors.orange.shade500..strokeWidth = 2..style = PaintingStyle.stroke);
+
+    void label(String t, Offset pos, Color c, {bool bold = false}) {
+      final tp = TextPainter(text: TextSpan(text: t, style: TextStyle(color: c, fontSize: bold ? 12 : 10, fontWeight: bold ? FontWeight.bold : FontWeight.normal)), textDirection: TextDirection.ltr)..layout();
+      tp.paint(canvas, pos);
+    }
+    label('${pitchDegrees.toStringAsFixed(1)}°', Offset(cx + 10, cy - 30), Colors.orange.shade700, bold: true);
+    label('Plumb cut', Offset(cx - 25, cy - 50), Colors.grey.shade600);
+    label('Ridge board', Offset(cx + 22, cy - 8), Colors.blue.shade700);
+    if (isHip) label('+ 45° cheek cut', Offset(cx - 60, cy + 10), Colors.orange.shade600);
+  }
+
+  @override
+  bool shouldRepaint(_) => true;
+}
+
+class _BirdMouthZoomPainter extends CustomPainter {
+  final double pitchDegrees;
+  _BirdMouthZoomPainter({required this.pitchDegrees});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final pitchRad = pitchDegrees * math.pi / 180;
+    final cx = size.width * 0.4;
+    final cy = size.height * 0.55;
+    final len = size.height * 0.45;
+
+    final rafterPaint = Paint()..color = Colors.brown.shade700..strokeWidth = 6..strokeCap = StrokeCap.round..style = PaintingStyle.stroke;
+    final wallPaint = Paint()..color = Colors.grey.shade600..strokeWidth = 3..style = PaintingStyle.stroke;
+    final birdPaint = Paint()..color = Colors.red.shade600..strokeWidth = 2.5..style = PaintingStyle.stroke;
+    final dimPaint = Paint()..color = Colors.blue.shade400..strokeWidth = 1..style = PaintingStyle.stroke;
+
+    canvas.drawLine(Offset(0, cy), Offset(size.width, cy), wallPaint);
+    canvas.drawLine(
+      Offset(cx - len * math.cos(pitchRad), cy - len * math.sin(pitchRad)),
+      Offset(cx + len * math.cos(pitchRad), cy + len * math.sin(pitchRad)), rafterPaint);
+
+    final depth = 35.0;
+    final width = pitchRad > 0 ? depth / math.tan(pitchRad) : depth;
+    final birdPath = Path();
+    birdPath.moveTo(cx - width, cy - depth * 2.2);
+    birdPath.lineTo(cx, cy);
+    birdPath.lineTo(cx + depth * 0.7, cy - depth);
+    canvas.drawPath(birdPath, birdPaint);
+
+    canvas.drawLine(Offset(cx + 22, cy), Offset(cx + 22, cy - depth * 2.2), dimPaint);
+    canvas.drawLine(Offset(cx - width, cy + 8), Offset(cx, cy + 8), dimPaint);
+
+    void label(String t, Offset pos, Color c) {
+      final tp = TextPainter(text: TextSpan(text: t, style: TextStyle(color: c, fontSize: 10, fontWeight: FontWeight.bold)), textDirection: TextDirection.ltr)..layout();
+      tp.paint(canvas, pos);
+    }
+    label('50mm', Offset(cx + 24, cy - depth), Colors.blue.shade700);
+    label('${width.toStringAsFixed(0)}mm', Offset(cx - width / 2 - 15, cy + 12), Colors.blue.shade700);
+    label('${(90 - pitchDegrees).toStringAsFixed(0)}°', Offset(cx + 5, cy - 18), Colors.orange.shade700);
+    label('${pitchDegrees.toStringAsFixed(0)}°', Offset(cx - width - 25, cy - depth * 1.5), Colors.orange.shade700);
+    label('Wall plate', Offset(size.width * 0.65, cy - 14), Colors.grey.shade600);
+  }
+
+  @override
+  bool shouldRepaint(_) => true;
+}
+
+class _TailZoomPainter extends CustomPainter {
+  final double pitchDegrees;
+  final double eavesOverhang;
+  _TailZoomPainter({required this.pitchDegrees, required this.eavesOverhang});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final pitchRad = pitchDegrees * math.pi / 180;
+    final cx = size.width * 0.45;
+    final cy = size.height * 0.45;
+    final len = size.height * 0.4;
+
+    final rafterPaint = Paint()..color = Colors.brown.shade700..strokeWidth = 6..strokeCap = StrokeCap.round..style = PaintingStyle.stroke;
+    final wallPaint = Paint()..color = Colors.grey.shade600..strokeWidth = 3..style = PaintingStyle.stroke;
+    final dimPaint = Paint()..color = Colors.blue.shade400..strokeWidth = 1..style = PaintingStyle.stroke;
+    final cutPaint = Paint()..color = Colors.red.shade600..strokeWidth = 2..style = PaintingStyle.stroke;
+
+    canvas.drawLine(Offset(cx, 0), Offset(cx, size.height), wallPaint);
+    canvas.drawLine(
+      Offset(cx - len * math.cos(pitchRad), cy - len * math.sin(pitchRad)),
+      Offset(cx + len * math.cos(pitchRad), cy + len * math.sin(pitchRad)), rafterPaint);
+
+    final eavesPixels = math.min(eavesOverhang * 120, 70.0);
+    canvas.drawLine(Offset(cx, cy + 28), Offset(cx + eavesPixels, cy + 28), dimPaint);
+    canvas.drawLine(Offset(cx, cy + 22), Offset(cx, cy + 34), dimPaint);
+    canvas.drawLine(Offset(cx + eavesPixels, cy + 22), Offset(cx + eavesPixels, cy + 34), dimPaint);
+    canvas.drawLine(Offset(cx + eavesPixels, cy - 28), Offset(cx + eavesPixels, cy + 22), cutPaint);
+
+    void label(String t, Offset pos, Color c) {
+      final tp = TextPainter(text: TextSpan(text: t, style: TextStyle(color: c, fontSize: 10, fontWeight: FontWeight.bold)), textDirection: TextDirection.ltr)..layout();
+      tp.paint(canvas, pos);
+    }
+    label('${(eavesOverhang * 1000).toStringAsFixed(0)}mm', Offset(cx + 4, cy + 32), Colors.blue.shade700);
+    label('Tail cut ${pitchDegrees.toStringAsFixed(0)}°', Offset(cx + eavesPixels + 4, cy - 24), Colors.red.shade700);
+    label('Wall plate', Offset(cx + 4, cy - 45), Colors.grey.shade600);
+  }
+
+  @override
+  bool shouldRepaint(_) => true;
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// Saved Rafter Calculations Screen
+// ═══════════════════════════════════════════════════════════════
+
+class SavedRafterScreen extends StatefulWidget {
+  const SavedRafterScreen({super.key});
+  @override
+  State<SavedRafterScreen> createState() => _SavedRafterScreenState();
+}
+
+class _SavedRafterScreenState extends State<SavedRafterScreen> {
+  List<Map<String, dynamic>> _calcs = [];
+  bool _loading = true;
+
+  @override
+  void initState() { super.initState(); _load(); }
+
+  Future<void> _load() async {
+    final all = await RafterSaveService.loadAll();
+    if (mounted) setState(() { _calcs = all; _loading = false; });
+  }
+
+  Future<void> _backup() async {
+    try {
+      if (AuthService.isLoggedIn) {
+        final uid = AuthService.currentUser!.uid;
+        final all = await RafterSaveService.loadAll();
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'rafterCalculations': all,
+          'rafterBackupAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('✓ ${all.length} calculations backed up to cloud!'),
+          backgroundColor: Colors.green.shade700));
+      } else {
+        final backup = await RafterSaveService.exportBackup();
+        await Share.shareXFiles(
+          [XFile.fromData(utf8.encode(backup), name: 'rafter_backup_${DateTime.now().millisecondsSinceEpoch}.json', mimeType: 'application/json')],
+          subject: 'Rafter Calculations Backup');
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Backup failed: $e'), backgroundColor: Colors.red));
+    }
+  }
+
+  Future<void> _restore() async {
+    if (AuthService.isLoggedIn) {
+      final choice = await showDialog<String>(context: context, builder: (ctx) => AlertDialog(
+        title: const Row(children: [Icon(Icons.restore, color: Colors.brown), SizedBox(width: 8), Text('Restore')]),
+        content: const Text('Restore from cloud or paste JSON?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, 'cancel'), child: const Text('Cancel')),
+          OutlinedButton.icon(onPressed: () => Navigator.pop(ctx, 'paste'), icon: const Icon(Icons.paste), label: const Text('Paste JSON')),
+          ElevatedButton.icon(onPressed: () => Navigator.pop(ctx, 'cloud'),
+            icon: const Icon(Icons.cloud_download), label: const Text('From Cloud'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.brown.shade600, foregroundColor: Colors.white)),
+        ],
+      ));
+      if (choice == 'cloud') {
+        try {
+          final uid = AuthService.currentUser!.uid;
+          final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+          final calcs = doc.data()?['rafterCalculations'] as List<dynamic>? ?? [];
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setStringList('saved_rafter_calculations', calcs.map((c) => json.encode(c)).toList());
+          await _load();
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('✓ Restored ${calcs.length} calculations!'),
+            backgroundColor: Colors.green.shade700));
+        } catch (e) {
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Restore failed: $e'), backgroundColor: Colors.red));
+        }
+        return;
+      }
+      if (choice != 'paste') return;
+    }
+    // Paste JSON restore
+    final pasteController = TextEditingController();
+    final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('Paste Backup JSON'),
+      content: TextField(controller: pasteController, maxLines: 5,
+        decoration: const InputDecoration(hintText: 'Paste backup JSON here...', border: OutlineInputBorder())),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+        ElevatedButton(onPressed: () => Navigator.pop(ctx, true),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.brown.shade600, foregroundColor: Colors.white),
+          child: const Text('Restore')),
+      ],
+    ));
+    if (confirm != true || pasteController.text.trim().isEmpty) return;
+    try {
+      final count = await RafterSaveService.importBackup(pasteController.text.trim());
+      await _load();
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('✓ Restored $count calculations!'),
+        backgroundColor: Colors.green.shade700));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Restore failed: $e'), backgroundColor: Colors.red));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Saved Calculations (${_calcs.length})'),
+        backgroundColor: Colors.brown.shade600,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(tooltip: 'Backup', icon: const Icon(Icons.backup), onPressed: _backup),
+          IconButton(tooltip: 'Restore', icon: const Icon(Icons.restore), onPressed: _restore),
+        ],
+      ),
+      body: _loading
+        ? const Center(child: CircularProgressIndicator())
+        : _calcs.isEmpty
+          ? const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.architecture, size: 64, color: Colors.grey),
+              SizedBox(height: 12),
+              Text('No saved calculations yet.\nTap Save after calculating.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+            ]))
+          : ListView.separated(
+              padding: const EdgeInsets.all(12),
+              itemCount: _calcs.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (ctx, index) {
+                final c = _calcs[index];
+                final name = c['name'] as String? ?? 'Unnamed';
+                final savedAt = c['savedAt'] as String? ?? '';
+                DateTime? dt; try { dt = DateTime.parse(savedAt); } catch (_) {}
+                final dateStr = dt != null ? '${dt.day.toString().padLeft(2,'0')}/${dt.month.toString().padLeft(2,'0')}/${dt.year}' : '';
+                final isHip = c['isHip'] as bool? ?? false;
+                final rafterLen = (c['rafterLength'] as num?)?.toDouble();
+                final hipLen = (c['hipLength'] as num?)?.toDouble();
+                final pitch = c['pitch'] as String? ?? '';
+                final span = c['span'] as String? ?? '';
+
+                return ListTile(
+                  leading: Container(width: 44, height: 44,
+                    decoration: BoxDecoration(
+                      color: isHip ? Colors.orange.shade100 : Colors.brown.shade100,
+                      borderRadius: BorderRadius.circular(8)),
+                    child: Icon(Icons.architecture,
+                      color: isHip ? Colors.orange.shade700 : Colors.brown.shade700, size: 24)),
+                  title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('${isHip ? 'Hip' : 'Common'} • Span: ${span}m • Pitch: ${pitch}°',
+                      style: const TextStyle(fontSize: 12)),
+                    if (rafterLen != null)
+                      Text('Rafter: ${rafterLen.toStringAsFixed(3)}m${hipLen != null ? ' | Hip: ${hipLen.toStringAsFixed(3)}m' : ''}',
+                        style: TextStyle(fontSize: 11, color: Colors.brown.shade600)),
+                    Text(dateStr, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                  ]),
+                  isThreeLine: true,
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(context: context, builder: (d) => AlertDialog(
+                        title: const Text('Delete Calculation'),
+                        content: Text('Delete "$name"?'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Cancel')),
+                          TextButton(onPressed: () => Navigator.pop(d, true),
+                            child: const Text('Delete', style: TextStyle(color: Colors.red))),
+                        ],
+                      ));
+                      if (confirm == true) {
+                        await RafterSaveService.delete(index);
+                        setState(() { _calcs.removeAt(index); });
+                      }
+                    },
+                  ),
+                );
+              },
+            ),
     );
   }
 }
