@@ -41,6 +41,8 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is used for the torch feature to illuminate dark roof spaces.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Used to save the location of the roof when recording a profile.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
