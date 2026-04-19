@@ -1,7 +1,7 @@
 name: profile_finder
 description: "Roof Profile Finder App"
 publish_to: 'none'
-version: 1.0.0+22
+version: 1.0.0+23
 
 environment:
   sdk: ^3.11.4
