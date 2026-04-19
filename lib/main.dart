@@ -15,6 +15,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'firebase_options.dart';
@@ -23,9 +24,14 @@ const String _donateUrl = 'https://ko-fi.com/weddingfund';
 const String _appVersion = '1.0.0';
 const String _contactEmail = 'marksjones73@gmail.com';
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   final prefs = await SharedPreferences.getInstance();
   final bool seenWelcome = prefs.getBool('seen_welcome') ?? false;
   runApp(RoofProfileFinderApp(showWelcome: !seenWelcome));
@@ -314,6 +320,62 @@ class PdfService {
       ],
     ));
     return pdf.save();
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// Favourites Service
+// ═══════════════════════════════════════════════════════════════
+
+class FavouritesService {
+  static const String _key = 'favourite_profiles';
+
+  static String _profileKey(ProfileRecord p) => '${p.code}_${p.profileName}_${p.manufacturer}';
+
+  static Future<Set<String>> loadKeys() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getStringList(_key) ?? []).toSet();
+  }
+
+  static Future<List<ProfileRecord>> loadAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> raw = prefs.getStringList('favourite_profiles_data') ?? [];
+    return raw.map((s) {
+      try { return ProfileRecord.fromJson(json.decode(s) as Map<String, dynamic>); } catch (_) { return null; }
+    }).whereType<ProfileRecord>().toList();
+  }
+
+  static Future<bool> isFavourite(ProfileRecord p) async {
+    final keys = await loadKeys();
+    return keys.contains(_profileKey(p));
+  }
+
+  static Future<void> add(ProfileRecord p) async {
+    final prefs = await SharedPreferences.getInstance();
+    final keys = (prefs.getStringList(_key) ?? []).toSet();
+    keys.add(_profileKey(p));
+    await prefs.setStringList(_key, keys.toList());
+    final data = prefs.getStringList('favourite_profiles_data') ?? [];
+    if (!data.any((s) => s.contains(p.profileName))) {
+      data.add(json.encode(p.toJson()));
+      await prefs.setStringList('favourite_profiles_data', data);
+    }
+  }
+
+  static Future<void> remove(ProfileRecord p) async {
+    final prefs = await SharedPreferences.getInstance();
+    final keys = (prefs.getStringList(_key) ?? []).toSet();
+    keys.remove(_profileKey(p));
+    await prefs.setStringList(_key, keys.toList());
+    final data = prefs.getStringList('favourite_profiles_data') ?? [];
+    data.removeWhere((s) => s.contains(p.profileName) && s.contains(p.manufacturer));
+    await prefs.setStringList('favourite_profiles_data', data);
+  }
+
+  static Future<int> count() async {
+    final keys = await loadKeys();
+    return keys.length;
   }
 }
 
@@ -777,6 +839,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     switch (value) {
       case 'tools': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen())); break;
       case 'help': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen())); break;
+      case 'favourites': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FavouritesScreen())); break;
       case 'about': _showAboutDialogBox(); break;
       case 'suggest': _showSuggestProfileDialog(); break;
       case 'backup': _backupAllData(); break;
@@ -1242,6 +1305,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                   icon: const Icon(Icons.more_vert, color: Colors.white),
                   itemBuilder: (context) => [
                     const PopupMenuItem<String>(value: 'tools', child: Row(children: [Icon(Icons.build, size: 18), SizedBox(width: 10), Text('Tools')])),
+                    const PopupMenuItem<String>(value: 'favourites', child: Row(children: [Icon(Icons.star, size: 18, color: Colors.amber), SizedBox(width: 10), Text('Favourites')])),
                     const PopupMenuItem<String>(value: 'help', child: Row(children: [Icon(Icons.help_outline, size: 18), SizedBox(width: 10), Text('How to use')])),
                     const PopupMenuItem<String>(value: 'backup', child: Row(children: [Icon(Icons.backup, size: 18), SizedBox(width: 10), Text('Backup All Data')])),
                     const PopupMenuItem<String>(value: 'restore', child: Row(children: [Icon(Icons.restore, size: 18), SizedBox(width: 10), Text('Restore Backup')])),
@@ -1794,8 +1858,40 @@ class ResultsScreen extends StatefulWidget {
 
 class _ResultsScreenState extends State<ResultsScreen> {
   final Set<String> _savedKeys = {};
+  Set<String> _favouriteKeys = {};
 
   String _profileKey(ProfileRecord p) => '${p.code}_${p.profileName}';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavourites();
+  }
+
+  Future<void> _loadFavourites() async {
+    final keys = await FavouritesService.loadKeys();
+    if (mounted) setState(() { _favouriteKeys = keys; });
+  }
+
+  Future<void> _toggleFavourite(ProfileRecord p) async {
+    final key = '${p.code}_${p.profileName}_${p.manufacturer}';
+    if (_favouriteKeys.contains(key)) {
+      await FavouritesService.remove(p);
+      setState(() { _favouriteKeys.remove(key); });
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Removed from favourites'), duration: Duration(seconds: 1)));
+    } else {
+      await FavouritesService.add(p);
+      setState(() { _favouriteKeys.add(key); });
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('⭐ Added to favourites!'),
+        backgroundColor: Colors.amber.shade700,
+        duration: const Duration(seconds: 2)));
+    }
+  }
+
+  bool _isFavourite(ProfileRecord p) =>
+    _favouriteKeys.contains('${p.code}_${p.profileName}_${p.manufacturer}');
 
   Future<void> _saveToHistory(BuildContext context, ProfileRecord profile) async {
     final TextEditingController buildingController = TextEditingController();
@@ -2143,6 +2239,26 @@ class _ResultsScreenState extends State<ResultsScreen> {
           label: const Text('Share Profile'),
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.blue.shade700,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _favouriteButton(ProfileRecord p) {
+    final isFav = _isFavourite(p);
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: SizedBox(width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: () => _toggleFavourite(p),
+          icon: Icon(isFav ? Icons.star : Icons.star_border,
+            color: isFav ? Colors.amber.shade700 : null, size: 18),
+          label: Text(isFav ? 'Remove from Favourites' : 'Add to Favourites'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: isFav ? Colors.amber.shade700 : Colors.grey.shade700,
+            side: BorderSide(color: isFav ? Colors.amber.shade400 : Colors.grey.shade400),
             padding: const EdgeInsets.symmetric(vertical: 10),
           ),
         ),
@@ -5931,6 +6047,90 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Favourites Screen
+// ═══════════════════════════════════════════════════════════════
+
+class FavouritesScreen extends StatefulWidget {
+  const FavouritesScreen({super.key});
+  @override
+  State<FavouritesScreen> createState() => _FavouritesScreenState();
+}
+
+class _FavouritesScreenState extends State<FavouritesScreen> {
+  List<ProfileRecord> _favourites = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final favs = await FavouritesService.loadAll();
+    if (mounted) setState(() { _favourites = favs; _loading = false; });
+  }
+
+  Future<void> _remove(ProfileRecord p) async {
+    await FavouritesService.remove(p);
+    setState(() { _favourites.removeWhere((f) => f.profileName == p.profileName && f.manufacturer == p.manufacturer); });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Favourites (${_favourites.length})'),
+        backgroundColor: Colors.amber.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: _loading
+        ? const Center(child: CircularProgressIndicator())
+        : _favourites.isEmpty
+          ? const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.star_border, size: 64, color: Colors.grey),
+              SizedBox(height: 16),
+              Text('No favourites yet.\nTap ⭐ on any profile to add it here.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey)),
+            ]))
+          : ListView.separated(
+              padding: const EdgeInsets.all(12),
+              itemCount: _favourites.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (ctx, index) {
+                final p = _favourites[index];
+                return ListTile(
+                  leading: p.imageFile != null
+                    ? ClipRRect(borderRadius: BorderRadius.circular(6),
+                        child: Image.asset(p.imageFile!, width: 48, height: 48, fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => Icon(Icons.roofing, size: 40, color: Colors.amber.shade700)))
+                    : Icon(Icons.roofing, size: 40, color: Colors.amber.shade700),
+                  title: Text(p.displayTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Text('${p.manufacturer} • ${p.isTileCategory ? p.tileTypeLabel : p.category}',
+                    style: const TextStyle(fontSize: 12)),
+                  trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                    IconButton(
+                      icon: Icon(Icons.star, color: Colors.amber.shade700),
+                      onPressed: () async {
+                        await _remove(p);
+                        if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(
+                          const SnackBar(content: Text('Removed from favourites'), duration: Duration(seconds: 1)));
+                      },
+                    ),
+                    const Icon(Icons.arrow_forward_ios, size: 16),
+                  ]),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                    builder: (_) => ResultsScreen(title: p.displayTitle,
+                      results: [SearchResult(profile: p, score: 0)]))),
+                );
+              },
+            ),
     );
   }
 }
