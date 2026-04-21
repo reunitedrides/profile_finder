@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrientation, MethodChannel, SystemUiMode;
 import 'package:url_launcher/url_launcher.dart';
@@ -889,153 +888,33 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   Widget _quickChip(IconData icon, String label, Color color, VoidCallback onTap) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(24),
-          onTap: onTap,
-          child: Ink(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.14),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white.withOpacity(0.18)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.26),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, size: 12, color: Colors.white),
-                ),
-                const SizedBox(width: 7),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.1,
-                  ),
-                ),
-              ],
-            ),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.85),
+            borderRadius: BorderRadius.circular(20),
           ),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Icon(icon, size: 13, color: Colors.white),
+            const SizedBox(width: 5),
+            Text(label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+          ]),
         ),
       ),
     );
   }
-
-  Widget _iosHeaderCircleButton({
-    required String tooltip,
-    required IconData icon,
-    required VoidCallback onPressed,
-    Color iconColor = Colors.white,
-  }) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withOpacity(0.20)),
-      ),
-      child: IconButton(
-        tooltip: tooltip,
-        padding: EdgeInsets.zero,
-        onPressed: onPressed,
-        icon: Icon(icon, size: 20, color: iconColor),
-      ),
-    );
-  }
-
-
-  Future<void> _openAccountFromHeader() async {
-    final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(builder: (_) => const AccountScreen()),
-    );
-    if (result == true && mounted) {
-      setState(() {});
-    }
-  }
-
-  Future<void> _signOutFromHeaderMenu() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Sign out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Sign out'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm != true) return;
-
-    try {
-      await AuthService.signOut();
-      if (!mounted) return;
-      setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Signed out'),
-          backgroundColor: Colors.blueGrey.shade700,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Sign out failed: $e'),
-          backgroundColor: Colors.red.shade700,
-        ),
-      );
-    }
-  }
-
 
   void _handleTopMenu(String value) {
     switch (value) {
-      case 'account':
-        _openAccountFromHeader();
-        break;
-      case 'signout':
-        _signOutFromHeaderMenu();
-        break;
-      case 'tools':
-        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen()));
-        break;
-      case 'help':
-        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen()));
-        break;
-      case 'favourites':
-        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FavouritesScreen()));
-        break;
-      case 'about':
-        _showAboutDialogBox();
-        break;
-      case 'suggest':
-        _showSuggestProfileDialog();
-        break;
-      case 'backup':
-        _backupAllData();
-        break;
-      case 'restore':
-        _restoreAllData();
-        break;
+      case 'tools': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen())); break;
+      case 'help': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen())); break;
+      case 'favourites': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FavouritesScreen())); break;
+      case 'about': _showAboutDialogBox(); break;
+      case 'suggest': _showSuggestProfileDialog(); break;
+      case 'backup': _backupAllData(); break;
+      case 'restore': _restoreAllData(); break;
     }
   }
 
@@ -1444,258 +1323,81 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(168),
+        preferredSize: const Size.fromHeight(112),
         child: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0xFF123B8C), Color(0xFF1E5FC8)],
+              colors: [Color(0xFF0D2B6B), Colors.blue.shade600],
             ),
           ),
           child: SafeArea(
             bottom: false,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 112,
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10, top: 8),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _iosHeaderCircleButton(
-                                tooltip: 'Donate',
-                                icon: CupertinoIcons.heart_fill,
-                                onPressed: _openDonate,
-                              ),
-                              const SizedBox(height: 8),
-                              _iosHeaderCircleButton(
-                                tooltip: AuthService.isLoggedIn ? 'Account' : 'Sign In',
-                                icon: AuthService.isLoggedIn
-                                    ? CupertinoIcons.person_crop_circle_fill
-                                    : CupertinoIcons.person_crop_circle_badge_plus,
-                                onPressed: _openAccountFromHeader,
-                                iconColor: AuthService.isLoggedIn
-                                    ? const Color(0xFF8AE06B)
-                                    : Colors.white,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 82),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'ROOF PROFILE',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.9,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              const Text(
-                                '& TILE FINDER',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xFF95EA77),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Identify over 700 roof sheets\n& 200 tiles / slates',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.88),
-                                  fontSize: 10.5,
-                                  height: 1.25,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8, right: 8),
-                          child: Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.14),
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withOpacity(0.20)),
-                            ),
-                            child: PopupMenuButton<String>(
-                              tooltip: 'Menu',
-                              onSelected: _handleTopMenu,
-                              padding: EdgeInsets.zero,
-                              icon: const Icon(CupertinoIcons.ellipsis, color: Colors.white),
-                              itemBuilder: (context) => [
-                                PopupMenuItem<String>(
-                                  value: 'account',
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        AuthService.isLoggedIn
-                                            ? CupertinoIcons.person_crop_circle
-                                            : CupertinoIcons.person_crop_circle_badge_plus,
-                                        size: 18,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(AuthService.isLoggedIn ? 'Account' : 'Sign in'),
-                                    ],
-                                  ),
-                                ),
-                                if (AuthService.isLoggedIn)
-                                  const PopupMenuItem<String>(
-                                    value: 'signout',
-                                    child: Row(
-                                      children: [
-                                        Icon(CupertinoIcons.square_arrow_right, size: 18, color: Colors.red),
-                                        SizedBox(width: 10),
-                                        Text(
-                                          'Sign out',
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                const PopupMenuDivider(),
-                                const PopupMenuItem<String>(
-                                  value: 'tools',
-                                  child: Row(
-                                    children: [
-                                      Icon(CupertinoIcons.wrench_fill, size: 18),
-                                      SizedBox(width: 10),
-                                      Text('Tools'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem<String>(
-                                  value: 'favourites',
-                                  child: Row(
-                                    children: [
-                                      Icon(CupertinoIcons.star_fill, size: 18),
-                                      SizedBox(width: 10),
-                                      Text('Favorites'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem<String>(
-                                  value: 'help',
-                                  child: Row(
-                                    children: [
-                                      Icon(CupertinoIcons.question_circle, size: 18),
-                                      SizedBox(width: 10),
-                                      Text('How to measure'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem<String>(
-                                  value: 'backup',
-                                  child: Row(
-                                    children: [
-                                      Icon(CupertinoIcons.cloud_upload, size: 18),
-                                      SizedBox(width: 10),
-                                      Text('Backup All Data'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem<String>(
-                                  value: 'restore',
-                                  child: Row(
-                                    children: [
-                                      Icon(CupertinoIcons.arrow_down_doc, size: 18),
-                                      SizedBox(width: 10),
-                                      Text('Restore Backup'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem<String>(
-                                  value: 'about',
-                                  child: Row(
-                                    children: [
-                                      Icon(CupertinoIcons.info_circle, size: 18),
-                                      SizedBox(width: 10),
-                                      Text('About'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem<String>(
-                                  value: 'suggest',
-                                  child: Row(
-                                    children: [
-                                      Icon(CupertinoIcons.add_circled, size: 18),
-                                      SizedBox(width: 10),
-                                      Text('Suggest / Add Profile'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+            child: Column(children: [
+              // Top row
+              SizedBox(
+                height: 60,
+                child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  // Left: donate + account
+                  IconButton(tooltip: 'Donate', onPressed: _openDonate,
+                    icon: const Icon(Icons.volunteer_activism, size: 22, color: Colors.white)),
+                  IconButton(
+                    tooltip: AuthService.isLoggedIn ? 'Account' : 'Sign In',
+                    onPressed: () async {
+                      final result = await Navigator.of(context).push<bool>(MaterialPageRoute<bool>(builder: (_) => const AccountScreen()));
+                      if (result == true && mounted) setState(() {});
+                    },
+                    icon: Icon(
+                      AuthService.isLoggedIn ? Icons.account_circle : Icons.account_circle_outlined,
+                      size: 22, color: AuthService.isLoggedIn ? Colors.greenAccent : Colors.white),
+                  ),
+                  // Centre: app name
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+                      const Text('ROOF PROFILE & TILE FINDER',
+                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                      const SizedBox(height: 2),
+                      Text('700+ sheets  •  100+ tiles & slates',
+                        style: TextStyle(color: Colors.blue.shade200, fontSize: 11)),
+                    ]),
+                  ),
+                  // Right: menu only
+                  PopupMenuButton<String>(
+                    tooltip: 'Menu',
+                    onSelected: _handleTopMenu,
+                    icon: const Icon(Icons.more_vert, color: Colors.white),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem<String>(value: 'tools', child: Row(children: [Icon(Icons.build, size: 18), SizedBox(width: 10), Text('Tools')])),
+                      const PopupMenuItem<String>(value: 'favourites', child: Row(children: [Icon(Icons.star, size: 18, color: Colors.amber), SizedBox(width: 10), Text('Favourites')])),
+                      const PopupMenuItem<String>(value: 'help', child: Row(children: [Icon(Icons.help_outline, size: 18), SizedBox(width: 10), Text('How to measure')])),
+                      const PopupMenuItem<String>(value: 'backup', child: Row(children: [Icon(Icons.backup, size: 18), SizedBox(width: 10), Text('Backup All Data')])),
+                      const PopupMenuItem<String>(value: 'restore', child: Row(children: [Icon(Icons.restore, size: 18), SizedBox(width: 10), Text('Restore Backup')])),
+                      const PopupMenuItem<String>(value: 'about', child: Row(children: [Icon(Icons.info_outline, size: 18), SizedBox(width: 10), Text('About')])),
+                      const PopupMenuItem<String>(value: 'suggest', child: Row(children: [Icon(Icons.add_circle_outline, size: 18), SizedBox(width: 10), Text('Suggest / Add Profile')])),
                     ],
                   ),
+                ]),
+              ),
+              // Quick chips row
+              SizedBox(
+                height: 36,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  children: [
+                    _quickChip(Icons.build, 'Tools', const Color(0xFF1565C0), () => _handleTopMenu('tools')),
+                    _quickChip(Icons.history, 'History', const Color(0xFF283593),
+                      () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HistoryScreen()))),
+                    _quickChip(Icons.save, 'Saved Lists', const Color(0xFF2E7D32),
+                      () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const _SavedListsScreen()))),
+                    _quickChip(Icons.star, 'Favourites', const Color(0xFFE65100), () => _handleTopMenu('favourites')),
+                    _quickChip(Icons.picture_as_pdf, 'PDF Export', const Color(0xFFC62828),
+                      () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HistoryScreen()))),
+                  ],
                 ),
-                SizedBox(
-                  height: 44,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    children: [
-                      _quickChip(
-                        CupertinoIcons.wrench_fill,
-                        'Tools',
-                        const Color(0xFF5CA7FF),
-                        () => _handleTopMenu('tools'),
-                      ),
-                      _quickChip(
-                        CupertinoIcons.clock_fill,
-                        'History',
-                        const Color(0xFF7C8CFF),
-                        () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(builder: (_) => const HistoryScreen()),
-                        ),
-                      ),
-                      _quickChip(
-                        CupertinoIcons.tray_fill,
-                        'Saved',
-                        const Color(0xFF69C48F),
-                        () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(builder: (_) => const _SavedListsScreen()),
-                        ),
-                      ),
-                      _quickChip(
-                        CupertinoIcons.star_fill,
-                        'Favorites',
-                        const Color(0xFFFFB36B),
-                        () => _handleTopMenu('favourites'),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 4),
-              ],
-            ),
+              ),
+            ]),
           ),
         ),
       ),
@@ -3646,7 +3348,7 @@ class _SavedListsScreenState extends State<_SavedListsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Saved (${_lists.length})'),
+        title: Text('Saved Lists (${_lists.length})'),
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
       ),
@@ -3948,7 +3650,7 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
               child: Row(children: [
                 const Icon(Icons.folder_open, color: Colors.green),
                 const SizedBox(width: 8),
-                const Expanded(child: Text('Saved', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+                const Expanded(child: Text('Saved Lists', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                 IconButton(onPressed: () => Navigator.pop(ctx), icon: const Icon(Icons.close)),
               ]),
             ),
