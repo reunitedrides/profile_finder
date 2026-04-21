@@ -5,7 +5,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrientation, MethodChannel, SystemUiMode, PlatformException;
+import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrientation, MethodChannel, SystemUiMode;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -24,8 +24,6 @@ import 'firebase_options.dart';
 const String _donateUrl = 'https://ko-fi.com/weddingfund';
 const String _appVersion = '1.0.0';
 const String _contactEmail = 'marksjones73@gmail.com';
-const String _androidPackageId = 'com.marksamazingapps.profilefinder';
-const String _iosAppStoreId = ''; // Add your App Store numeric ID here when the iPhone app is live.
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -798,7 +796,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       case 'area':      screen = const RoofAreaCalculator(); break;
       case 'rafter':    screen = const RafterCalculator(); break;
       case 'perimeter': screen = const PerimeterAreaTool(); break;
-      case 'torch':     screen = const TorchScreen(); break;
+      case 'torch':     if (!Platform.isIOS) screen = const TorchScreen(); else return; break;
       default: return;
     }
     await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
@@ -1009,112 +1007,6 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   }
 
 
-  Widget _buildQuickActionsRow({required bool insideHeader}) {
-    final chips = [
-      _quickChip(
-        Platform.isIOS ? CupertinoIcons.wrench_fill : Icons.build,
-        'Tools',
-        const Color(0xFF5CA7FF),
-        () => _handleTopMenu('tools'),
-      ),
-      _quickChip(
-        Platform.isIOS ? CupertinoIcons.clock_fill : Icons.history,
-        'History',
-        const Color(0xFF7C8CFF),
-        () => Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => const HistoryScreen()),
-        ),
-      ),
-      _quickChip(
-        Platform.isIOS ? CupertinoIcons.tray_fill : Icons.save,
-        'Saved',
-        const Color(0xFF69C48F),
-        () => Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => const _SavedListsScreen()),
-        ),
-      ),
-      _quickChip(
-        Platform.isIOS ? CupertinoIcons.star_fill : Icons.star,
-        'Favorites',
-        const Color(0xFFFFB36B),
-        () => _handleTopMenu('favourites'),
-      ),
-    ];
-
-    final list = SizedBox(
-      height: 44,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        children: chips,
-      ),
-    );
-
-    if (insideHeader) return list;
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 10, 16, 2),
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: list,
-    );
-  }
-
-  Future<void> _checkForAppUpdate() async {
-    Uri? primaryUri;
-    Uri? fallbackUri;
-
-    if (Platform.isAndroid) {
-      primaryUri = Uri.parse('market://details?id=$_androidPackageId');
-      fallbackUri = Uri.parse('https://play.google.com/store/apps/details?id=$_androidPackageId');
-    } else if (Platform.isIOS && _iosAppStoreId.isNotEmpty) {
-      primaryUri = Uri.parse('itms-apps://itunes.apple.com/app/id$_iosAppStoreId');
-      fallbackUri = Uri.parse('https://apps.apple.com/app/id$_iosAppStoreId');
-    }
-
-    if (primaryUri != null) {
-      try {
-        if (await launchUrl(primaryUri, mode: LaunchMode.externalApplication)) return;
-      } catch (_) {}
-    }
-
-    if (fallbackUri != null) {
-      try {
-        if (await launchUrl(fallbackUri, mode: LaunchMode.externalApplication)) return;
-      } catch (_) {}
-    }
-
-    if (!mounted) return;
-
-    final message = Platform.isIOS && _iosAppStoreId.isEmpty
-        ? 'Current version: $_appVersion\n\nAdd your App Store numeric ID to _iosAppStoreId to open update checks on iPhone.'
-        : 'Current version: $_appVersion\n\nCould not open the store right now.';
-
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Check for update'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _handleTopMenu(String value) {
     switch (value) {
       case 'account':
@@ -1131,9 +1023,6 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         break;
       case 'favourites':
         Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FavouritesScreen()));
-        break;
-      case 'update':
-        _checkForAppUpdate();
         break;
       case 'about':
         _showAboutDialogBox();
@@ -1553,11 +1442,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool useIosHeaderLayout = Platform.isIOS;
-
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(useIosHeaderLayout ? 128 : 168),
+        preferredSize: const Size.fromHeight(168),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -1571,7 +1458,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
             child: Column(
               children: [
                 SizedBox(
-                  height: useIosHeaderLayout ? 118 : 112,
+                  height: 112,
                   child: Stack(
                     children: [
                       Align(
@@ -1742,16 +1629,6 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                                   ),
                                 ),
                                 const PopupMenuItem<String>(
-                                  value: 'update',
-                                  child: Row(
-                                    children: [
-                                      Icon(CupertinoIcons.arrow_down_circle, size: 18),
-                                      SizedBox(width: 10),
-                                      Text('Check for update'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem<String>(
                                   value: 'about',
                                   child: Row(
                                     children: [
@@ -1779,8 +1656,43 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                     ],
                   ),
                 ),
-                if (!useIosHeaderLayout) _buildQuickActionsRow(insideHeader: true),
-                SizedBox(height: useIosHeaderLayout ? 6 : 4),
+                SizedBox(
+                  height: 44,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    children: [
+                      _quickChip(
+                        CupertinoIcons.wrench_fill,
+                        'Tools',
+                        const Color(0xFF5CA7FF),
+                        () => _handleTopMenu('tools'),
+                      ),
+                      _quickChip(
+                        CupertinoIcons.clock_fill,
+                        'History',
+                        const Color(0xFF7C8CFF),
+                        () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(builder: (_) => const HistoryScreen()),
+                        ),
+                      ),
+                      _quickChip(
+                        CupertinoIcons.tray_fill,
+                        'Saved',
+                        const Color(0xFF69C48F),
+                        () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(builder: (_) => const _SavedListsScreen()),
+                        ),
+                      ),
+                      _quickChip(
+                        CupertinoIcons.star_fill,
+                        'Favorites',
+                        const Color(0xFFFFB36B),
+                        () => _handleTopMenu('favourites'),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 4),
               ],
             ),
@@ -1788,9 +1700,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         ),
       ),
       body: _loading ? const Center(child: CircularProgressIndicator()) : Column(children: [
-        if (useIosHeaderLayout) _buildQuickActionsRow(insideHeader: false),
         Expanded(child: ListView(
-          padding: EdgeInsets.fromLTRB(16, useIosHeaderLayout ? 8 : 12, 16, 20),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
           children: [
           const SizedBox(height: 8),
           // Profile type dropdown
@@ -2918,26 +2829,24 @@ class _ToolsScreenState extends State<ToolsScreen> {
               onTap: () { ToolUsageService.recordUsage('pitch'); Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PitchAngleScreen())); },
             ),
           ),
-          const SizedBox(height: 12),
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              leading: Container(
-                width: 52, height: 52,
-                decoration: BoxDecoration(color: Colors.amber.shade700, borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.flashlight_on, color: Colors.white, size: 28),
+          if (!Platform.isIOS) ...[
+            const SizedBox(height: 12),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                leading: Container(
+                  width: 52, height: 52,
+                  decoration: BoxDecoration(color: Colors.amber.shade700, borderRadius: BorderRadius.circular(10)),
+                  child: const Icon(Icons.flashlight_on, color: Colors.white, size: 28),
+                ),
+                title: const Text('Torch', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                subtitle: const Text('Turn on your phone torch for working in dark roof spaces'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () { ToolUsageService.recordUsage('torch'); Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const TorchScreen())); },
               ),
-              title: const Text('Torch', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              subtitle: Text(
-                Platform.isIOS
-                    ? 'Use your iPhone torch for darker roof spaces'
-                    : 'Turn on your phone torch for working in dark roof spaces',
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () { ToolUsageService.recordUsage('torch'); Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const TorchScreen())); },
             ),
-          ),
+          ],
           const SizedBox(height: 12),
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -5126,32 +5035,15 @@ class _TorchScreenState extends State<TorchScreen> {
   Future<void> _toggleTorch() async {
     try {
       await _channel.invokeMethod('setTorch', {'on': !_torchOn});
-      if (!mounted) return;
-      setState(() {
-        _torchOn = !_torchOn;
-        _supported = true;
-      });
-    } on PlatformException catch (e) {
-      if (!mounted) return;
-      final code = e.code;
-      final message = switch (code) {
-        'NO_PERMISSION' => 'Please allow Camera access in iPhone Settings for the torch to work.',
-        'NO_TORCH' => 'This iPhone does not have a torch available.',
-        'BAD_ARGS' => 'Torch request failed because of invalid arguments.',
-        _ => e.message ?? 'Torch could not be turned on.',
-      };
-      setState(() { _supported = code != 'NO_TORCH' ? true : false; });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 3),
-      ));
-    } catch (_) {
-      if (!mounted) return;
+      setState(() { _torchOn = !_torchOn; });
+    } catch (e) {
       setState(() { _supported = false; });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Torch not available on this device'),
-        duration: Duration(seconds: 2),
-      ));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Torch not available on this device'),
+          duration: Duration(seconds: 2),
+        ));
+      }
     }
   }
 
