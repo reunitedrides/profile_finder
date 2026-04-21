@@ -1426,14 +1426,19 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                'ROOF PROFILE',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 21,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.8,
+                              const FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'ROOF PROFILE',
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.4,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 2),
