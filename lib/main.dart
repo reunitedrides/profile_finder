@@ -1012,13 +1012,13 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   Widget _buildQuickActionsRow({required bool insideHeader}) {
     final chips = [
       _quickChip(
-        Platform.isIOS ? CupertinoIcons.wrench_fill : Icons.build,
+        Icons.build,
         'Tools',
         const Color(0xFF5CA7FF),
         () => _handleTopMenu('tools'),
       ),
       _quickChip(
-        Platform.isIOS ? CupertinoIcons.clock_fill : Icons.history,
+        Icons.history,
         'History',
         const Color(0xFF7C8CFF),
         () => Navigator.of(context).push(
@@ -1026,7 +1026,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         ),
       ),
       _quickChip(
-        Platform.isIOS ? CupertinoIcons.tray_fill : Icons.save,
+        Icons.save,
         'Saved',
         const Color(0xFF69C48F),
         () => Navigator.of(context).push(
@@ -1034,7 +1034,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         ),
       ),
       _quickChip(
-        Platform.isIOS ? CupertinoIcons.star_fill : Icons.star,
+        Icons.star,
         'Favorites',
         const Color(0xFFFFB36B),
         () => _handleTopMenu('favourites'),
@@ -1557,7 +1557,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(useIosHeaderLayout ? 128 : 168),
+        preferredSize: Size.fromHeight(useIosHeaderLayout ? 152 : 168),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -1571,7 +1571,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
             child: Column(
               children: [
                 SizedBox(
-                  height: useIosHeaderLayout ? 118 : 112,
+                  height: useIosHeaderLayout ? 108 : 112,
                   child: Stack(
                     children: [
                       Align(
@@ -1779,7 +1779,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                     ],
                   ),
                 ),
-                if (!useIosHeaderLayout) _buildQuickActionsRow(insideHeader: true),
+                _buildQuickActionsRow(insideHeader: true),
                 SizedBox(height: useIosHeaderLayout ? 6 : 4),
                 const SizedBox(height: 4),
               ],
@@ -1788,9 +1788,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         ),
       ),
       body: _loading ? const Center(child: CircularProgressIndicator()) : Column(children: [
-        if (useIosHeaderLayout) _buildQuickActionsRow(insideHeader: false),
         Expanded(child: ListView(
-          padding: EdgeInsets.fromLTRB(16, useIosHeaderLayout ? 8 : 12, 16, 20),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
           children: [
           const SizedBox(height: 8),
           // Profile type dropdown
