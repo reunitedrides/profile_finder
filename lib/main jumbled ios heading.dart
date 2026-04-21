@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrientation, MethodChannel, SystemUiMode;
+import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrientation, MethodChannel, SystemUiMode, PlatformException;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -23,6 +24,8 @@ import 'firebase_options.dart';
 const String _donateUrl = 'https://ko-fi.com/weddingfund';
 const String _appVersion = '1.0.0';
 const String _contactEmail = 'marksjones73@gmail.com';
+const String _androidPackageId = 'com.marksamazingapps.profilefinder';
+const String _iosAppStoreId = ''; // Add your App Store numeric ID here when the iPhone app is live.
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -885,48 +888,161 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     ));
   }
 
-  Future<void> _openAccountFromHeader() async {
-    final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(builder: (_) => const AccountScreen()),
+  Widget _quickChip(IconData icon, String label, Color color, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: onTap,
+          child: Ink(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.14),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white.withOpacity(0.18)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.26),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, size: 12, color: Colors.white),
+                ),
+                const SizedBox(width: 7),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
-    if (result == true && mounted) setState(() {});
   }
 
-  Widget _headerCircleButton({
+  Widget _iosHeaderCircleButton({
     required String tooltip,
     required IconData icon,
     required VoidCallback onPressed,
     Color iconColor = Colors.white,
   }) {
     return Container(
-      width: 38,
-      height: 38,
+      width: 42,
+      height: 42,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.14),
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withOpacity(0.22)),
+        border: Border.all(color: Colors.white.withOpacity(0.20)),
       ),
       child: IconButton(
         tooltip: tooltip,
-        onPressed: onPressed,
         padding: EdgeInsets.zero,
+        onPressed: onPressed,
         icon: Icon(icon, size: 20, color: iconColor),
       ),
     );
   }
 
+
+  Future<void> _openAccountFromHeader() async {
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(builder: (_) => const AccountScreen()),
+    );
+    if (result == true && mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _signOutFromHeaderMenu() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Sign out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Sign out'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      await AuthService.signOut();
+      if (!mounted) return;
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Signed out'),
+          backgroundColor: Colors.blueGrey.shade700,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign out failed: $e'),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
+    }
+  }
+
+
   Widget _buildQuickActionsRow({required bool insideHeader}) {
     final chips = [
-      _quickChip(Icons.build, 'Tools', const Color(0xFF1565C0), () => _handleTopMenu('tools')),
-      _quickChip(Icons.history, 'History', const Color(0xFF283593),
-        () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HistoryScreen()))),
-      _quickChip(Icons.save, 'Saved', const Color(0xFF2E7D32),
-        () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const _SavedListsScreen()))),
-      _quickChip(Icons.star, 'Favorites', const Color(0xFFE65100), () => _handleTopMenu('favourites')),
+      _quickChip(
+        Icons.build,
+        'Tools',
+        const Color(0xFF5CA7FF),
+        () => _handleTopMenu('tools'),
+      ),
+      _quickChip(
+        Icons.history,
+        'History',
+        const Color(0xFF7C8CFF),
+        () => Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => const HistoryScreen()),
+        ),
+      ),
+      _quickChip(
+        Icons.save,
+        'Saved',
+        const Color(0xFF69C48F),
+        () => Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => const _SavedListsScreen()),
+        ),
+      ),
+      _quickChip(
+        Icons.star,
+        'Favorites',
+        const Color(0xFFFFB36B),
+        () => _handleTopMenu('favourites'),
+      ),
     ];
 
-    final row = SizedBox(
-      height: 36,
+    final list = SizedBox(
+      height: 44,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -934,44 +1050,103 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       ),
     );
 
-    if (insideHeader) return row;
+    if (insideHeader) return list;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 10, 0, 2),
-      child: row,
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 10, 16, 2),
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: list,
     );
   }
 
-  Widget _quickChip(IconData icon, String label, Color color, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.85),
-            borderRadius: BorderRadius.circular(20),
+  Future<void> _checkForAppUpdate() async {
+    Uri? primaryUri;
+    Uri? fallbackUri;
+
+    if (Platform.isAndroid) {
+      primaryUri = Uri.parse('market://details?id=$_androidPackageId');
+      fallbackUri = Uri.parse('https://play.google.com/store/apps/details?id=$_androidPackageId');
+    } else if (Platform.isIOS && _iosAppStoreId.isNotEmpty) {
+      primaryUri = Uri.parse('itms-apps://itunes.apple.com/app/id$_iosAppStoreId');
+      fallbackUri = Uri.parse('https://apps.apple.com/app/id$_iosAppStoreId');
+    }
+
+    if (primaryUri != null) {
+      try {
+        if (await launchUrl(primaryUri, mode: LaunchMode.externalApplication)) return;
+      } catch (_) {}
+    }
+
+    if (fallbackUri != null) {
+      try {
+        if (await launchUrl(fallbackUri, mode: LaunchMode.externalApplication)) return;
+      } catch (_) {}
+    }
+
+    if (!mounted) return;
+
+    final message = Platform.isIOS && _iosAppStoreId.isEmpty
+        ? 'Current version: $_appVersion\n\nAdd your App Store numeric ID to _iosAppStoreId to open update checks on iPhone.'
+        : 'Current version: $_appVersion\n\nCould not open the store right now.';
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Check for update'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Close'),
           ),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(icon, size: 13, color: Colors.white),
-            const SizedBox(width: 5),
-            Text(label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
-          ]),
-        ),
+        ],
       ),
     );
   }
 
   void _handleTopMenu(String value) {
     switch (value) {
-      case 'tools': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen())); break;
-      case 'help': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen())); break;
-      case 'favourites': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FavouritesScreen())); break;
-      case 'about': _showAboutDialogBox(); break;
-      case 'suggest': _showSuggestProfileDialog(); break;
-      case 'backup': _backupAllData(); break;
-      case 'restore': _restoreAllData(); break;
+      case 'account':
+        _openAccountFromHeader();
+        break;
+      case 'signout':
+        _signOutFromHeaderMenu();
+        break;
+      case 'tools':
+        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen()));
+        break;
+      case 'help':
+        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen()));
+        break;
+      case 'favourites':
+        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FavouritesScreen()));
+        break;
+      case 'update':
+        _checkForAppUpdate();
+        break;
+      case 'about':
+        _showAboutDialogBox();
+        break;
+      case 'suggest':
+        _showSuggestProfileDialog();
+        break;
+      case 'backup':
+        _backupAllData();
+        break;
+      case 'restore':
+        _restoreAllData();
+        break;
     }
   }
 
@@ -1378,9 +1553,11 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool useIosHeaderLayout = Platform.isIOS;
+
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(120),
+        preferredSize: Size.fromHeight(useIosHeaderLayout ? 152 : 168),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -1394,7 +1571,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
             child: Column(
               children: [
                 SizedBox(
-                  height: 108,
+                  height: useIosHeaderLayout ? 108 : 112,
                   child: Stack(
                     children: [
                       Align(
@@ -1404,17 +1581,21 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              _headerCircleButton(
+                              _iosHeaderCircleButton(
                                 tooltip: 'Donate',
-                                icon: Icons.volunteer_activism,
+                                icon: CupertinoIcons.heart_fill,
                                 onPressed: _openDonate,
                               ),
                               const SizedBox(height: 8),
-                              _headerCircleButton(
+                              _iosHeaderCircleButton(
                                 tooltip: AuthService.isLoggedIn ? 'Account' : 'Sign In',
-                                icon: AuthService.isLoggedIn ? Icons.account_circle : Icons.account_circle_outlined,
+                                icon: AuthService.isLoggedIn
+                                    ? CupertinoIcons.person_crop_circle_fill
+                                    : CupertinoIcons.person_crop_circle_badge_plus,
                                 onPressed: _openAccountFromHeader,
-                                iconColor: AuthService.isLoggedIn ? Colors.greenAccent : Colors.white,
+                                iconColor: AuthService.isLoggedIn
+                                    ? const Color(0xFF8AE06B)
+                                    : Colors.white,
                               ),
                             ],
                           ),
@@ -1431,9 +1612,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 21,
+                                  fontSize: 22,
                                   fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.8,
+                                  letterSpacing: 0.9,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -1442,7 +1623,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Color(0xFF95EA77),
-                                  fontSize: 17,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: 0.5,
                                 ),
@@ -1452,7 +1633,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                                 'Identify over 700 roof sheets\n& 200 tiles / slates',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withOpacity(0.88),
                                   fontSize: 10.5,
                                   height: 1.25,
                                   fontWeight: FontWeight.w500,
@@ -1467,26 +1648,129 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                         child: Padding(
                           padding: const EdgeInsets.only(top: 8, right: 8),
                           child: Container(
-                            width: 38,
-                            height: 38,
+                            width: 42,
+                            height: 42,
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.14),
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withOpacity(0.22)),
+                              border: Border.all(color: Colors.white.withOpacity(0.20)),
                             ),
                             child: PopupMenuButton<String>(
                               tooltip: 'Menu',
                               onSelected: _handleTopMenu,
                               padding: EdgeInsets.zero,
-                              icon: const Icon(Icons.more_horiz, color: Colors.white),
+                              icon: const Icon(CupertinoIcons.ellipsis, color: Colors.white),
                               itemBuilder: (context) => [
-                                const PopupMenuItem<String>(value: 'tools', child: Row(children: [Icon(Icons.build, size: 18), SizedBox(width: 10), Text('Tools')])),
-                                const PopupMenuItem<String>(value: 'favourites', child: Row(children: [Icon(Icons.star, size: 18, color: Colors.amber), SizedBox(width: 10), Text('Favorites')])),
-                                const PopupMenuItem<String>(value: 'help', child: Row(children: [Icon(Icons.help_outline, size: 18), SizedBox(width: 10), Text('How to measure')])),
-                                const PopupMenuItem<String>(value: 'backup', child: Row(children: [Icon(Icons.backup, size: 18), SizedBox(width: 10), Text('Backup All Data')])),
-                                const PopupMenuItem<String>(value: 'restore', child: Row(children: [Icon(Icons.restore, size: 18), SizedBox(width: 10), Text('Restore Backup')])),
-                                const PopupMenuItem<String>(value: 'about', child: Row(children: [Icon(Icons.info_outline, size: 18), SizedBox(width: 10), Text('About')])),
-                                const PopupMenuItem<String>(value: 'suggest', child: Row(children: [Icon(Icons.add_circle_outline, size: 18), SizedBox(width: 10), Text('Suggest / Add Profile')])),
+                                PopupMenuItem<String>(
+                                  value: 'account',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        AuthService.isLoggedIn
+                                            ? CupertinoIcons.person_crop_circle
+                                            : CupertinoIcons.person_crop_circle_badge_plus,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(AuthService.isLoggedIn ? 'Account' : 'Sign in'),
+                                    ],
+                                  ),
+                                ),
+                                if (AuthService.isLoggedIn)
+                                  const PopupMenuItem<String>(
+                                    value: 'signout',
+                                    child: Row(
+                                      children: [
+                                        Icon(CupertinoIcons.square_arrow_right, size: 18, color: Colors.red),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'Sign out',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                const PopupMenuDivider(),
+                                const PopupMenuItem<String>(
+                                  value: 'tools',
+                                  child: Row(
+                                    children: [
+                                      Icon(CupertinoIcons.wrench_fill, size: 18),
+                                      SizedBox(width: 10),
+                                      Text('Tools'),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'favourites',
+                                  child: Row(
+                                    children: [
+                                      Icon(CupertinoIcons.star_fill, size: 18),
+                                      SizedBox(width: 10),
+                                      Text('Favorites'),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'help',
+                                  child: Row(
+                                    children: [
+                                      Icon(CupertinoIcons.question_circle, size: 18),
+                                      SizedBox(width: 10),
+                                      Text('How to measure'),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'backup',
+                                  child: Row(
+                                    children: [
+                                      Icon(CupertinoIcons.cloud_upload, size: 18),
+                                      SizedBox(width: 10),
+                                      Text('Backup All Data'),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'restore',
+                                  child: Row(
+                                    children: [
+                                      Icon(CupertinoIcons.arrow_down_doc, size: 18),
+                                      SizedBox(width: 10),
+                                      Text('Restore Backup'),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'update',
+                                  child: Row(
+                                    children: [
+                                      Icon(CupertinoIcons.arrow_down_circle, size: 18),
+                                      SizedBox(width: 10),
+                                      Text('Check for update'),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'about',
+                                  child: Row(
+                                    children: [
+                                      Icon(CupertinoIcons.info_circle, size: 18),
+                                      SizedBox(width: 10),
+                                      Text('About'),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'suggest',
+                                  child: Row(
+                                    children: [
+                                      Icon(CupertinoIcons.add_circled, size: 18),
+                                      SizedBox(width: 10),
+                                      Text('Suggest / Add Profile'),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -1495,14 +1779,15 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                     ],
                   ),
                 ),
-
+                _buildQuickActionsRow(insideHeader: true),
+                SizedBox(height: useIosHeaderLayout ? 6 : 4),
+                const SizedBox(height: 4),
               ],
             ),
           ),
         ),
       ),
       body: _loading ? const Center(child: CircularProgressIndicator()) : Column(children: [
-        _buildQuickActionsRow(insideHeader: false),
         Expanded(child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
           children: [
@@ -3451,7 +3736,7 @@ class _SavedListsScreenState extends State<_SavedListsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Saved Lists (${_lists.length})'),
+        title: Text('Saved (${_lists.length})'),
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
       ),
@@ -3753,7 +4038,7 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
               child: Row(children: [
                 const Icon(Icons.folder_open, color: Colors.green),
                 const SizedBox(width: 8),
-                const Expanded(child: Text('Saved Lists', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+                const Expanded(child: Text('Saved', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                 IconButton(onPressed: () => Navigator.pop(ctx), icon: const Icon(Icons.close)),
               ]),
             ),
@@ -4840,15 +5125,32 @@ class _TorchScreenState extends State<TorchScreen> {
   Future<void> _toggleTorch() async {
     try {
       await _channel.invokeMethod('setTorch', {'on': !_torchOn});
-      setState(() { _torchOn = !_torchOn; });
-    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _torchOn = !_torchOn;
+        _supported = true;
+      });
+    } on PlatformException catch (e) {
+      if (!mounted) return;
+      final code = e.code;
+      final message = switch (code) {
+        'NO_PERMISSION' => 'Please allow Camera access in iPhone Settings for the torch to work.',
+        'NO_TORCH' => 'This iPhone does not have a torch available.',
+        'BAD_ARGS' => 'Torch request failed because of invalid arguments.',
+        _ => e.message ?? 'Torch could not be turned on.',
+      };
+      setState(() { _supported = code != 'NO_TORCH' ? true : false; });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 3),
+      ));
+    } catch (_) {
+      if (!mounted) return;
       setState(() { _supported = false; });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Torch not available on this device'),
-          duration: Duration(seconds: 2),
-        ));
-      }
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Torch not available on this device'),
+        duration: Duration(seconds: 2),
+      ));
     }
   }
 
