@@ -23,6 +23,8 @@ dependencies:
   pdf: ^3.10.8
   printing: ^5.12.0
   firebase_messaging: ^15.0.0
+  audioplayers: ^6.6.0
+  vibration: ^3.1.8
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +39,7 @@ flutter:
     - assets/data/cement_profiles.json
     - assets/data/tile_profiles_uk_phase2.json
     - assets/images/
+    - assets/audio/
 
 flutter_launcher_icons:
   android: true
