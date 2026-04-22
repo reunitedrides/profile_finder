@@ -822,20 +822,22 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     }
   }
 
-  Future<void> _playHubScrollFeedback() async {
+  Future<void> _playTapClick() async {
     try {
-      await _hubClickPool?.start(volume: 0.20);
-    } catch (_) {
-      try {
-        await SystemSound.play(SystemSoundType.click);
-      } catch (_) {}
-    }
+      await _hubClickPool?.start(volume: 0.28);
+      return;
+    } catch (_) {}
+    try {
+      await SystemSound.play(SystemSoundType.click);
+    } catch (_) {}
+  }
 
+  Future<void> _playHubScrollFeedback() async {
     try {
       final hasVibrator = await Vibration.hasVibrator() ?? false;
       if (hasVibrator) {
         final hasAmplitude = await Vibration.hasAmplitudeControl() ?? false;
-        await Vibration.vibrate(duration: 12, amplitude: hasAmplitude ? 40 : -1);
+        await Vibration.vibrate(duration: 10, amplitude: hasAmplitude ? 35 : -1);
         return;
       }
     } catch (_) {}
@@ -1010,49 +1012,77 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         color: Colors.blue.shade700,
         title: '1. Profile Finder',
         subtitle: 'Open the original profile finder screen and search by name or measurements.',
-        onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProfileSearchScreen())),
+        onTap: () async {
+          await _playTapClick();
+          if (!mounted) return;
+          await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProfileSearchScreen()));
+        },
       ),
       _HomeHubEntry(
         icon: Icons.architecture,
         color: Colors.blue.shade700,
         title: '2. Roof Pitch Finder',
         subtitle: 'Use your phone to measure roof pitch in degrees and ratio.',
-        onTap: () => _openTool('pitch'),
+        onTap: () async {
+          await _playTapClick();
+          if (!mounted) return;
+          await _openTool('pitch');
+        },
       ),
       _HomeHubEntry(
         icon: Icons.list_alt,
         color: Colors.green.shade700,
         title: '3. Material List',
         subtitle: 'Build a material takeoff list for any roofing job.',
-        onTap: () => _openTool('material'),
+        onTap: () async {
+          await _playTapClick();
+          if (!mounted) return;
+          await _openTool('material');
+        },
       ),
       _HomeHubEntry(
         icon: Icons.straighten,
         color: Colors.brown.shade600,
         title: '4. Rafter Calculator & Design',
         subtitle: 'Calculate rafter lengths, ridge height and cut details.',
-        onTap: () => _openTool('rafter'),
+        onTap: () async {
+          await _playTapClick();
+          if (!mounted) return;
+          await _openTool('rafter');
+        },
       ),
       _HomeHubEntry(
         icon: Icons.calculate,
         color: Colors.teal.shade700,
         title: '5. Roof Area Calculator',
         subtitle: 'Calculate roof area from length, width and pitch.',
-        onTap: () => _openTool('area'),
+        onTap: () async {
+          await _playTapClick();
+          if (!mounted) return;
+          await _openTool('area');
+        },
       ),
       _HomeHubEntry(
         icon: Icons.crop_free,
         color: Colors.indigo.shade700,
         title: '6. Perimeter Area Tool',
         subtitle: 'Sketch a building outline and work out the area.',
-        onTap: () => _openTool('perimeter'),
+        onTap: () async {
+          await _playTapClick();
+          if (!mounted) return;
+          await _openTool('perimeter');
+        },
       ),
       _HomeHubEntry(
         icon: Icons.flashlight_on,
         color: Colors.amber.shade700,
         title: '7. Torch',
         subtitle: 'Use your phone torch in dark roof spaces.',
-        onTap: () => _openTool('torch'),
+        onTap: () async {
+          await _playTapClick();
+          if (!mounted) return;
+          await _openTool('torch');
+        },
       ),
     ];
   }
@@ -1083,7 +1113,11 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: GestureDetector(
-        onTap: onTap,
+        onTap: () async {
+          await _playTapClick();
+          if (!mounted) return;
+          onTap();
+        },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
