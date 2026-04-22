@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrientation, MethodChannel, SystemUiMode, HapticFeedback, SystemSound, SystemSoundType;
+import 'package:audioplayers/audioplayers.dart';
+import 'package:vibration/vibration.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -788,6 +790,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   final ScrollController _homeHubScrollController = ScrollController();
   DateTime? _lastHubHapticAt;
   double? _lastHubFeedbackOffset;
+  AudioPool? _hubClickPool;
 
   @override
   void initState() {
@@ -795,6 +798,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     _loadProfilesForCategory(_selectedCategory);
     _profileSearchController.addListener(_updateNameSuggestions);
     _loadMostUsed();
+    unawaited(_prepareHubFeedback());
     _authSub = AuthService.authStateChanges.listen((_) {
       if (mounted) setState(() {});
     });
@@ -803,6 +807,42 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   Future<void> _loadMostUsed() async {
     final tools = await ToolUsageService.getMostUsed();
     if (mounted) setState(() { _mostUsedTools = tools; });
+  }
+
+  Future<void> _prepareHubFeedback() async {
+    try {
+      _hubClickPool = await AudioPool.createFromAsset(
+        path: 'audio/scroll_tick.wav',
+        maxPlayers: 2,
+        minPlayers: 1,
+        playerMode: PlayerMode.lowLatency,
+      );
+    } catch (_) {
+      _hubClickPool = null;
+    }
+  }
+
+  Future<void> _playHubScrollFeedback() async {
+    try {
+      await _hubClickPool?.start(volume: 0.20);
+    } catch (_) {
+      try {
+        await SystemSound.play(SystemSoundType.click);
+      } catch (_) {}
+    }
+
+    try {
+      final hasVibrator = await Vibration.hasVibrator() ?? false;
+      if (hasVibrator) {
+        final hasAmplitude = await Vibration.hasAmplitudeControl() ?? false;
+        await Vibration.vibrate(duration: 12, amplitude: hasAmplitude ? 40 : -1);
+        return;
+      }
+    } catch (_) {}
+
+    try {
+      HapticFeedback.selectionClick();
+    } catch (_) {}
   }
 
   Future<void> _openTool(String toolId) async {
@@ -834,6 +874,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     _tileGaugeController.dispose(); _tileMinPitchController.dispose();
     _tileCoverageController.dispose();
     _homeHubScrollController.dispose();
+    unawaited(_hubClickPool?.dispose() ?? Future<void>.value());
     super.dispose();
   }
 
@@ -1480,15 +1521,14 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     }
 
     final distance = (pixels - _lastHubFeedbackOffset!).abs();
-    if (distance < 42) return;
-    if (_lastHubHapticAt != null && now.difference(_lastHubHapticAt!) < const Duration(milliseconds: 90)) {
+    if (distance < 14) return;
+    if (_lastHubHapticAt != null && now.difference(_lastHubHapticAt!) < const Duration(milliseconds: 85)) {
       return;
     }
 
     _lastHubFeedbackOffset = pixels;
     _lastHubHapticAt = now;
-    HapticFeedback.selectionClick();
-    unawaited(SystemSound.play(SystemSoundType.click));
+    unawaited(_playHubScrollFeedback());
   }
 
   Widget _buildFinderFormBody() {
@@ -1615,8 +1655,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       child: ListView.builder(
         controller: _homeHubScrollController,
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+        itemCount: items.length,
         itemBuilder: (context, index) {
-          final item = items[index % items.length];
+          final item = items[index];
           return _buildHomeHubTile(item);
         },
       ),
@@ -3631,6 +3672,38 @@ class _SavedListsScreenState extends State<_SavedListsScreen> {
     if (mounted) setState(() { _lists = lists; _loading = false; });
   }
 
+  Future<void> _shareSavedList(Map<String, dynamic> item) async {
+    final name = (item['name'] as String?)?.trim().isNotEmpty == true ? item['name'] as String : 'Saved Material List';
+    await Share.share(_savedMaterialListToText(item), subject: name);
+  }
+
+  Future<void> _openSavedList(Map<String, dynamic> item) async {
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => _SavedMaterialListDetailScreen(savedList: item),
+    ));
+    _load();
+  }
+
+  Future<void> _deleteSavedList(int index, String name) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (d) => AlertDialog(
+        title: const Text('Delete List'),
+        content: Text('Delete "{name}"?'.replaceFirst('{name}', name)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(d, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      await MaterialListService.delete(index);
+      if (!mounted) return;
+      setState(() { _lists.removeAt(index); });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Saved list deleted')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -3645,7 +3718,7 @@ class _SavedListsScreenState extends State<_SavedListsScreen> {
           ? const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
               Icon(Icons.folder_open, size: 64, color: Colors.grey),
               SizedBox(height: 12),
-              Text('No saved lists yet.\nSave a material list using the \u22ee menu.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+              Text('No saved lists yet.\nSave a material list using the ⋮ menu.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
             ]))
           : ListView.separated(
               padding: const EdgeInsets.all(12),
@@ -3659,6 +3732,7 @@ class _SavedListsScreenState extends State<_SavedListsScreen> {
                 DateTime? dt; try { dt = DateTime.parse(savedAt); } catch (_) {}
                 final dateStr = dt != null ? '${dt.day.toString().padLeft(2,'0')}/${dt.month.toString().padLeft(2,'0')}/${dt.year}' : '';
                 return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   leading: Container(
                     width: 44, height: 44,
                     decoration: BoxDecoration(
@@ -3669,28 +3743,192 @@ class _SavedListsScreenState extends State<_SavedListsScreen> {
                       color: type == 'domestic' ? Colors.orange.shade700 : Colors.green.shade700,
                       size: 22)),
                   title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text('${type == 'domestic' ? 'Domestic' : 'Industrial'} • $dateStr',
+                  subtitle: Text('${type == 'domestic' ? 'Domestic' : 'Industrial'}${dateStr.isNotEmpty ? ' • $dateStr' : ''}',
                     style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                    onPressed: () async {
-                      final confirm = await showDialog<bool>(context: context, builder: (d) => AlertDialog(
-                        title: const Text('Delete List'),
-                        content: Text('Delete "$name"?'),
-                        actions: [
-                          TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Cancel')),
-                          TextButton(onPressed: () => Navigator.pop(d, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
-                        ],
-                      ));
-                      if (confirm == true) {
-                        await MaterialListService.delete(index);
-                        setState(() { _lists.removeAt(index); });
-                      }
-                    },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        tooltip: 'Share',
+                        icon: const Icon(Icons.share_outlined, size: 20),
+                        onPressed: () => _shareSavedList(item),
+                      ),
+                      IconButton(
+                        tooltip: 'Delete',
+                        icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                        onPressed: () => _deleteSavedList(index, name),
+                      ),
+                      const Icon(Icons.arrow_forward_ios, size: 16),
+                    ],
                   ),
+                  onTap: () => _openSavedList(item),
                 );
               },
             ),
+    );
+  }
+}
+
+String _savedMaterialListToText(Map<String, dynamic> data) {
+  final sb = StringBuffer();
+  final type = (data['type'] as String? ?? 'industrial').toLowerCase();
+  final name = (data['name'] as String?)?.trim();
+  final buildingName = (data['buildingName'] as String?)?.trim();
+  final savedAt = data['savedAt'] as String? ?? '';
+  DateTime? dt;
+  try { dt = DateTime.parse(savedAt); } catch (_) {}
+  final dateStr = dt != null
+      ? '${dt.day.toString().padLeft(2,'0')}/${dt.month.toString().padLeft(2,'0')}/${dt.year}'
+      : '';
+
+  void writeSection(String title, List<String> lines) {
+    final nonEmpty = lines.where((e) => e.trim().isNotEmpty).toList();
+    if (nonEmpty.isEmpty) return;
+    sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    sb.writeln(title);
+    sb.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    for (final line in nonEmpty) {
+      sb.writeln(line);
+    }
+    sb.writeln('');
+  }
+
+  if (type == 'domestic') {
+    sb.writeln('╔══════════════════════════╗');
+    sb.writeln('║  🏠 DOMESTIC ROOF LIST   ║');
+    sb.writeln('╚══════════════════════════╝');
+  } else {
+    sb.writeln('╔══════════════════════════╗');
+    sb.writeln('║  🏭 INDUSTRIAL ROOF LIST ║');
+    sb.writeln('╚══════════════════════════╝');
+  }
+  if (name != null && name.isNotEmpty) sb.writeln('📝 Name: $name');
+  if (buildingName != null && buildingName.isNotEmpty) sb.writeln('📍 Job:  $buildingName');
+  if (dateStr.isNotEmpty) sb.writeln('📅 Date: $dateStr');
+  sb.writeln('');
+
+  if (type == 'domestic') {
+    final tiles = (data['tiles'] as List?)?.cast<Map>() ?? const [];
+    writeSection('🏠 TILES / SLATES', [
+      for (final i in tiles)
+        if ((i['qty'] ?? '').toString().isNotEmpty || (i['material'] ?? '').toString().isNotEmpty)
+          '• ${((i['material'] ?? '').toString().isNotEmpty ? i['material'] : 'Tile')}${(i['qty'] ?? '').toString().isNotEmpty ? ' — Qty: ${i['qty']}' : ''}${(i['size'] ?? '').toString().isNotEmpty ? ' | Size: ${i['size']}' : ''}',
+    ]);
+    writeSection('🛡️ UNDERLAY / WATERPROOFING', [
+      if ((data['epdm'] ?? '').toString().isNotEmpty) '• EPDM: ${data['epdm']} m²',
+      if ((data['felt'] ?? '').toString().isNotEmpty) '• Felt: ${data['felt']} rolls',
+      if ((data['adhesive'] ?? '').toString().isNotEmpty) '• Adhesive: ${data['adhesive']} litres',
+      if ((data['primer'] ?? '').toString().isNotEmpty) '• Primer: ${data['primer']} litres',
+    ]);
+    writeSection('🪵 BATTENS', [
+      if ((data['battens'] ?? '').toString().isNotEmpty) '• Battens: ${data['battens']} m',
+      if ((data['battenSpacing'] ?? '').toString().isNotEmpty) '• Spacing: ${data['battenSpacing']} mm',
+    ]);
+    writeSection('🔩 FIXINGS', [
+      if ((data['nails'] ?? '').toString().isNotEmpty) '• Nails: ${data['nails']}',
+      if ((data['screws'] ?? '').toString().isNotEmpty) '• Screws: ${data['screws']}',
+    ]);
+    final flashings = (data['flashings'] as List?)?.cast<Map>() ?? const [];
+    writeSection('⚡ FLASHINGS', [
+      for (final i in flashings)
+        if ((i['type'] ?? '').toString().isNotEmpty || (i['qty'] ?? '').toString().isNotEmpty)
+          '• ${((i['type'] ?? '').toString().isNotEmpty ? i['type'] : 'Flashing')}${(i['qty'] ?? '').toString().isNotEmpty ? ' — Qty: ${i['qty']}' : ''}${(i['size'] ?? '').toString().isNotEmpty ? ' | Size: ${i['size']}' : ''}${(i['colour'] ?? '').toString().isNotEmpty ? ' | ${i['colour']}' : ''}${(i['material'] ?? '').toString().isNotEmpty ? ' | ${i['material']}' : ''}',
+    ]);
+    final ridges = (data['ridges'] as List?)?.cast<Map>() ?? const [];
+    final hips = (data['hips'] as List?)?.cast<Map>() ?? const [];
+    final valleys = (data['valleys'] as List?)?.cast<Map>() ?? const [];
+    writeSection('🔺 RIDGE / HIP / VALLEY', [
+      for (final i in ridges)
+        if ((i['qty'] ?? '').toString().isNotEmpty) '• Ridge — Qty: ${i['qty']}${(i['size'] ?? '').toString().isNotEmpty ? ' | ${i['size']}' : ''}',
+      for (final i in hips)
+        if ((i['qty'] ?? '').toString().isNotEmpty) '• Hip — Qty: ${i['qty']}${(i['size'] ?? '').toString().isNotEmpty ? ' | ${i['size']}' : ''}',
+      for (final i in valleys)
+        if ((i['length'] ?? '').toString().isNotEmpty) '• Valley — ${i['length']}m${(i['type'] ?? '').toString().isNotEmpty ? ' | ${i['type']}' : ''}${(i['size'] ?? '').toString().isNotEmpty ? ' | ${i['size']}' : ''}',
+    ]);
+    writeSection('🧰 EXTRAS / SAFETY', [
+      if ((data['vents'] ?? '').toString().isNotEmpty) '• Vents: ${data['vents']}${(data['ventsType'] ?? '').toString().isNotEmpty ? ' | ${data['ventsType']}' : ''}',
+      if ((data['rooflights'] ?? '').toString().isNotEmpty) '• Rooflights: ${data['rooflights']}${(data['rooflightsSize'] ?? '').toString().isNotEmpty ? ' | ${data['rooflightsSize']}' : ''}',
+      if ((data['guttering'] ?? '').toString().isNotEmpty) '• Guttering: ${data['guttering']} m',
+      if ((data['downpipes'] ?? '').toString().isNotEmpty) '• Downpipes: ${data['downpipes']}',
+      if ((data['scaffolding'] ?? '').toString().isNotEmpty) '• Scaffolding: ${data['scaffolding']}',
+      if ((data['netting'] ?? '').toString().isNotEmpty) '• Netting: ${data['netting']}',
+      if ((data['plant'] ?? '').toString().isNotEmpty) '• Plant: ${data['plant']}',
+    ]);
+  } else {
+    final sheets = (data['sheets'] as List?)?.cast<Map>() ?? const [];
+    writeSection('📦 ROOFING MATERIALS', [
+      for (final i in sheets)
+        if ((i['qty'] ?? '').toString().isNotEmpty || (i['length'] ?? '').toString().isNotEmpty || (i['material'] ?? '').toString().isNotEmpty)
+          '• ${((i['material'] ?? '').toString().isNotEmpty ? i['material'] : 'Sheet')}${(i['qty'] ?? '').toString().isNotEmpty ? ' — Qty: ${i['qty']}' : ''}${(i['length'] ?? '').toString().isNotEmpty ? ' | Length: ${i['length']}m' : ''}',
+      if ((data['insulation'] ?? '').toString().isNotEmpty) '• Insulation: ${data['insulation']} m²',
+      if ((data['felt'] ?? '').toString().isNotEmpty) '• Felt / Underlay: ${data['felt']} rolls',
+      if ((data['battens'] ?? '').toString().isNotEmpty) '• Battens: ${data['battens']} m',
+      if ((data['spacingBars'] ?? '').toString().isNotEmpty) '• Spacing Bars: ${data['spacingBars']}',
+    ]);
+    final fixings = (data['fixings'] as List?)?.cast<Map>() ?? const [];
+    writeSection('🔩 FIXINGS', [
+      for (final i in fixings)
+        if ((i['head'] ?? '').toString().isNotEmpty || (i['qty'] ?? '').toString().isNotEmpty)
+          '• ${((i['head'] ?? '').toString().isNotEmpty ? i['head'] : 'Fixing')}${(i['length'] ?? '').toString().isNotEmpty ? ' ${i['length']}mm' : ''}${(i['washer'] ?? '').toString().isNotEmpty ? ' | Washer: ${i['washer']}' : ''}${(i['qty'] ?? '').toString().isNotEmpty ? ' | Qty: ${i['qty']}' : ''}',
+      if ((data['rafterFixings'] ?? '').toString().isNotEmpty) '• Rafter Fixings: ${data['rafterFixings']}',
+    ]);
+    final flashings = (data['flashings'] as List?)?.cast<Map>() ?? const [];
+    writeSection('⚡ FLASHINGS', [
+      for (final i in flashings)
+        if ((i['type'] ?? '').toString().isNotEmpty || (i['qty'] ?? '').toString().isNotEmpty)
+          '• ${((i['type'] ?? '').toString().isNotEmpty ? i['type'] : 'Flashing')}${(i['qty'] ?? '').toString().isNotEmpty ? ' — Qty: ${i['qty']}' : ''}${(i['colour'] ?? '').toString().isNotEmpty ? ' | ${i['colour']}' : ''}${(i['material'] ?? '').toString().isNotEmpty ? ' | ${i['material']}' : ''}',
+    ]);
+    writeSection('🧰 EXTRAS', [
+      if ((data['sealants'] ?? '').toString().isNotEmpty) '• Sealants: ${data['sealants']} tubes',
+      if ((data['fillerBlocks'] ?? '').toString().isNotEmpty) '• Filler Blocks: ${data['fillerBlocks']}',
+      if ((data['vents'] ?? '').toString().isNotEmpty) '• Vents: ${data['vents']}',
+      if ((data['guttering'] ?? '').toString().isNotEmpty) '• Guttering: ${data['guttering']} m',
+      if ((data['downpipes'] ?? '').toString().isNotEmpty) '• Downpipes: ${data['downpipes']}',
+    ]);
+  }
+
+  if ((data['notes'] ?? '').toString().trim().isNotEmpty) {
+    writeSection('📝 NOTES', [data['notes'].toString()]);
+  }
+
+  sb.writeln('──────────────────────────');
+  sb.writeln('Generated by Roof Profile Finder');
+  return sb.toString();
+}
+
+class _SavedMaterialListDetailScreen extends StatelessWidget {
+  final Map<String, dynamic> savedList;
+  const _SavedMaterialListDetailScreen({required this.savedList});
+
+  @override
+  Widget build(BuildContext context) {
+    final name = (savedList['name'] as String?)?.trim().isNotEmpty == true
+        ? savedList['name'] as String
+        : 'Saved Material List';
+    final text = _savedMaterialListToText(savedList);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(name),
+        backgroundColor: Colors.green.shade700,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            tooltip: 'Share',
+            icon: const Icon(Icons.share_outlined),
+            onPressed: () => Share.share(text, subject: name),
+          ),
+        ],
+      ),
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          child: SelectableText(
+            text,
+            style: const TextStyle(fontSize: 14, height: 1.45),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -3905,6 +4143,7 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
     ));
     if (confirm != true) return;
     final data = _collectData();
+    data['type'] = 'industrial';
     data['name'] = nameController.text.trim().isNotEmpty ? nameController.text.trim() : autoName;
     await MaterialListService.save(data);
     if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -4603,6 +4842,37 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
   void shareList() => _shareList();
   void clearAll() => _clearAll();
 
+  Map<String, dynamic> _collectData() {
+    return {
+      'savedAt': DateTime.now().toIso8601String(),
+      'type': 'domestic',
+      'buildingName': _buildingController.text,
+      'notes': _notesController.text,
+      'epdm': _epdmController.text,
+      'felt': _feltController.text,
+      'adhesive': _adhesiveController.text,
+      'primer': _primerController.text,
+      'battens': _battensController.text,
+      'battenSpacing': _battenSpacingController.text,
+      'nails': _nailsController.text,
+      'screws': _screwsController.text,
+      'vents': _ventsController.text,
+      'ventsType': _ventsTypeController.text,
+      'rooflights': _rooflightsController.text,
+      'rooflightsSize': _rooflightsSizeController.text,
+      'guttering': _gutteringController.text,
+      'downpipes': _downpipesController.text,
+      'scaffolding': _scaffoldingController.text,
+      'netting': _nettingController.text,
+      'plant': _plantController.text,
+      'tiles': _tileItems.map((i) => {'qty': i.qtyController.text, 'size': i.sizeController.text, 'material': i.materialController.text}).toList(),
+      'flashings': _flashingItems.map((i) => {'type': i.typeController.text, 'qty': i.qtyController.text, 'colour': i.colourController.text, 'material': i.materialController.text, 'size': i.sizeController.text}).toList(),
+      'ridges': _ridgeItems.map((i) => {'qty': i.qtyController.text, 'size': i.sizeController.text}).toList(),
+      'hips': _hipItems.map((i) => {'qty': i.qtyController.text, 'size': i.sizeController.text}).toList(),
+      'valleys': _valleyItems.map((i) => {'length': i.lengthController.text, 'type': i.typeController.text, 'size': i.sizeController.text}).toList(),
+    };
+  }
+
   Future<void> _saveList() async {
     final autoName = _buildingController.text.trim().isNotEmpty
       ? _buildingController.text.trim()
@@ -4625,12 +4895,8 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
       ],
     ));
     if (confirm != true) return;
-    final data = {
-      'savedAt': DateTime.now().toIso8601String(),
-      'type': 'domestic',
-      'name': nameController.text.trim().isNotEmpty ? nameController.text.trim() : autoName,
-      'buildingName': _buildingController.text,
-    };
+    final data = _collectData();
+    data['name'] = nameController.text.trim().isNotEmpty ? nameController.text.trim() : autoName;
     await MaterialListService.save(data);
     if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Saved: ${data['name']}'),
