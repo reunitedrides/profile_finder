@@ -1134,8 +1134,27 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     );
   }
 
+  Future<void> _goHomeHub() async {
+    if (widget.homeHubMode) {
+      if (_homeHubScrollController.hasClients) {
+        await _homeHubScrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
+      }
+      return;
+    }
+    if (!mounted) return;
+    await Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const ProfileSearchScreen(homeHubMode: true)),
+      (route) => false,
+    );
+  }
+
   void _handleTopMenu(String value) {
     switch (value) {
+      case 'home': unawaited(_goHomeHub()); break;
       case 'tools': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen())); break;
       case 'help': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen())); break;
       case 'favourites': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FavouritesScreen())); break;
@@ -1775,14 +1794,18 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Text(
-                                'Identify over 720 roof sheets\nand over 200 roof tiles / slates',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.92),
-                                  fontSize: 10.5,
-                                  height: 1.25,
-                                  fontWeight: FontWeight.w500,
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'Identify hundreds of roof sheets, tiles and slates',
+                                  maxLines: 1,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.92),
+                                    fontSize: 10.2,
+                                    height: 1.2,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
                             ],
@@ -1807,6 +1830,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                               padding: EdgeInsets.zero,
                               icon: const Icon(Icons.more_horiz, color: Colors.white),
                               itemBuilder: (context) => [
+                                const PopupMenuItem<String>(value: 'home', child: Row(children: [Icon(Icons.home_outlined, size: 18), SizedBox(width: 10), Text('Home')])),
                                 const PopupMenuItem<String>(value: 'tools', child: Row(children: [Icon(Icons.build, size: 18), SizedBox(width: 10), Text('Tools')])),
                                 const PopupMenuItem<String>(value: 'favourites', child: Row(children: [Icon(Icons.star, size: 18, color: Colors.amber), SizedBox(width: 10), Text('Favorites')])),
                                 const PopupMenuItem<String>(value: 'help', child: Row(children: [Icon(Icons.help_outline, size: 18), SizedBox(width: 10), Text('How to measure')])),
