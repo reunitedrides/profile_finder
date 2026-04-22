@@ -1719,6 +1719,40 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.homeHubMode) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Profile Finder'),
+          backgroundColor: Colors.blue.shade700,
+          foregroundColor: Colors.white,
+          actions: [
+            IconButton(
+              tooltip: AuthService.isLoggedIn ? 'Account' : 'Sign In',
+              icon: Icon(
+                AuthService.isLoggedIn ? Icons.account_circle : Icons.account_circle_outlined,
+                color: AuthService.isLoggedIn ? Colors.greenAccent : Colors.white,
+              ),
+              onPressed: _openAccountFromHeader,
+            ),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert, color: Colors.white),
+              onSelected: _handleTopMenu,
+              itemBuilder: (context) => [
+                const PopupMenuItem<String>(value: 'tools', child: Row(children: [Icon(Icons.build, size: 18), SizedBox(width: 10), Text('Tools')])),
+                const PopupMenuItem<String>(value: 'favourites', child: Row(children: [Icon(Icons.star, size: 18, color: Colors.amber), SizedBox(width: 10), Text('Favorites')])),
+                const PopupMenuItem<String>(value: 'help', child: Row(children: [Icon(Icons.help_outline, size: 18), SizedBox(width: 10), Text('How to measure')])),
+                const PopupMenuItem<String>(value: 'backup', child: Row(children: [Icon(Icons.backup, size: 18), SizedBox(width: 10), Text('Backup All Data')])),
+                const PopupMenuItem<String>(value: 'restore', child: Row(children: [Icon(Icons.restore, size: 18), SizedBox(width: 10), Text('Restore Backup')])),
+                const PopupMenuItem<String>(value: 'about', child: Row(children: [Icon(Icons.info_outline, size: 18), SizedBox(width: 10), Text('About')])),
+                const PopupMenuItem<String>(value: 'suggest', child: Row(children: [Icon(Icons.add_circle_outline, size: 18), SizedBox(width: 10), Text('Suggest / Add Profile')])),
+              ],
+            ),
+          ],
+        ),
+        body: _buildFinderFormBody(),
+      );
+    }
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(120),
@@ -1855,7 +1889,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         children: [
           _buildQuickActionsRow(insideHeader: false),
           Expanded(
-            child: widget.homeHubMode ? _buildHomeHubBody() : _buildFinderFormBody(),
+            child: _buildHomeHubBody(),
           ),
         ],
       ),
@@ -3623,10 +3657,6 @@ class _MaterialListScreenState2 extends State<MaterialListScreen> with SingleTic
         else _domesticKey.currentState?.saveList();
         Future.delayed(const Duration(milliseconds: 800), _loadCount);
         break;
-      case 'pdf':
-        if (isIndustrial) _industrialKey.currentState?.exportPdf();
-        else _domesticKey.currentState?.exportPdf();
-        break;
       case 'share':
         if (isIndustrial) _industrialKey.currentState?.shareList();
         else _domesticKey.currentState?.shareList();
@@ -3684,7 +3714,6 @@ class _MaterialListScreenState2 extends State<MaterialListScreen> with SingleTic
             onSelected: _handleMenu,
             itemBuilder: (ctx) => [
               const PopupMenuItem(value: 'save', child: Row(children: [Icon(Icons.save, size: 18), SizedBox(width: 10), Text('Save List')])),
-              const PopupMenuItem(value: 'pdf', child: Row(children: [Icon(Icons.picture_as_pdf, size: 18, color: Colors.red), SizedBox(width: 10), Text('Export PDF', style: TextStyle(color: Colors.red))])),
               const PopupMenuItem(value: 'share', child: Row(children: [Icon(Icons.share, size: 18), SizedBox(width: 10), Text('Share')])),
               const PopupMenuItem(value: 'clear', child: Row(children: [Icon(Icons.delete_outline, size: 18, color: Colors.red), SizedBox(width: 10), Text('Clear All', style: TextStyle(color: Colors.red))])),
             ],
