@@ -36,6 +36,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await FCMService.init();
   final prefs = await SharedPreferences.getInstance();
   final bool seenWelcome = prefs.getBool('seen_welcome') ?? false;
   runApp(RoofProfileFinderApp(showWelcome: !seenWelcome));
@@ -453,6 +454,7 @@ class AuthService {
     await cred.user?.updateDisplayName(name);
     // Fire and forget - don't block on Firestore write
     unawaited(_saveUserProfile(cred.user!, name, email));
+    unawaited(FCMService.onLogin());
     return cred;
   }
 
@@ -478,6 +480,7 @@ class AuthService {
     final cred = await _auth.signInWithCredential(credential);
     // Fire and forget - don't block on Firestore write
     unawaited(_saveUserProfile(cred.user!, cred.user!.displayName ?? '', cred.user!.email ?? ''));
+    unawaited(FCMService.onLogin());
     return cred;
   }
 
@@ -523,6 +526,64 @@ class AuthService {
       try { results.add(HistoryEntry.fromJson(doc.data())); } catch (_) {}
     }
     return results;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FCM Service — push notifications
+// ═══════════════════════════════════════════════════════════════
+
+class FCMService {
+  static Future<void> init() async {
+    final messaging = FirebaseMessaging.instance;
+
+    // Request permission (iOS prompts user, Android 13+ prompts user)
+    final settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      // Get the FCM token and save to Firestore if logged in
+      final token = await messaging.getToken();
+      if (token != null) await _saveToken(token);
+
+      // Refresh token if it changes
+      messaging.onTokenRefresh.listen(_saveToken);
+    }
+
+    // Show notification when app is in foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      final notification = message.notification;
+      if (notification != null) {
+        _pendingMessage = '${notification.title}: ${notification.body}';
+      }
+    });
+  }
+
+  // Temporarily holds a message to show via snackbar
+  static String? _pendingMessage;
+  static String? consumePendingMessage() {
+    final msg = _pendingMessage;
+    _pendingMessage = null;
+    return msg;
+  }
+
+  static Future<void> _saveToken(String token) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    await FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .set({'fcmToken': token, 'updatedAt': FieldValue.serverTimestamp()},
+           SetOptions(merge: true));
+  }
+
+  // Call this after login to save token for newly signed-in user
+  static Future<void> onLogin() async {
+    final token = await FirebaseMessaging.instance.getToken();
+    if (token != null) await _saveToken(token);
   }
 }
 
