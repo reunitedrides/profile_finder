@@ -43,6 +43,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera access is used for the torch feature to illuminate dark roof spaces.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Access to photos is needed to upload profile images in the admin panel.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Used to save the location of the roof when recording a profile.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

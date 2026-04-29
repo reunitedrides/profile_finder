@@ -18,6 +18,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'firebase_options.dart';
@@ -735,12 +737,25 @@ class _HomeHubEntry {
 
 class ProfileSearchScreen extends StatefulWidget {
   final bool homeHubMode;
-  const ProfileSearchScreen({super.key, this.homeHubMode = false});
+  final String initialCategory;
+  final List<String> allowedCategories;
+  final String screenTitle;
+
+  const ProfileSearchScreen({
+    super.key,
+    this.homeHubMode = false,
+    this.initialCategory = 'steel',
+    this.allowedCategories = const ['steel', 'cement', 'tile'],
+    this.screenTitle = 'Profile Finder',
+  });
+
   @override
   State<ProfileSearchScreen> createState() => _ProfileSearchScreenState();
 }
 
 class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
+  int _logoTapCount = 0;
+  DateTime? _lastLogoTap;
   final TextEditingController _profileSearchController = TextEditingController();
   List<String> _mostUsedTools = [];
   final TextEditingController _pitchController = TextEditingController();
@@ -795,6 +810,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedCategory = widget.allowedCategories.contains(widget.initialCategory)
+        ? widget.initialCategory
+        : (widget.allowedCategories.isNotEmpty ? widget.allowedCategories.first : 'steel');
     _loadProfilesForCategory(_selectedCategory);
     _profileSearchController.addListener(_updateNameSuggestions);
     _loadMostUsed();
@@ -979,6 +997,127 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     );
   }
 
+  List<String> get _availableCategories =>
+      widget.allowedCategories.isEmpty ? const ['steel', 'cement', 'tile'] : widget.allowedCategories;
+
+  String _categoryLabelFor(String category) {
+    switch (category) {
+      case 'steel':
+        return 'Steel Sheets';
+      case 'cement':
+        return 'Cement Sheets';
+      case 'tile':
+        return 'Tiles / Slates';
+      default:
+        return 'Profiles';
+    }
+  }
+
+  IconData _categoryIconFor(String category) {
+    switch (category) {
+      case 'cement':
+        return Icons.layers;
+      case 'tile':
+        return Icons.home;
+      case 'steel':
+      default:
+        return Icons.factory_outlined;
+    }
+  }
+
+  Color _categoryColorFor(String category) {
+    switch (category) {
+      case 'cement':
+        return Colors.grey.shade700;
+      case 'tile':
+        return Colors.orange.shade700;
+      case 'steel':
+      default:
+        return Colors.blue.shade700;
+    }
+  }
+
+  PopupMenuItem<String> _categoryMenuItem(String category) {
+    return PopupMenuItem<String>(
+      value: category,
+      child: Row(
+        children: [
+          Icon(_categoryIconFor(category), color: _categoryColorFor(category), size: 20),
+          const SizedBox(width: 10),
+          Text(_categoryLabelFor(category)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategorySelector() {
+    final categories = _availableCategories;
+    final label = categories.length == 1 ? 'Category:' : 'Profile type:';
+
+    if (categories.length == 1) {
+      final category = categories.first;
+      return Row(
+        children: [
+          Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: _categoryColorFor(category),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Icon(_categoryIconFor(category), color: Colors.white, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    _categoryLabelFor(category),
+                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(width: 12),
+        Expanded(
+          child: PopupMenuButton<String>(
+            onSelected: (cat) => _loadProfilesForCategory(cat),
+            offset: const Offset(0, 44),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            itemBuilder: (context) => categories.map(_categoryMenuItem).toList(),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: _categoryColorFor(_selectedCategory),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Icon(_categoryIconFor(_selectedCategory), color: Colors.white, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    _categoryLabelFor(_selectedCategory),
+                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(width: 6),
+                  const Icon(Icons.arrow_drop_down, color: Colors.white, size: 20),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildQuickActionsRow({required bool insideHeader}) {
     final chips = [
       _quickChip(Icons.history, 'History', const Color(0xFF283593),
@@ -1011,17 +1150,44 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         icon: Icons.search,
         color: Colors.blue.shade700,
         title: '1. Profile Finder',
-        subtitle: 'Open the original profile finder screen and search by name or measurements.',
+        subtitle: 'Search steel and cement roof sheets by name or measurements.',
         onTap: () async {
           await _playTapClick();
           if (!mounted) return;
-          await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProfileSearchScreen()));
+          await Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const ProfileSearchScreen(
+                initialCategory: 'steel',
+                allowedCategories: ['steel', 'cement'],
+                screenTitle: 'Profile Finder',
+              ),
+            ),
+          );
+        },
+      ),
+      _HomeHubEntry(
+        icon: Icons.roofing,
+        color: Colors.orange.shade700,
+        title: '2. Tile Identifier',
+        subtitle: 'Identify roof tiles and slates by name, type, filters and measurements.',
+        onTap: () async {
+          await _playTapClick();
+          if (!mounted) return;
+          await Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const ProfileSearchScreen(
+                initialCategory: 'tile',
+                allowedCategories: ['tile'],
+                screenTitle: 'Tile Identifier',
+              ),
+            ),
+          );
         },
       ),
       _HomeHubEntry(
         icon: Icons.architecture,
         color: Colors.blue.shade700,
-        title: '2. Roof Pitch Finder',
+        title: '3. Roof Pitch Finder',
         subtitle: 'Use your phone to measure roof pitch in degrees and ratio.',
         onTap: () async {
           await _playTapClick();
@@ -1032,7 +1198,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       _HomeHubEntry(
         icon: Icons.list_alt,
         color: Colors.green.shade700,
-        title: '3. Material List',
+        title: '4. Material List',
         subtitle: 'Build a material takeoff list for any roofing job.',
         onTap: () async {
           await _playTapClick();
@@ -1043,7 +1209,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       _HomeHubEntry(
         icon: Icons.straighten,
         color: Colors.brown.shade600,
-        title: '4. Rafter Calculator & Design',
+        title: '5. Rafter Calculation Tool',
         subtitle: 'Calculate rafter lengths, ridge height and cut details.',
         onTap: () async {
           await _playTapClick();
@@ -1054,7 +1220,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       _HomeHubEntry(
         icon: Icons.calculate,
         color: Colors.teal.shade700,
-        title: '5. Roof Area Calculator',
+        title: '6. Roof Area Calculator',
         subtitle: 'Calculate roof area from length, width and pitch.',
         onTap: () async {
           await _playTapClick();
@@ -1065,8 +1231,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       _HomeHubEntry(
         icon: Icons.crop_free,
         color: Colors.indigo.shade700,
-        title: '6. Perimeter Area Tool',
-        subtitle: 'Sketch a building outline and work out the area.',
+        title: '7. Perimeter Roof Calculation',
+        subtitle: 'Sketch a building outline and work out the roof area.',
         onTap: () async {
           await _playTapClick();
           if (!mounted) return;
@@ -1076,7 +1242,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       _HomeHubEntry(
         icon: Icons.flashlight_on,
         color: Colors.amber.shade700,
-        title: '7. Torch',
+        title: '8. Torch',
         subtitle: 'Use your phone torch in dark roof spaces.',
         onTap: () async {
           await _playTapClick();
@@ -1152,9 +1318,49 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     );
   }
 
+  void _handleAdminTap() {
+    final now = DateTime.now();
+    if (_lastLogoTap != null && now.difference(_lastLogoTap!).inSeconds > 3) {
+      _logoTapCount = 0;
+    }
+    _lastLogoTap = now;
+    _logoTapCount++;
+    if (_logoTapCount >= 5) {
+      _logoTapCount = 0;
+      _showAdminPinDialog();
+    }
+  }
+
+  Future<void> _showAdminPinDialog() async {
+    final pinController = TextEditingController();
+    final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Row(children: [Icon(Icons.admin_panel_settings, color: Colors.blue), SizedBox(width: 8), Text('Admin Access')]),
+      content: TextField(
+        controller: pinController,
+        obscureText: true,
+        keyboardType: TextInputType.number,
+        maxLength: 6,
+        decoration: const InputDecoration(hintText: 'Enter PIN', border: OutlineInputBorder()),
+        autofocus: true,
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+        ElevatedButton(onPressed: () => Navigator.pop(ctx, true),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white),
+          child: const Text('Enter')),
+      ],
+    ));
+    if (confirm != true) return;
+    if (pinController.text.trim() == '7950') {
+      if (mounted) Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AdminScreen()));
+    } else {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Incorrect PIN'), backgroundColor: Colors.red));
+    }
+  }
+
   void _handleTopMenu(String value) {
     switch (value) {
-      case 'home': unawaited(_goHomeHub()); break;
       case 'tools': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen())); break;
       case 'help': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen())); break;
       case 'favourites': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FavouritesScreen())); break;
@@ -1594,35 +1800,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
                   children: [
                     const SizedBox(height: 8),
-                    Row(children: [
-                      const Text('Profile type:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      const SizedBox(width: 12),
-                      Expanded(child: PopupMenuButton<String>(
-                        onSelected: (cat) => _loadProfilesForCategory(cat),
-                        offset: const Offset(0, 44),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        itemBuilder: (context) => [
-                          PopupMenuItem(value: 'steel', child: Row(children: [Icon(Icons.factory_outlined, color: Colors.blue.shade700, size: 20), const SizedBox(width: 10), const Text('Steel Sheets')])),
-                          PopupMenuItem(value: 'cement', child: Row(children: [Icon(Icons.layers, color: Colors.grey.shade700, size: 20), const SizedBox(width: 10), const Text('Cement Sheets')])),
-                          PopupMenuItem(value: 'tile', child: Row(children: [Icon(Icons.home, color: Colors.orange.shade700, size: 20), const SizedBox(width: 10), const Text('Tiles / Slates')])),
-                        ],
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: _selectedCategory == 'tile' ? Colors.orange.shade700 : _selectedCategory == 'cement' ? Colors.grey.shade700 : Colors.blue.shade700,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(children: [
-                            Icon(_selectedCategory == 'tile' ? Icons.home : _selectedCategory == 'cement' ? Icons.layers : Icons.factory_outlined, color: Colors.white, size: 18),
-                            const SizedBox(width: 8),
-                            Text(_selectedCategory == 'tile' ? 'Tiles / Slates' : _selectedCategory == 'cement' ? 'Cement Sheets' : 'Steel Sheets',
-                              style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
-                            const SizedBox(width: 6),
-                            const Icon(Icons.arrow_drop_down, color: Colors.white, size: 20),
-                          ]),
-                        ),
-                      )),
-                    ]),
+                    _buildCategorySelector(),
                     const SizedBox(height: 18),
                     Text(_categoryTitle(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 16),
@@ -1722,7 +1900,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     if (!widget.homeHubMode) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Profile Finder'),
+          title: Text(widget.screenTitle),
           backgroundColor: Colors.blue.shade700,
           foregroundColor: Colors.white,
           actions: [
@@ -1801,6 +1979,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              GestureDetector(
+                                onTap: _handleAdminTap,
+                                child: Column(children: [
                               const FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Text(
@@ -1827,6 +2008,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                                   letterSpacing: 0.5,
                                 ),
                               ),
+                                ])),
                               const SizedBox(height: 8),
                               FittedBox(
                                 fit: BoxFit.scaleDown,
@@ -1864,7 +2046,6 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                               padding: EdgeInsets.zero,
                               icon: const Icon(Icons.more_horiz, color: Colors.white),
                               itemBuilder: (context) => [
-                                const PopupMenuItem<String>(value: 'home', child: Row(children: [Icon(Icons.home_outlined, size: 18), SizedBox(width: 10), Text('Home')])),
                                 const PopupMenuItem<String>(value: 'tools', child: Row(children: [Icon(Icons.build, size: 18), SizedBox(width: 10), Text('Tools')])),
                                 const PopupMenuItem<String>(value: 'favourites', child: Row(children: [Icon(Icons.star, size: 18, color: Colors.amber), SizedBox(width: 10), Text('Favorites')])),
                                 const PopupMenuItem<String>(value: 'help', child: Row(children: [Icon(Icons.help_outline, size: 18), SizedBox(width: 10), Text('How to measure')])),
@@ -7426,6 +7607,394 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// Admin Screen
+// ═══════════════════════════════════════════════════════════════
+
+class AdminScreen extends StatefulWidget {
+  const AdminScreen({super.key});
+  @override
+  State<AdminScreen> createState() => _AdminScreenState();
+}
+
+class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Admin — Upload Profile'),
+        backgroundColor: Colors.red.shade700,
+        foregroundColor: Colors.white,
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          tabs: const [
+            Tab(icon: Icon(Icons.factory_outlined), text: 'Sheet Profile'),
+            Tab(icon: Icon(Icons.home_outlined), text: 'Tile Profile'),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: const [
+          _AdminSheetForm(),
+          _AdminTileForm(),
+        ],
+      ),
+    );
+  }
+}
+
+class _AdminSheetForm extends StatefulWidget {
+  const _AdminSheetForm();
+  @override
+  State<_AdminSheetForm> createState() => _AdminSheetFormState();
+}
+
+class _AdminSheetFormState extends State<_AdminSheetForm> {
+  final _nameController = TextEditingController();
+  final _codeController = TextEditingController();
+  final _manufacturerController = TextEditingController();
+  final _pitchController = TextEditingController();
+  final _depthController = TextEditingController();
+  final _crownController = TextEditingController();
+  final _troughController = TextEditingController();
+  final _coverWidthController = TextEditingController();
+  final _overallWidthController = TextEditingController();
+  String _category = 'steel';
+  XFile? _imageFile;
+  bool _uploading = false;
+
+  @override
+  void dispose() {
+    for (final c in [_nameController, _codeController, _manufacturerController,
+      _pitchController, _depthController, _crownController, _troughController,
+      _coverWidthController, _overallWidthController]) { c.dispose(); }
+    super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (file != null) setState(() { _imageFile = file; });
+  }
+
+  Future<void> _upload() async {
+    if (_nameController.text.isEmpty || _manufacturerController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Name and manufacturer required'), backgroundColor: Colors.red));
+      return;
+    }
+    setState(() { _uploading = true; });
+    try {
+      String? imageUrl;
+      if (_imageFile != null) {
+        final ref = FirebaseStorage.instance.ref()
+          .child('profiles')
+          .child('${DateTime.now().millisecondsSinceEpoch}_${_imageFile!.name}');
+        await ref.putFile(File(_imageFile!.path));
+        imageUrl = await ref.getDownloadURL();
+      }
+
+      final data = {
+        'name': _nameController.text.trim(),
+        'code': _codeController.text.trim(),
+        'manufacturer': _manufacturerController.text.trim(),
+        'category': _category,
+        'pitch': double.tryParse(_pitchController.text) ?? 0,
+        'depth': double.tryParse(_depthController.text) ?? 0,
+        'crown': double.tryParse(_crownController.text) ?? 0,
+        'trough': double.tryParse(_troughController.text) ?? 0,
+        'coverWidth': double.tryParse(_coverWidthController.text) ?? 0,
+        'overallWidth': double.tryParse(_overallWidthController.text) ?? 0,
+        'imageUrl': imageUrl ?? '',
+        'addedAt': FieldValue.serverTimestamp(),
+        'type': 'sheet',
+      };
+
+      await FirebaseFirestore.instance.collection('new_profiles').add(data);
+
+      // Send push notification
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'title': 'New Profile Added! 🎉',
+        'body': '${_nameController.text.trim()} by ${_manufacturerController.text.trim()} has been added.',
+        'sentAt': FieldValue.serverTimestamp(),
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('✓ ${_nameController.text} uploaded successfully!'),
+          backgroundColor: Colors.green.shade700));
+        // Clear form
+        for (final c in [_nameController, _codeController, _manufacturerController,
+          _pitchController, _depthController, _crownController, _troughController,
+          _coverWidthController, _overallWidthController]) { c.clear(); }
+        setState(() { _imageFile = null; });
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Upload failed: $e'), backgroundColor: Colors.red));
+    }
+    if (mounted) setState(() { _uploading = false; });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // Category
+        Row(children: [
+          const Text('Category:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(width: 12),
+          ChoiceChip(label: const Text('Steel'), selected: _category == 'steel',
+            onSelected: (_) => setState(() { _category = 'steel'; }),
+            selectedColor: Colors.blue.shade200),
+          const SizedBox(width: 8),
+          ChoiceChip(label: const Text('Cement'), selected: _category == 'cement',
+            onSelected: (_) => setState(() { _category = 'cement'; }),
+            selectedColor: Colors.grey.shade300),
+        ]),
+        const SizedBox(height: 12),
+        _field('Profile Name *', _nameController),
+        _field('Code', _codeController),
+        _field('Manufacturer *', _manufacturerController),
+        _field('Pitch (mm)', _pitchController, isNumber: true),
+        _field('Depth (mm)', _depthController, isNumber: true),
+        _field('Crown (mm)', _crownController, isNumber: true),
+        _field('Trough (mm)', _troughController, isNumber: true),
+        _field('Cover Width (mm)', _coverWidthController, isNumber: true),
+        _field('Overall Width (mm)', _overallWidthController, isNumber: true),
+        const SizedBox(height: 12),
+        // Image picker
+        GestureDetector(
+          onTap: _pickImage,
+          child: Container(
+            height: 120,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade400, width: 2),
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey.shade100,
+            ),
+            child: _imageFile == null
+              ? const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey),
+                  Text('Tap to add image', style: TextStyle(color: Colors.grey)),
+                ]))
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.file(File(_imageFile!.path), fit: BoxFit.contain)),
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _uploading ? null : _upload,
+            icon: _uploading
+              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+              : const Icon(Icons.cloud_upload),
+            label: Text(_uploading ? 'Uploading...' : 'Upload Profile'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade700, foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14)),
+          )),
+      ]),
+    );
+  }
+
+  Widget _field(String label, TextEditingController c, {bool isNumber = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: TextField(
+        controller: c,
+        keyboardType: isNumber ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+        textCapitalization: isNumber ? TextCapitalization.none : TextCapitalization.words,
+        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), isDense: true),
+      ),
+    );
+  }
+}
+
+class _AdminTileForm extends StatefulWidget {
+  const _AdminTileForm();
+  @override
+  State<_AdminTileForm> createState() => _AdminTileFormState();
+}
+
+class _AdminTileFormState extends State<_AdminTileForm> {
+  final _nameController = TextEditingController();
+  final _manufacturerController = TextEditingController();
+  final _lengthController = TextEditingController();
+  final _widthController = TextEditingController();
+  final _minPitchController = TextEditingController();
+  final _coverWidthController = TextEditingController();
+  String _material = 'Concrete';
+  String _type = 'Plain';
+  XFile? _imageFile;
+  bool _uploading = false;
+
+  @override
+  void dispose() {
+    for (final c in [_nameController, _manufacturerController, _lengthController,
+      _widthController, _minPitchController, _coverWidthController]) { c.dispose(); }
+    super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (file != null) setState(() { _imageFile = file; });
+  }
+
+  Future<void> _upload() async {
+    if (_nameController.text.isEmpty || _manufacturerController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Name and manufacturer required'), backgroundColor: Colors.red));
+      return;
+    }
+    setState(() { _uploading = true; });
+    try {
+      String? imageUrl;
+      if (_imageFile != null) {
+        final ref = FirebaseStorage.instance.ref()
+          .child('profiles')
+          .child('${DateTime.now().millisecondsSinceEpoch}_${_imageFile!.name}');
+        await ref.putFile(File(_imageFile!.path));
+        imageUrl = await ref.getDownloadURL();
+      }
+
+      final data = {
+        'name': _nameController.text.trim(),
+        'manufacturer': _manufacturerController.text.trim(),
+        'material': _material,
+        'tileType': _type,
+        'nominalLength': double.tryParse(_lengthController.text) ?? 0,
+        'nominalWidth': double.tryParse(_widthController.text) ?? 0,
+        'minPitch': double.tryParse(_minPitchController.text) ?? 0,
+        'coverWidth': double.tryParse(_coverWidthController.text) ?? 0,
+        'imageUrl': imageUrl ?? '',
+        'addedAt': FieldValue.serverTimestamp(),
+        'type': 'tile',
+      };
+
+      await FirebaseFirestore.instance.collection('new_profiles').add(data);
+
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'title': 'New Tile Added! 🏠',
+        'body': '${_nameController.text.trim()} by ${_manufacturerController.text.trim()} has been added.',
+        'sentAt': FieldValue.serverTimestamp(),
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('✓ ${_nameController.text} uploaded successfully!'),
+          backgroundColor: Colors.green.shade700));
+        for (final c in [_nameController, _manufacturerController, _lengthController,
+          _widthController, _minPitchController, _coverWidthController]) { c.clear(); }
+        setState(() { _imageFile = null; });
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Upload failed: $e'), backgroundColor: Colors.red));
+    }
+    if (mounted) setState(() { _uploading = false; });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          const Text('Material:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(width: 8),
+          for (final m in ['Concrete', 'Clay', 'Slate', 'Other'])
+            Padding(padding: const EdgeInsets.only(right: 6),
+              child: ChoiceChip(label: Text(m), selected: _material == m,
+                onSelected: (_) => setState(() { _material = m; }),
+                selectedColor: Colors.orange.shade200)),
+        ]),
+        const SizedBox(height: 8),
+        Row(children: [
+          const Text('Type:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(width: 8),
+          for (final t in ['Plain', 'Interlocking', 'Roman', 'Pantile', 'Other'])
+            Padding(padding: const EdgeInsets.only(right: 6),
+              child: ChoiceChip(label: Text(t), selected: _type == t,
+                onSelected: (_) => setState(() { _type = t; }),
+                selectedColor: Colors.orange.shade200)),
+        ]),
+        const SizedBox(height: 12),
+        _field('Tile Name *', _nameController),
+        _field('Manufacturer *', _manufacturerController),
+        _field('Nominal Length (mm)', _lengthController, isNumber: true),
+        _field('Nominal Width (mm)', _widthController, isNumber: true),
+        _field('Min Pitch (°)', _minPitchController, isNumber: true),
+        _field('Cover Width (mm)', _coverWidthController, isNumber: true),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap: _pickImage,
+          child: Container(
+            height: 120,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade400, width: 2),
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey.shade100,
+            ),
+            child: _imageFile == null
+              ? const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey),
+                  Text('Tap to add image', style: TextStyle(color: Colors.grey)),
+                ]))
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.file(File(_imageFile!.path), fit: BoxFit.contain)),
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _uploading ? null : _upload,
+            icon: _uploading
+              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+              : const Icon(Icons.cloud_upload),
+            label: Text(_uploading ? 'Uploading...' : 'Upload Tile'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange.shade700, foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14)),
+          )),
+      ]),
+    );
+  }
+
+  Widget _field(String label, TextEditingController c, {bool isNumber = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: TextField(
+        controller: c,
+        keyboardType: isNumber ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+        textCapitalization: isNumber ? TextCapitalization.none : TextCapitalization.words,
+        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), isDense: true),
+      ),
+    );
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════
 // Welcome Screen — shown on first boot
