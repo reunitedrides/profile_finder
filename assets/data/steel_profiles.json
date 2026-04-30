@@ -16,7 +16,7 @@
     "rawTrough": "23",
     "rawCoverWidth": "900",
     "rawOverallWidth": "973",
-    "image_file": "assets/images/095B.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_p20_75.png"
   },
   {
     "code": "095A",
@@ -35,7 +35,7 @@
     "rawTrough": "23",
     "rawCoverWidth": "1050",
     "rawOverallWidth": "1123",
-    "image_file": "assets/images/095A.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_trp_20_75.png"
   },
   {
     "code": "410A",
@@ -54,7 +54,7 @@
     "rawTrough": "27",
     "rawCoverWidth": "750",
     "rawOverallWidth": "820",
-    "image_file": "assets/images/410A.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_p40_95.png"
   },
   {
     "code": "303A",
@@ -73,7 +73,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1045",
-    "image_file": "assets/images/303A.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_p20b.png"
   },
   {
     "code": "303B",
@@ -92,7 +92,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1045",
-    "image_file": "assets/images/303B.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_p20bl_liner.png"
   },
   {
     "code": "092A",
@@ -111,7 +111,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/092A.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr20s.png"
   },
   {
     "code": "092B",
@@ -130,7 +130,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/092B.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_p20.png"
   },
   {
     "code": "092C",
@@ -149,7 +149,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/092C.png"
+    "image_file": "assets/images/gasell_profiles_ga_20g_35_liner.png"
   },
   {
     "code": "092D",
@@ -168,7 +168,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/092D.png"
+    "image_file": "assets/images/gasell_profiles_ga_20d_35_cladding.png"
   },
   {
     "code": "240A",
@@ -187,7 +187,7 @@
     "rawTrough": "43",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1041",
-    "image_file": "assets/images/240A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_mm10.png"
   },
   {
     "code": "240B",
@@ -205,7 +205,8 @@
     "rawCrown": "25",
     "rawTrough": "43",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1041"
+    "rawOverallWidth": "1041",
+    "image_file": "assets/images/rigidal_industries_rigidal_mm10.png"
   },
   {
     "code": "240C",
@@ -223,7 +224,8 @@
     "rawCrown": "25",
     "rawTrough": "43",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1041"
+    "rawOverallWidth": "1041",
+    "image_file": "assets/images/rigidal_industries_classic_20_100_1000.png"
   },
   {
     "code": "405A",
@@ -242,7 +244,7 @@
     "rawTrough": "16",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1100",
-    "image_file": "assets/images/405A.png"
+    "image_file": "assets/images/precision_metal_forming_ms20.png"
   },
   {
     "code": "098A",
@@ -261,7 +263,7 @@
     "rawTrough": "26",
     "rawCoverWidth": "900",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/098A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_mp9_64.png"
   },
   {
     "code": "076A",
@@ -280,7 +282,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "900",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/076A.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_trp_40_100.png"
   },
   {
     "code": "076B",
@@ -299,7 +301,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "900",
     "rawOverallWidth": "1000",
-    "image_file": "assets/images/076B.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_trp_40w_100.png"
   },
   {
     "code": "076C",
@@ -318,7 +320,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1100",
-    "image_file": "assets/images/076C.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_trp_40t_100.png"
   },
   {
     "code": "102A",
@@ -337,7 +339,7 @@
     "rawTrough": "47",
     "rawCoverWidth": "918",
     "rawOverallWidth": "973",
-    "image_file": "assets/images/102A.png"
+    "image_file": "assets/images/british_steel_l9.png"
   },
   {
     "code": "157A",
@@ -356,7 +358,7 @@
     "rawTrough": "47",
     "rawCoverWidth": "1020",
     "rawOverallWidth": "1090",
-    "image_file": "assets/images/157A.png"
+    "image_file": "assets/images/british_steel_l10.png"
   },
   {
     "code": "034A",
@@ -375,7 +377,7 @@
     "rawTrough": "59",
     "rawCoverWidth": "711",
     "rawOverallWidth": "747",
-    "image_file": "assets/images/034A.png"
+    "image_file": "assets/images/h_h_robertson_uk_ibr7.png"
   },
   {
     "code": "106A",
@@ -394,7 +396,7 @@
     "rawTrough": "59",
     "rawCoverWidth": "920",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/106A.png"
+    "image_file": "assets/images/h_h_robertson_uk_ibr9.png"
   },
   {
     "code": "106C",
@@ -413,7 +415,7 @@
     "rawTrough": "59",
     "rawCoverWidth": "920",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/106C.png"
+    "image_file": "assets/images/haironville_tac_r9.png"
   },
   {
     "code": "515A",
@@ -432,7 +434,7 @@
     "rawTrough": "38",
     "rawCoverWidth": "914",
     "rawOverallWidth": "983",
-    "image_file": "assets/images/515A.png"
+    "image_file": "assets/images/rigidal_industries_talspan_20_100.png"
   },
   {
     "code": "515B",
@@ -451,7 +453,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "914",
     "rawOverallWidth": "968",
-    "image_file": "assets/images/515B.png"
+    "image_file": "assets/images/rigidal_industries_talspan_20_100i.png"
   },
   {
     "code": "034B",
@@ -470,7 +472,7 @@
     "rawTrough": "21",
     "rawCoverWidth": "711",
     "rawOverallWidth": "737",
-    "image_file": "assets/images/034B.png"
+    "image_file": "assets/images/h_h_robertson_uk_br7.png"
   },
   {
     "code": "106B",
@@ -489,7 +491,7 @@
     "rawTrough": "21",
     "rawCoverWidth": "920",
     "rawOverallWidth": "951",
-    "image_file": "assets/images/106B.png"
+    "image_file": "assets/images/h_h_robertson_uk_br9.png"
   },
   {
     "code": "106D",
@@ -508,7 +510,7 @@
     "rawTrough": "21",
     "rawCoverWidth": "920",
     "rawOverallWidth": "951",
-    "image_file": "assets/images/106D.png"
+    "image_file": "assets/images/haironville_tac_c9.png"
   },
   {
     "code": "173A",
@@ -527,7 +529,7 @@
     "rawTrough": "59",
     "rawCoverWidth": "920",
     "rawOverallWidth": "957",
-    "image_file": "assets/images/173A.png"
+    "image_file": "assets/images/h_h_robertson_uk_ibr9_26.png"
   },
   {
     "code": "173D",
@@ -546,7 +548,7 @@
     "rawTrough": "21",
     "rawCoverWidth": "920",
     "rawOverallWidth": "944",
-    "image_file": "assets/images/173D.png"
+    "image_file": "assets/images/h_h_robertson_uk_br9_26_c.png"
   },
   {
     "code": "173B",
@@ -565,7 +567,7 @@
     "rawTrough": "21",
     "rawCoverWidth": "920",
     "rawOverallWidth": "957",
-    "image_file": "assets/images/173B.png"
+    "image_file": "assets/images/h_h_robertson_uk_br9_26_s.png"
   },
   {
     "code": "427A",
@@ -584,7 +586,7 @@
     "rawTrough": "56/63",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1038",
-    "image_file": "assets/images/427A.png"
+    "image_file": "assets/images/euroclad_sf500_secret_fix_1000mm_cover.png"
   },
   {
     "code": "422A",
@@ -603,7 +605,7 @@
     "rawTrough": "74",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/422A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_20_1000_liner.png"
   },
   {
     "code": "422F",
@@ -621,7 +623,8 @@
     "rawCrown": "25",
     "rawTrough": "74",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1054"
+    "rawOverallWidth": "1054",
+    "image_file": "assets/images/rigidal_industries_classic_20_125_1000.png"
   },
   {
     "code": "422E",
@@ -639,7 +642,8 @@
     "rawCrown": "25",
     "rawTrough": "74",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1054"
+    "rawOverallWidth": "1054",
+    "image_file": "assets/images/rigidal_industries_rigidal_20_1000.png"
   },
   {
     "code": "422D",
@@ -658,7 +662,7 @@
     "rawTrough": "74",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/422D.png"
+    "image_file": "assets/images/rigidal_industries_rigidal_20_1000_liner.png"
   },
   {
     "code": "134B",
@@ -677,7 +681,7 @@
     "rawTrough": "40",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1074",
-    "image_file": "assets/images/134B.png"
+    "image_file": "assets/images/ward_building_components_moduclad_23_1000.png"
   },
   {
     "code": "134A",
@@ -696,7 +700,7 @@
     "rawTrough": "40",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1097",
-    "image_file": "assets/images/134A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_23_1000p.png"
   },
   {
     "code": "134C",
@@ -715,7 +719,7 @@
     "rawTrough": "40",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1097",
-    "image_file": "assets/images/134C.png"
+    "image_file": "assets/images/ecometal_ecometal_23_1000.png"
   },
   {
     "code": "134D",
@@ -734,7 +738,7 @@
     "rawTrough": "40",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1097",
-    "image_file": "assets/images/134D.png"
+    "image_file": "assets/images/b_w_industries_bw_a1.png"
   },
   {
     "code": "232G",
@@ -753,7 +757,7 @@
     "rawTrough": "28",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1064",
-    "image_file": "assets/images/232G.png"
+    "image_file": "assets/images/haironville_tac_c25_8_8_125_25hb.png"
   },
   {
     "code": "232B",
@@ -772,7 +776,7 @@
     "rawTrough": "28",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1064",
-    "image_file": "assets/images/232B.png"
+    "image_file": "assets/images/brunel_steel_services_26_1000_vertical.png"
   },
   {
     "code": "232A",
@@ -791,11 +795,11 @@
     "rawTrough": "28",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1083",
-    "image_file": "assets/images/232A.png"
+    "image_file": "assets/images/brunel_steel_services_26_1000_roofing.png"
   },
   {
     "code": "020A",
-    "profileName": "5 x 5”",
+    "profileName": "5 x 5\u201d",
     "manufacturer": "British Steel",
     "shape": "unknown",
     "pitch": 127,
@@ -810,11 +814,11 @@
     "rawTrough": "S",
     "rawCoverWidth": "635",
     "rawOverallWidth": "711",
-    "image_file": "assets/images/020A.png"
+    "image_file": "assets/images/british_steel_5_x_5.png"
   },
   {
     "code": "020B",
-    "profileName": "6 x 5”",
+    "profileName": "6 x 5\u201d",
     "manufacturer": "British Steel",
     "shape": "unknown",
     "pitch": 127,
@@ -829,7 +833,7 @@
     "rawTrough": "S",
     "rawCoverWidth": "762",
     "rawOverallWidth": "838",
-    "image_file": "assets/images/020B.png"
+    "image_file": "assets/images/british_steel_6_x_5.png"
   },
   {
     "code": "005A",
@@ -848,7 +852,7 @@
     "rawTrough": "57",
     "rawCoverWidth": "635",
     "rawOverallWidth": "679",
-    "image_file": "assets/images/005A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_a5.png"
   },
   {
     "code": "005B",
@@ -867,7 +871,7 @@
     "rawTrough": "57",
     "rawCoverWidth": "762",
     "rawOverallWidth": "806",
-    "image_file": "assets/images/005B.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_a6.png"
   },
   {
     "code": "005C",
@@ -886,7 +890,7 @@
     "rawTrough": "57",
     "rawCoverWidth": "889",
     "rawOverallWidth": "933",
-    "image_file": "assets/images/005C.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_a7.png"
   },
   {
     "code": "372B",
@@ -905,7 +909,7 @@
     "rawTrough": "57",
     "rawCoverWidth": "1016",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/372B.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_a8.png"
   },
   {
     "code": "355A",
@@ -924,7 +928,7 @@
     "rawTrough": "58",
     "rawCoverWidth": "900",
     "rawOverallWidth": "963",
-    "image_file": "assets/images/355A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_a900.png"
   },
   {
     "code": "355C",
@@ -942,7 +946,8 @@
     "rawCrown": "19",
     "rawTrough": "58",
     "rawCoverWidth": "900",
-    "rawOverallWidth": "963"
+    "rawOverallWidth": "963",
+    "image_file": "assets/images/rigidal_industries_classic_38_129_900.png"
   },
   {
     "code": "355B",
@@ -960,7 +965,8 @@
     "rawCrown": "19",
     "rawTrough": "58",
     "rawCoverWidth": "900",
-    "rawOverallWidth": "963"
+    "rawOverallWidth": "963",
+    "image_file": "assets/images/rigidal_industries_rigidal_a900.png"
   },
   {
     "code": "003A",
@@ -979,7 +985,7 @@
     "rawTrough": "21",
     "rawCoverWidth": "651",
     "rawOverallWidth": "711",
-    "image_file": "assets/images/003A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_b5.png"
   },
   {
     "code": "003B",
@@ -998,7 +1004,7 @@
     "rawTrough": "21",
     "rawCoverWidth": "781",
     "rawOverallWidth": "841",
-    "image_file": "assets/images/003B.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_b6.png"
   },
   {
     "code": "003C",
@@ -1017,7 +1023,7 @@
     "rawTrough": "21",
     "rawCoverWidth": "911",
     "rawOverallWidth": "971",
-    "image_file": "assets/images/003C.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_b7.png"
   },
   {
     "code": "003D",
@@ -1036,12 +1042,12 @@
     "rawTrough": "21",
     "rawCoverWidth": "1042",
     "rawOverallWidth": "1102",
-    "image_file": "assets/images/003D.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_b8.png"
   },
   {
     "code": "H.H.Robertson (UK)",
     "profileName": "768",
-    "manufacturer": "R.P.M. ‘V’ Beam (5 trough)",
+    "manufacturer": "R.P.M. \u2018V\u2019 Beam (5 trough)",
     "shape": "unknown",
     "pitch": 2,
     "depth": 135,
@@ -1054,7 +1060,8 @@
     "rawCrown": "42",
     "rawTrough": "S",
     "rawCoverWidth": "S",
-    "rawOverallWidth": "675"
+    "rawOverallWidth": "675",
+    "image_file": "assets/images/r_p_m_v_beam_5_trough_768.png"
   },
   {
     "code": "388A",
@@ -1073,7 +1080,7 @@
     "rawTrough": "45",
     "rawCoverWidth": "1250",
     "rawOverallWidth": "1345",
-    "image_file": "assets/images/388A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_25_1250.png"
   },
   {
     "code": "375D",
@@ -1092,7 +1099,7 @@
     "rawTrough": "54",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/375D.png"
+    "image_file": "assets/images/hoesch_building_products_hbp_20_liner.png"
   },
   {
     "code": "375C",
@@ -1111,7 +1118,7 @@
     "rawTrough": "54",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/375C.png"
+    "image_file": "assets/images/firth_steels_norclad_np_1000r.png"
   },
   {
     "code": "375A",
@@ -1130,7 +1137,7 @@
     "rawTrough": "54",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/375A.png"
+    "image_file": "assets/images/firth_steels_norclad_1000_liner_old_type.png"
   },
   {
     "code": "375B",
@@ -1149,7 +1156,7 @@
     "rawTrough": "54",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/375B.png"
+    "image_file": "assets/images/firth_steels_norclad_np1000_c.png"
   },
   {
     "code": "279C",
@@ -1168,7 +1175,7 @@
     "rawTrough": "85",
     "rawCoverWidth": "714",
     "rawOverallWidth": "774",
-    "image_file": "assets/images/279C.png"
+    "image_file": "assets/images/gleno_industries_gl24g.png"
   },
   {
     "code": "279A",
@@ -1187,7 +1194,7 @@
     "rawTrough": "85",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/279A.png"
+    "image_file": "assets/images/gleno_industries_gl24.png"
   },
   {
     "code": "279G",
@@ -1206,7 +1213,7 @@
     "rawTrough": "85",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/279G.png"
+    "image_file": "assets/images/coverworld_uk_cr24.png"
   },
   {
     "code": "279E",
@@ -1225,7 +1232,7 @@
     "rawTrough": "85",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/279E.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_24r.png"
   },
   {
     "code": "279D",
@@ -1244,7 +1251,7 @@
     "rawTrough": "24",
     "rawCoverWidth": "714",
     "rawOverallWidth": "759",
-    "image_file": "assets/images/279D.png"
+    "image_file": "assets/images/gleno_industries_gl24gr.png"
   },
   {
     "code": "279B",
@@ -1263,7 +1270,7 @@
     "rawTrough": "24",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1045",
-    "image_file": "assets/images/279B.png"
+    "image_file": "assets/images/gleno_industries_gl24r.png"
   },
   {
     "code": "279H",
@@ -1282,7 +1289,7 @@
     "rawTrough": "24",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1045",
-    "image_file": "assets/images/279H.png"
+    "image_file": "assets/images/coverworld_uk_cw24.png"
   },
   {
     "code": "279F",
@@ -1301,7 +1308,7 @@
     "rawTrough": "24",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1045",
-    "image_file": "assets/images/279F.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_24w.png"
   },
   {
     "code": "423A",
@@ -1320,7 +1327,7 @@
     "rawTrough": "78",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1062",
-    "image_file": "assets/images/423A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_30_1000_roof.png"
   },
   {
     "code": "423C",
@@ -1338,7 +1345,8 @@
     "rawCrown": "25",
     "rawTrough": "78",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1062"
+    "rawOverallWidth": "1062",
+    "image_file": "assets/images/rigidal_industries_rigidal_30_1000_roof.png"
   },
   {
     "code": "423E",
@@ -1356,7 +1364,8 @@
     "rawCrown": "25",
     "rawTrough": "78",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1062"
+    "rawOverallWidth": "1062",
+    "image_file": "assets/images/rigidal_industries_classic_30_143_1000r.png"
   },
   {
     "code": "423B",
@@ -1375,7 +1384,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1030",
-    "image_file": "assets/images/423B.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_30_1000_vertical.png"
   },
   {
     "code": "423D",
@@ -1393,7 +1402,8 @@
     "rawCrown": "78",
     "rawTrough": "25",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1030"
+    "rawOverallWidth": "1030",
+    "image_file": "assets/images/rigidal_industries_rigidal_30_1000_vertical.png"
   },
   {
     "code": "423F",
@@ -1411,7 +1421,8 @@
     "rawCrown": "78",
     "rawTrough": "25",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1030"
+    "rawOverallWidth": "1030",
+    "image_file": "assets/images/rigidal_industries_classic_30_143_1000v.png"
   },
   {
     "code": "031A",
@@ -1430,7 +1441,7 @@
     "rawTrough": "32",
     "rawCoverWidth": "714",
     "rawOverallWidth": "770",
-    "image_file": "assets/images/031A.png"
+    "image_file": "assets/images/british_steel_trough_rib.png"
   },
   {
     "code": "424A",
@@ -1449,7 +1460,7 @@
     "rawTrough": "65",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1057",
-    "image_file": "assets/images/424A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_40_1000.png"
   },
   {
     "code": "424B",
@@ -1467,7 +1478,8 @@
     "rawCrown": "25",
     "rawTrough": "65",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1057"
+    "rawOverallWidth": "1057",
+    "image_file": "assets/images/rigidal_industries_rigidal_40_1000.png"
   },
   {
     "code": "424C",
@@ -1485,7 +1497,8 @@
     "rawCrown": "25",
     "rawTrough": "65",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1057"
+    "rawOverallWidth": "1057",
+    "image_file": "assets/images/rigidal_industries_classic_40_143_1000.png"
   },
   {
     "code": "542B",
@@ -1504,7 +1517,7 @@
     "rawTrough": "54",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1095",
-    "image_file": "assets/images/542B.png"
+    "image_file": "assets/images/architectural_profiles_ap_22_50r.png"
   },
   {
     "code": "542A",
@@ -1523,7 +1536,7 @@
     "rawTrough": "54",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1110",
-    "image_file": "assets/images/542A.png"
+    "image_file": "assets/images/architectural_profiles_ap_22he_liner.png"
   },
   {
     "code": "542C",
@@ -1542,7 +1555,7 @@
     "rawTrough": "54",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1110",
-    "image_file": "assets/images/542C.png"
+    "image_file": "assets/images/architectural_profiles_ap_22hw_liner.png"
   },
   {
     "code": "376A",
@@ -1561,7 +1574,7 @@
     "rawTrough": "54",
     "rawCoverWidth": "1035",
     "rawOverallWidth": "1095",
-    "image_file": "assets/images/376A.png"
+    "image_file": "assets/images/firth_steels_norclad_np_1035r.png"
   },
   {
     "code": "376B",
@@ -1580,7 +1593,7 @@
     "rawTrough": "54",
     "rawCoverWidth": "1035",
     "rawOverallWidth": "1115",
-    "image_file": "assets/images/376B.png"
+    "image_file": "assets/images/firth_steels_norclad_np_1035c.png"
   },
   {
     "code": "319A",
@@ -1599,7 +1612,7 @@
     "rawTrough": "112",
     "rawCoverWidth": "900",
     "rawOverallWidth": "946",
-    "image_file": "assets/images/319A.png"
+    "image_file": "assets/images/tegral_metal_forming_minirib_900_liner.png"
   },
   {
     "code": "319B",
@@ -1618,7 +1631,7 @@
     "rawTrough": "112",
     "rawCoverWidth": "1050",
     "rawOverallWidth": "1096",
-    "image_file": "assets/images/319B.png"
+    "image_file": "assets/images/tegral_metal_forming_minirib_1050_liner.png"
   },
   {
     "code": "264A",
@@ -1637,7 +1650,7 @@
     "rawTrough": "120",
     "rawCoverWidth": "450",
     "rawOverallWidth": "450",
-    "image_file": "assets/images/264A.png"
+    "image_file": "assets/images/ecometal_ecometal_450_liner.png"
   },
   {
     "code": "119A",
@@ -1656,7 +1669,7 @@
     "rawTrough": "120",
     "rawCoverWidth": "900",
     "rawOverallWidth": "898",
-    "image_file": "assets/images/119A.png"
+    "image_file": "assets/images/ecometal_ecometal_900_liner.png"
   },
   {
     "code": "126",
@@ -1674,7 +1687,8 @@
     "rawCrown": "40",
     "rawTrough": "90",
     "rawCoverWidth": "V",
-    "rawOverallWidth": "V"
+    "rawOverallWidth": "V",
+    "image_file": "assets/images/filon_products_ltd_filon_multi_width_liner.png"
   },
   {
     "code": "356A",
@@ -1693,7 +1707,7 @@
     "rawTrough": "93",
     "rawCoverWidth": "900",
     "rawOverallWidth": "960",
-    "image_file": "assets/images/356A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_mm900_liner.png"
   },
   {
     "code": "103D",
@@ -1712,7 +1726,7 @@
     "rawTrough": "86",
     "rawCoverWidth": "750",
     "rawOverallWidth": "815",
-    "image_file": "assets/images/103D.png"
+    "image_file": "assets/images/european_profiles_ep_19_750.png"
   },
   {
     "code": "103C",
@@ -1731,7 +1745,7 @@
     "rawTrough": "86",
     "rawCoverWidth": "900",
     "rawOverallWidth": "965",
-    "image_file": "assets/images/103C.png"
+    "image_file": "assets/images/european_profiles_ep_19_900.png"
   },
   {
     "code": "197A",
@@ -1750,7 +1764,7 @@
     "rawTrough": "96",
     "rawCoverWidth": "900",
     "rawOverallWidth": "938",
-    "image_file": "assets/images/197A.png"
+    "image_file": "assets/images/ash_lacy_al900_liner.png"
   },
   {
     "code": "103E",
@@ -1769,7 +1783,7 @@
     "rawTrough": "26",
     "rawCoverWidth": "900",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/103E.png"
+    "image_file": "assets/images/european_profiles_ep_19_900_reversed.png"
   },
   {
     "code": "080B/A",
@@ -1787,7 +1801,8 @@
     "rawCrown": "25",
     "rawTrough": "75",
     "rawCoverWidth": "750",
-    "rawOverallWidth": "854"
+    "rawOverallWidth": "854",
+    "image_file": "assets/images/precision_metal_forming_r25_type_e750.png"
   },
   {
     "code": "390B",
@@ -1806,7 +1821,7 @@
     "rawTrough": "78",
     "rawCoverWidth": "900",
     "rawOverallWidth": "979",
-    "image_file": "assets/images/390B.png"
+    "image_file": "assets/images/construction_metal_products_cmp_900_25_rib_face.png"
   },
   {
     "code": "390A",
@@ -1825,7 +1840,7 @@
     "rawTrough": "78",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1093",
-    "image_file": "assets/images/390A.png"
+    "image_file": "assets/images/construction_metal_products_cmp_1200_25_rib_face.png"
   },
   {
     "code": "390D",
@@ -1844,7 +1859,7 @@
     "rawTrough": "78",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1279",
-    "image_file": "assets/images/390D.png"
+    "image_file": "assets/images/ward_building_components_moduclad_25_1200.png"
   },
   {
     "code": "080C",
@@ -1863,7 +1878,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "750",
     "rawOverallWidth": "815",
-    "image_file": "assets/images/080C.png"
+    "image_file": "assets/images/precision_metal_forming_c25.png"
   },
   {
     "code": "390C",
@@ -1882,7 +1897,7 @@
     "rawTrough": "41",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1247",
-    "image_file": "assets/images/390C.png"
+    "image_file": "assets/images/construction_metal_products_cmp_1200_25_crest_face.png"
   },
   {
     "code": "390E",
@@ -1901,7 +1916,7 @@
     "rawTrough": "41",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1247",
-    "image_file": "assets/images/390E.png"
+    "image_file": "assets/images/ward_building_components_moduclad_25_1200_390e.png"
   },
   {
     "code": "211A",
@@ -1920,7 +1935,7 @@
     "rawTrough": "50",
     "rawCoverWidth": "1050",
     "rawOverallWidth": "1093",
-    "image_file": "assets/images/211A.png"
+    "image_file": "assets/images/ash_lacy_al26_1050.png"
   },
   {
     "code": "396A",
@@ -1939,7 +1954,7 @@
     "rawTrough": "50",
     "rawCoverWidth": "1050",
     "rawOverallWidth": "1093",
-    "image_file": "assets/images/396A.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc_1050_pbl.png"
   },
   {
     "code": "211D",
@@ -1958,7 +1973,7 @@
     "rawTrough": "50",
     "rawCoverWidth": "1050",
     "rawOverallWidth": "1100",
-    "image_file": "assets/images/211D.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc_1050_sym.png"
   },
   {
     "code": "198C",
@@ -1977,7 +1992,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "750",
     "rawOverallWidth": "830",
-    "image_file": "assets/images/198C.png"
+    "image_file": "assets/images/european_profiles_ep_26_750.png"
   },
   {
     "code": "104B",
@@ -1996,7 +2011,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "750",
     "rawOverallWidth": "848",
-    "image_file": "assets/images/104B.png"
+    "image_file": "assets/images/european_profiles_ep_26_750_old_type.png"
   },
   {
     "code": "198B",
@@ -2015,7 +2030,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "900",
     "rawOverallWidth": "980",
-    "image_file": "assets/images/198B.png"
+    "image_file": "assets/images/european_profiles_ep_26_900.png"
   },
   {
     "code": "198G",
@@ -2034,7 +2049,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "900",
     "rawOverallWidth": "998",
-    "image_file": "assets/images/198G.png"
+    "image_file": "assets/images/brohome_26_900_forward.png"
   },
   {
     "code": "198D",
@@ -2053,7 +2068,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "900",
     "rawOverallWidth": "998",
-    "image_file": "assets/images/198D.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_26.png"
   },
   {
     "code": "198N",
@@ -2072,7 +2087,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "900",
     "rawOverallWidth": "998",
-    "image_file": "assets/images/198N.png"
+    "image_file": "assets/images/colormet_international_colormet_profile_26.png"
   },
   {
     "code": "104A",
@@ -2091,7 +2106,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "900",
     "rawOverallWidth": "998",
-    "image_file": "assets/images/104A.png"
+    "image_file": "assets/images/european_profiles_ep_26_900_old_type.png"
   },
   {
     "code": "198Q",
@@ -2110,7 +2125,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "900",
     "rawOverallWidth": "998",
-    "image_file": "assets/images/198Q.png"
+    "image_file": "assets/images/olympic_cladding_26_900_roof.png"
   },
   {
     "code": "198L",
@@ -2129,7 +2144,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "900",
     "rawOverallWidth": "998",
-    "image_file": "assets/images/198L.png"
+    "image_file": "assets/images/profiled_cladding_systems_26_900_forward.png"
   },
   {
     "code": "211B",
@@ -2148,7 +2163,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1050",
     "rawOverallWidth": "1093",
-    "image_file": "assets/images/211B.png"
+    "image_file": "assets/images/ash_lacy_al26_1050_reverse.png"
   },
   {
     "code": "211E",
@@ -2167,7 +2182,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1050",
     "rawOverallWidth": "1093",
-    "image_file": "assets/images/211E.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1050w.png"
   },
   {
     "code": "198K",
@@ -2186,7 +2201,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "900",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/198K.png"
+    "image_file": "assets/images/brohome_26_900_reverse.png"
   },
   {
     "code": "198E",
@@ -2205,7 +2220,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "900",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/198E.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_26_reverse.png"
   },
   {
     "code": "198P",
@@ -2224,7 +2239,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "900",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/198P.png"
+    "image_file": "assets/images/colormet_international_colormet_profile_26_reverse.png"
   },
   {
     "code": "198F",
@@ -2243,7 +2258,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "900",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/198F.png"
+    "image_file": "assets/images/european_profiles_ep_26_900_reverse.png"
   },
   {
     "code": "198R",
@@ -2262,7 +2277,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "900",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/198R.png"
+    "image_file": "assets/images/olympic_cladding_26_900_wall.png"
   },
   {
     "code": "198M",
@@ -2281,7 +2296,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "900",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/198M.png"
+    "image_file": "assets/images/profiled_cladding_systems_26_900_reverse.png"
   },
   {
     "code": "093A",
@@ -2300,7 +2315,7 @@
     "rawTrough": "75",
     "rawCoverWidth": "900",
     "rawOverallWidth": "950",
-    "image_file": "assets/images/093A.png"
+    "image_file": "assets/images/precision_metal_forming_r35.png"
   },
   {
     "code": "093D",
@@ -2319,7 +2334,7 @@
     "rawTrough": "75",
     "rawCoverWidth": "900",
     "rawOverallWidth": "973",
-    "image_file": "assets/images/093D.png"
+    "image_file": "assets/images/precision_metal_forming_r35a.png"
   },
   {
     "code": "093B",
@@ -2338,7 +2353,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "900",
     "rawOverallWidth": "940",
-    "image_file": "assets/images/093B.png"
+    "image_file": "assets/images/precision_metal_forming_c35.png"
   },
   {
     "code": "122A",
@@ -2357,7 +2372,7 @@
     "rawTrough": "75",
     "rawCoverWidth": "900",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/122A.png"
+    "image_file": "assets/images/ash_lacy_al1.png"
   },
   {
     "code": "122C",
@@ -2376,7 +2391,7 @@
     "rawTrough": "75",
     "rawCoverWidth": "900",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/122C.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc_900.png"
   },
   {
     "code": "122E",
@@ -2395,7 +2410,7 @@
     "rawTrough": "75",
     "rawCoverWidth": "900",
     "rawOverallWidth": "975",
-    "image_file": "assets/images/122E.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc_900_pbl.png"
   },
   {
     "code": "122B",
@@ -2414,7 +2429,7 @@
     "rawTrough": "36",
     "rawCoverWidth": "900",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/122B.png"
+    "image_file": "assets/images/ash_lacy_al1_reverse.png"
   },
   {
     "code": "122D",
@@ -2433,7 +2448,7 @@
     "rawTrough": "36",
     "rawCoverWidth": "900",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/122D.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc_900w.png"
   },
   {
     "code": "128A",
@@ -2452,7 +2467,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "450",
     "rawOverallWidth": "490",
-    "image_file": "assets/images/128A.png"
+    "image_file": "assets/images/ecometal_ecometal_450.png"
   },
   {
     "code": "120I",
@@ -2471,7 +2486,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "750",
     "rawOverallWidth": "790",
-    "image_file": "assets/images/120I.png"
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_750r.png"
   },
   {
     "code": "120E",
@@ -2490,7 +2505,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "900",
     "rawOverallWidth": "940",
-    "image_file": "assets/images/120E.png"
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_900r.png"
   },
   {
     "code": "120A",
@@ -2509,7 +2524,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "900",
     "rawOverallWidth": "975",
-    "image_file": "assets/images/120A.png"
+    "image_file": "assets/images/ecometal_ecometal_900.png"
   },
   {
     "code": "Adam G. Brown / Brown & Glegg",
@@ -2527,7 +2542,8 @@
     "rawCrown": "38",
     "rawTrough": "80",
     "rawCoverWidth": "19",
-    "rawOverallWidth": "750"
+    "rawOverallWidth": "750",
+    "image_file": "assets/images/formaclad_750c_780.png"
   },
   {
     "code": "120F",
@@ -2546,7 +2562,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "900",
     "rawOverallWidth": "930",
-    "image_file": "assets/images/120F.png"
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_900c.png"
   },
   {
     "code": "120G",
@@ -2565,7 +2581,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "900",
     "rawOverallWidth": "980",
-    "image_file": "assets/images/120G.png"
+    "image_file": "assets/images/quedron_distribution_ip40_900r.png"
   },
   {
     "code": "219E",
@@ -2584,7 +2600,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "750",
     "rawOverallWidth": "800",
-    "image_file": "assets/images/219E.png"
+    "image_file": "assets/images/european_profiles_ep_40_750_continental.png"
   },
   {
     "code": "219A",
@@ -2603,7 +2619,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "750",
     "rawOverallWidth": "821",
-    "image_file": "assets/images/219A.png"
+    "image_file": "assets/images/european_profiles_ep_40_750.png"
   },
   {
     "code": "219B",
@@ -2622,7 +2638,7 @@
     "rawTrough": "33",
     "rawCoverWidth": "750",
     "rawOverallWidth": "808",
-    "image_file": "assets/images/219B.png"
+    "image_file": "assets/images/european_profiles_ep_40_750_reversed.png"
   },
   {
     "code": "120H",
@@ -2641,7 +2657,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "900",
     "rawOverallWidth": "978",
-    "image_file": "assets/images/120H.png"
+    "image_file": "assets/images/quedron_distribution_ip40_900c.png"
   },
   {
     "code": "379A",
@@ -2660,7 +2676,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "900",
     "rawOverallWidth": "950",
-    "image_file": "assets/images/379A.png"
+    "image_file": "assets/images/v_a_w_uk_aluform_45_150.png"
   },
   {
     "code": "167C",
@@ -2679,7 +2695,7 @@
     "rawTrough": "60",
     "rawCoverWidth": "900",
     "rawOverallWidth": "952",
-    "image_file": "assets/images/167C.png"
+    "image_file": "assets/images/gasell_profiles_ga_45_30_roofing_cladding.png"
   },
   {
     "code": "167A",
@@ -2698,7 +2714,7 @@
     "rawTrough": "60",
     "rawCoverWidth": "900",
     "rawOverallWidth": "926",
-    "image_file": "assets/images/167A.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_p45r_old_type.png"
   },
   {
     "code": "167D",
@@ -2717,7 +2733,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "900",
     "rawOverallWidth": "952",
-    "image_file": "assets/images/167D.png"
+    "image_file": "assets/images/gasell_profiles_ga_45_60_cladding.png"
   },
   {
     "code": "167B",
@@ -2736,7 +2752,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "900",
     "rawOverallWidth": "926",
-    "image_file": "assets/images/167B.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_p45w_old_type.png"
   },
   {
     "code": "100A",
@@ -2754,7 +2770,8 @@
     "rawCrown": "25",
     "rawTrough": "74",
     "rawCoverWidth": "600",
-    "rawOverallWidth": "650"
+    "rawOverallWidth": "650",
+    "image_file": "assets/images/precision_metal_forming_r63.png"
   },
   {
     "code": "100C",
@@ -2772,7 +2789,8 @@
     "rawCrown": "25",
     "rawTrough": "74",
     "rawCoverWidth": "600",
-    "rawOverallWidth": "650"
+    "rawOverallWidth": "650",
+    "image_file": "assets/images/precision_metal_forming_type_250.png"
   },
   {
     "code": "100B",
@@ -2791,7 +2809,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "600",
     "rawOverallWidth": "635",
-    "image_file": "assets/images/100B.png"
+    "image_file": "assets/images/precision_metal_forming_c63.png"
   },
   {
     "code": "111A",
@@ -2810,7 +2828,7 @@
     "rawTrough": "76",
     "rawCoverWidth": "750",
     "rawOverallWidth": "798",
-    "image_file": "assets/images/111A.png"
+    "image_file": "assets/images/briggs_amasco_profile_65.png"
   },
   {
     "code": "083A",
@@ -2829,7 +2847,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "900",
     "rawOverallWidth": "957",
-    "image_file": "assets/images/083A.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_trp_65_150.png"
   },
   {
     "code": "223A",
@@ -2848,7 +2866,7 @@
     "rawTrough": "100",
     "rawCoverWidth": "914",
     "rawOverallWidth": "968",
-    "image_file": "assets/images/223A.png"
+    "image_file": "assets/images/quedron_distribution_qlp17s_914_liner.png"
   },
   {
     "code": "223B",
@@ -2866,7 +2884,8 @@
     "rawCrown": "22",
     "rawTrough": "100",
     "rawCoverWidth": "1067",
-    "rawOverallWidth": "1121"
+    "rawOverallWidth": "1121",
+    "image_file": "assets/images/quedron_distribution_agriclad_1067r.png"
   },
   {
     "code": "223E",
@@ -2884,7 +2903,8 @@
     "rawCrown": "22",
     "rawTrough": "100",
     "rawCoverWidth": "1067",
-    "rawOverallWidth": "1121"
+    "rawOverallWidth": "1121",
+    "image_file": "assets/images/quedron_distribution_ip17_1067r.png"
   },
   {
     "code": "223D",
@@ -2903,7 +2923,7 @@
     "rawTrough": "100",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1121",
-    "image_file": "assets/images/223D.png"
+    "image_file": "assets/images/quedron_distribution_qlp17s_1067_liner.png"
   },
   {
     "code": "343A",
@@ -2922,7 +2942,7 @@
     "rawTrough": "100",
     "rawCoverWidth": "914",
     "rawOverallWidth": "975",
-    "image_file": "assets/images/343A.png"
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_914_liner.png"
   },
   {
     "code": "223C",
@@ -2940,7 +2960,8 @@
     "rawCrown": "100",
     "rawTrough": "22",
     "rawCoverWidth": "1067",
-    "rawOverallWidth": "1115"
+    "rawOverallWidth": "1115",
+    "image_file": "assets/images/quedron_distribution_agriclad_1067c.png"
   },
   {
     "code": "223F",
@@ -2958,7 +2979,8 @@
     "rawCrown": "100",
     "rawTrough": "22",
     "rawCoverWidth": "1067",
-    "rawOverallWidth": "1115"
+    "rawOverallWidth": "1115",
+    "image_file": "assets/images/quedron_distribution_ip17_1067c.png"
   },
   {
     "code": "314A",
@@ -2977,7 +2999,7 @@
     "rawTrough": "109",
     "rawCoverWidth": "914",
     "rawOverallWidth": "984",
-    "image_file": "assets/images/314A.png"
+    "image_file": "assets/images/brohome_19_914_liner.png"
   },
   {
     "code": "129A",
@@ -2996,7 +3018,7 @@
     "rawTrough": "95",
     "rawCoverWidth": "914",
     "rawOverallWidth": "976",
-    "image_file": "assets/images/129A.png"
+    "image_file": "assets/images/precision_metal_forming_l19.png"
   },
   {
     "code": "129E",
@@ -3015,7 +3037,7 @@
     "rawTrough": "95",
     "rawCoverWidth": "914",
     "rawOverallWidth": "984",
-    "image_file": "assets/images/129E.png"
+    "image_file": "assets/images/precision_metal_forming_cl6_914_liner.png"
   },
   {
     "code": "129B",
@@ -3034,7 +3056,7 @@
     "rawTrough": "95",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1128",
-    "image_file": "assets/images/129B.png"
+    "image_file": "assets/images/precision_metal_forming_r19_fine_rib_19r.png"
   },
   {
     "code": "123E",
@@ -3053,7 +3075,7 @@
     "rawTrough": "98",
     "rawCoverWidth": "762",
     "rawOverallWidth": "808",
-    "image_file": "assets/images/123E.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc_762.png"
   },
   {
     "code": "123A",
@@ -3072,7 +3094,7 @@
     "rawTrough": "98",
     "rawCoverWidth": "762",
     "rawOverallWidth": "818",
-    "image_file": "assets/images/123A.png"
+    "image_file": "assets/images/ash_lacy_al5.png"
   },
   {
     "code": "123C",
@@ -3091,7 +3113,7 @@
     "rawTrough": "98",
     "rawCoverWidth": "762",
     "rawOverallWidth": "818",
-    "image_file": "assets/images/123C.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc_762_pbl.png"
   },
   {
     "code": "449A",
@@ -3110,7 +3132,7 @@
     "rawTrough": "100",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/449A.png"
+    "image_file": "assets/images/ca_profiles_ca_lt19_914_liner.png"
   },
   {
     "code": "129C",
@@ -3129,7 +3151,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1120",
-    "image_file": "assets/images/129C.png"
+    "image_file": "assets/images/precision_metal_forming_c19_fine_rib_19c.png"
   },
   {
     "code": "123D",
@@ -3148,7 +3170,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "762",
     "rawOverallWidth": "808",
-    "image_file": "assets/images/123D.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc_762w.png"
   },
   {
     "code": "123B",
@@ -3167,7 +3189,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "762",
     "rawOverallWidth": "818",
-    "image_file": "assets/images/123B.png"
+    "image_file": "assets/images/ash_lacy_al5_reverse.png"
   },
   {
     "code": "218C",
@@ -3186,7 +3208,7 @@
     "rawTrough": "56",
     "rawCoverWidth": "914",
     "rawOverallWidth": "951",
-    "image_file": "assets/images/218C.png"
+    "image_file": "assets/images/euroclad_20_914_f.png"
   },
   {
     "code": "218D",
@@ -3205,7 +3227,7 @@
     "rawTrough": "56",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/218D.png"
+    "image_file": "assets/images/euroclad_20_914_r.png"
   },
   {
     "code": "218F",
@@ -3224,7 +3246,7 @@
     "rawTrough": "56",
     "rawCoverWidth": "914",
     "rawOverallWidth": "994",
-    "image_file": "assets/images/218F.png"
+    "image_file": "assets/images/euroclad_20_914_liner.png"
   },
   {
     "code": "218A",
@@ -3243,7 +3265,7 @@
     "rawTrough": "56",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1104",
-    "image_file": "assets/images/218A.png"
+    "image_file": "assets/images/euroclad_20_1066_f.png"
   },
   {
     "code": "218B",
@@ -3262,7 +3284,7 @@
     "rawTrough": "56",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1125",
-    "image_file": "assets/images/218B.png"
+    "image_file": "assets/images/euroclad_20_1066_r.png"
   },
   {
     "code": "218E",
@@ -3281,7 +3303,7 @@
     "rawTrough": "56",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1147",
-    "image_file": "assets/images/218E.png"
+    "image_file": "assets/images/euroclad_20_1066_liner.png"
   },
   {
     "code": "035A",
@@ -3300,7 +3322,7 @@
     "rawTrough": "76",
     "rawCoverWidth": "762",
     "rawOverallWidth": "851",
-    "image_file": "assets/images/035A.png"
+    "image_file": "assets/images/precision_metal_forming_type_e.png"
   },
   {
     "code": "112B",
@@ -3319,7 +3341,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/112b.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_wa6.png"
   },
   {
     "code": "112Y",
@@ -3338,7 +3360,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/112y.png"
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_914r.png"
   },
   {
     "code": "112n",
@@ -3357,7 +3379,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/112N.png"
+    "image_file": "assets/images/b_w_industries_bw_a6r.png"
   },
   {
     "code": "112Q",
@@ -3376,7 +3398,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/112q.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_38.png"
   },
   {
     "code": "112r",
@@ -3395,7 +3417,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/112r.png"
+    "image_file": "assets/images/colormet_international_colormet_profile_38.png"
   },
   {
     "code": "112h",
@@ -3414,7 +3436,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/112H.png"
+    "image_file": "assets/images/firth_steels_norclad_wa6_r.png"
   },
   {
     "code": "135A",
@@ -3433,7 +3455,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/135A.png"
+    "image_file": "assets/images/haironville_tac_wa6.png"
   },
   {
     "code": "112p",
@@ -3452,7 +3474,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/112p.png"
+    "image_file": "assets/images/industrial_cladding_systems_cladrite_38_914.png"
   },
   {
     "code": "112G",
@@ -3471,7 +3493,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/112G.png"
+    "image_file": "assets/images/precision_metal_forming_r38.png"
   },
   {
     "code": "112S",
@@ -3490,7 +3512,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112s.png"
+    "image_file": "assets/images/atlas_coated_steels_rwa6.png"
   },
   {
     "code": "112b",
@@ -3509,7 +3531,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112b.png"
+    "image_file": "assets/images/brohome_38_914_forward.png"
   },
   {
     "code": "112k",
@@ -3528,7 +3550,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112K.png"
+    "image_file": "assets/images/ca_profiles_ca_38_914r.png"
   },
   {
     "code": "112I",
@@ -3547,7 +3569,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112i.png"
+    "image_file": "assets/images/corrugated_sheets_profiles_hi_38.png"
   },
   {
     "code": "112.",
@@ -3565,7 +3587,8 @@
     "rawCrown": "19",
     "rawTrough": "82",
     "rawCoverWidth": "914",
-    "rawOverallWidth": "988"
+    "rawOverallWidth": "988",
+    "image_file": "assets/images/coverworld_uk_cr38.png"
   },
   {
     "code": "112x",
@@ -3584,7 +3607,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112X.png"
+    "image_file": "assets/images/ecometal_ecometal_wa6.png"
   },
   {
     "code": "112U",
@@ -3603,7 +3626,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112u.png"
+    "image_file": "assets/images/euroclad_38_914.png"
   },
   {
     "code": "112X",
@@ -3622,7 +3645,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112X.png"
+    "image_file": "assets/images/gleno_industries_gl38.png"
   },
   {
     "code": "112K",
@@ -3641,7 +3664,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112K.png"
+    "image_file": "assets/images/haironville_tac_r38_6_152_38t.png"
   },
   {
     "code": "112u",
@@ -3660,7 +3683,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112u.png"
+    "image_file": "assets/images/heys_shaw_rwa6.png"
   },
   {
     "code": "112l",
@@ -3679,7 +3702,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112l.png"
+    "image_file": "assets/images/hi_tech_industrial_cladding_38_rib.png"
   },
   {
     "code": "112M",
@@ -3698,7 +3721,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112M.png"
+    "image_file": "assets/images/precision_metal_forming_r38a.png"
   },
   {
     "code": "112y",
@@ -3717,7 +3740,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112y.png"
+    "image_file": "assets/images/profiled_cladding_systems_38_914_forward.png"
   },
   {
     "code": "112a",
@@ -3735,7 +3758,8 @@
     "rawCrown": "19",
     "rawTrough": "82",
     "rawCoverWidth": "914",
-    "rawOverallWidth": "988"
+    "rawOverallWidth": "988",
+    "image_file": "assets/images/rigidal_industries_classic_38_152_914r.png"
   },
   {
     "code": "112m",
@@ -3754,7 +3778,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112M.png"
+    "image_file": "assets/images/rigidal_industries_talspan_r38.png"
   },
   {
     "code": "112i",
@@ -3773,7 +3797,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/112i.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_38r.png"
   },
   {
     "code": "112e",
@@ -3792,7 +3816,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "914",
     "rawOverallWidth": "996",
-    "image_file": "assets/images/112e.png"
+    "image_file": "assets/images/quedron_distribution_wa6.png"
   },
   {
     "code": "112C",
@@ -3811,7 +3835,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1110",
-    "image_file": "assets/images/112c.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_wa7.png"
   },
   {
     "code": "112N",
@@ -3830,7 +3854,7 @@
     "rawTrough": "82",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1111",
-    "image_file": "assets/images/112N.png"
+    "image_file": "assets/images/euroclad_38_1066_f.png"
   },
   {
     "code": "112E",
@@ -3849,7 +3873,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "944",
-    "image_file": "assets/images/112e.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_wa6m.png"
   },
   {
     "code": "112Z",
@@ -3868,7 +3892,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "944",
-    "image_file": "assets/images/112z.png"
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_914c.png"
   },
   {
     "code": "112.",
@@ -3886,7 +3910,8 @@
     "rawCrown": "82",
     "rawTrough": "19",
     "rawCoverWidth": "914",
-    "rawOverallWidth": "944"
+    "rawOverallWidth": "944",
+    "image_file": "assets/images/coverworld_uk_cw38.png"
   },
   {
     "code": "135B",
@@ -3905,7 +3930,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "944",
-    "image_file": "assets/images/135B.png"
+    "image_file": "assets/images/haironville_tac_wa6c.png"
   },
   {
     "code": "112q",
@@ -3924,7 +3949,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "944",
-    "image_file": "assets/images/112q.png"
+    "image_file": "assets/images/industrial_cladding_systems_cladrite_38_914_reverse.png"
   },
   {
     "code": "112H",
@@ -3943,7 +3968,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "944",
-    "image_file": "assets/images/112H.png"
+    "image_file": "assets/images/precision_metal_forming_c38.png"
   },
   {
     "code": "112j",
@@ -3962,7 +3987,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "944",
-    "image_file": "assets/images/112j.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_38w.png"
   },
   {
     "code": "112o",
@@ -3981,7 +4006,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/112O.png"
+    "image_file": "assets/images/b_w_industries_bw_a6w.png"
   },
   {
     "code": "112T",
@@ -4000,7 +4025,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112T.png"
+    "image_file": "assets/images/atlas_coated_steels_cwa6.png"
   },
   {
     "code": "112c",
@@ -4019,7 +4044,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112c.png"
+    "image_file": "assets/images/brohome_38_914_reverse.png"
   },
   {
     "code": "112t",
@@ -4038,7 +4063,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112T.png"
+    "image_file": "assets/images/ca_profiles_ca_38_914w.png"
   },
   {
     "code": "112R",
@@ -4057,7 +4082,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112r.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_38_reverse.png"
   },
   {
     "code": "112s",
@@ -4076,7 +4101,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112s.png"
+    "image_file": "assets/images/colormet_international_colormet_profile_38_reverse.png"
   },
   {
     "code": "112g",
@@ -4095,7 +4120,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112G.png"
+    "image_file": "assets/images/corrugated_sheets_profiles_hi_38_reverse.png"
   },
   {
     "code": "112O",
@@ -4114,7 +4139,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112O.png"
+    "image_file": "assets/images/euroclad_38_914_r.png"
   },
   {
     "code": "112V",
@@ -4133,7 +4158,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112v.png"
+    "image_file": "assets/images/gleno_industries_gl38r.png"
   },
   {
     "code": "Haironville TAC",
@@ -4151,7 +4176,8 @@
     "rawCrown": "38",
     "rawTrough": "82",
     "rawCoverWidth": "19",
-    "rawOverallWidth": "914"
+    "rawOverallWidth": "914",
+    "image_file": "assets/images/c38_6_152_38b_972.png"
   },
   {
     "code": "112v",
@@ -4170,7 +4196,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112v.png"
+    "image_file": "assets/images/heys_shaw_cwa6.png"
   },
   {
     "code": "112.",
@@ -4188,7 +4214,8 @@
     "rawCrown": "82",
     "rawTrough": "19",
     "rawCoverWidth": "914",
-    "rawOverallWidth": "972"
+    "rawOverallWidth": "972",
+    "image_file": "assets/images/hi_tech_industrial_cladding_38_crest.png"
   },
   {
     "code": "112J",
@@ -4207,7 +4234,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112j.png"
+    "image_file": "assets/images/precision_metal_forming_c38a.png"
   },
   {
     "code": "112z",
@@ -4226,7 +4253,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "972",
-    "image_file": "assets/images/112z.png"
+    "image_file": "assets/images/profiled_cladding_systems_38_914_reverse.png"
   },
   {
     "code": "112d",
@@ -4244,7 +4271,8 @@
     "rawCrown": "82",
     "rawTrough": "19",
     "rawCoverWidth": "914",
-    "rawOverallWidth": "972"
+    "rawOverallWidth": "972",
+    "image_file": "assets/images/rigidal_industries_classic_38_152_914v.png"
   },
   {
     "code": "112w",
@@ -4262,7 +4290,8 @@
     "rawCrown": "82",
     "rawTrough": "19",
     "rawCoverWidth": "914",
-    "rawOverallWidth": "972"
+    "rawOverallWidth": "972",
+    "image_file": "assets/images/rigidal_industries_talspan_c38.png"
   },
   {
     "code": "112f",
@@ -4281,7 +4310,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "914",
     "rawOverallWidth": "992",
-    "image_file": "assets/images/112f.png"
+    "image_file": "assets/images/quedron_distribution_wa6m.png"
   },
   {
     "code": "112P",
@@ -4300,7 +4329,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1098",
-    "image_file": "assets/images/112p.png"
+    "image_file": "assets/images/euroclad_38_1066_r.png"
   },
   {
     "code": "036A",
@@ -4319,7 +4348,7 @@
     "rawTrough": "41",
     "rawCoverWidth": "762",
     "rawOverallWidth": "822",
-    "image_file": "assets/images/036A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_wb5.png"
   },
   {
     "code": "036B",
@@ -4338,7 +4367,7 @@
     "rawTrough": "41",
     "rawCoverWidth": "914",
     "rawOverallWidth": "974",
-    "image_file": "assets/images/036B.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_wb6.png"
   },
   {
     "code": "049A",
@@ -4357,7 +4386,7 @@
     "rawTrough": "41",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1127",
-    "image_file": "assets/images/049A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_wb7.png"
   },
   {
     "code": "036F",
@@ -4375,7 +4404,8 @@
     "rawCrown": "21",
     "rawTrough": "41",
     "rawCoverWidth": "914",
-    "rawOverallWidth": "974"
+    "rawOverallWidth": "974",
+    "image_file": "assets/images/rigidal_industries_classic_45_152_914.png"
   },
   {
     "code": "036D",
@@ -4393,7 +4423,8 @@
     "rawCrown": "21",
     "rawTrough": "41",
     "rawCoverWidth": "914",
-    "rawOverallWidth": "974"
+    "rawOverallWidth": "974",
+    "image_file": "assets/images/rigidal_industries_talspan_wb6.png"
   },
   {
     "code": "057A",
@@ -4412,7 +4443,7 @@
     "rawTrough": "89",
     "rawCoverWidth": "762",
     "rawOverallWidth": "799",
-    "image_file": "assets/images/057A.png"
+    "image_file": "assets/images/british_steel_decking.png"
   },
   {
     "code": "058E",
@@ -4430,7 +4461,8 @@
     "rawCrown": "29",
     "rawTrough": "29",
     "rawCoverWidth": "762",
-    "rawOverallWidth": "838"
+    "rawOverallWidth": "838",
+    "image_file": "assets/images/rigidal_industries_classic_65_152_762.png"
   },
   {
     "code": "058D",
@@ -4448,7 +4480,8 @@
     "rawCrown": "29",
     "rawTrough": "29",
     "rawCoverWidth": "762",
-    "rawOverallWidth": "838"
+    "rawOverallWidth": "838",
+    "image_file": "assets/images/rigidal_industries_rigidal_c5.png"
   },
   {
     "code": "058A",
@@ -4467,7 +4500,7 @@
     "rawTrough": "29",
     "rawCoverWidth": "762",
     "rawOverallWidth": "838",
-    "image_file": "assets/images/058A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_c5.png"
   },
   {
     "code": "058B",
@@ -4486,7 +4519,7 @@
     "rawTrough": "29",
     "rawCoverWidth": "914",
     "rawOverallWidth": "990",
-    "image_file": "assets/images/058B.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_c6.png"
   },
   {
     "code": "381A",
@@ -4505,7 +4538,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "915",
     "rawOverallWidth": "965",
-    "image_file": "assets/images/381A.png"
+    "image_file": "assets/images/hoogovens_aluminium_building_systems_kal_bau_tr_30_152r.png"
   },
   {
     "code": "381B",
@@ -4524,7 +4557,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "915",
     "rawOverallWidth": "955",
-    "image_file": "assets/images/381B.png"
+    "image_file": "assets/images/hoogovens_aluminium_building_systems_kal_bau_tr_30_152w.png"
   },
   {
     "code": "461A",
@@ -4543,7 +4576,7 @@
     "rawTrough": "93",
     "rawCoverWidth": "945",
     "rawOverallWidth": "1015",
-    "image_file": "assets/images/461A.png"
+    "image_file": "assets/images/concrete_portal_frames_sr20.png"
   },
   {
     "code": "413A",
@@ -4562,7 +4595,7 @@
     "rawTrough": "96",
     "rawCoverWidth": "945",
     "rawOverallWidth": "1002",
-    "image_file": "assets/images/413A.png"
+    "image_file": "assets/images/concrete_portal_frames_sr35.png"
   },
   {
     "code": "183A",
@@ -4581,7 +4614,7 @@
     "rawTrough": "40",
     "rawCoverWidth": "948",
     "rawOverallWidth": "1028",
-    "image_file": "assets/images/183A.png"
+    "image_file": "assets/images/h_h_robertson_uk_mhr3.png"
   },
   {
     "code": "413B",
@@ -4600,7 +4633,7 @@
     "rawTrough": "21",
     "rawCoverWidth": "945",
     "rawOverallWidth": "981",
-    "image_file": "assets/images/413B.png"
+    "image_file": "assets/images/concrete_portal_frames_sw35.png"
   },
   {
     "code": "206A",
@@ -4619,7 +4652,7 @@
     "rawTrough": "94",
     "rawCoverWidth": "950",
     "rawOverallWidth": "993",
-    "image_file": "assets/images/206A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_b950_bigrib.png"
   },
   {
     "code": "206D",
@@ -4638,7 +4671,7 @@
     "rawTrough": "94",
     "rawCoverWidth": "950",
     "rawOverallWidth": "1012",
-    "image_file": "assets/images/206D.png"
+    "image_file": "assets/images/ward_building_components_moduclad_b950_pbl_bigrib.png"
   },
   {
     "code": "206E",
@@ -4657,7 +4690,7 @@
     "rawTrough": "22",
     "rawCoverWidth": "950",
     "rawOverallWidth": "993",
-    "image_file": "assets/images/206E.png"
+    "image_file": "assets/images/ward_building_components_moduclad_d950.png"
   },
   {
     "code": "113D",
@@ -4676,7 +4709,7 @@
     "rawTrough": "88",
     "rawCoverWidth": "800",
     "rawOverallWidth": "850",
-    "image_file": "assets/images/113D.png"
+    "image_file": "assets/images/construction_metal_products_cape_800_30_rib_face.png"
   },
   {
     "code": "113E",
@@ -4695,7 +4728,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "800",
     "rawOverallWidth": "835",
-    "image_file": "assets/images/113E.png"
+    "image_file": "assets/images/construction_metal_products_cape_800_30_crest_face.png"
   },
   {
     "code": "116A",
@@ -4714,7 +4747,7 @@
     "rawTrough": "88",
     "rawCoverWidth": "960",
     "rawOverallWidth": "1010",
-    "image_file": "assets/images/116A.png"
+    "image_file": "assets/images/precision_metal_forming_r32s.png"
   },
   {
     "code": "113C",
@@ -4733,7 +4766,7 @@
     "rawTrough": "88",
     "rawCoverWidth": "960",
     "rawOverallWidth": "1010",
-    "image_file": "assets/images/113C.png"
+    "image_file": "assets/images/tegral_metal_forming_tmr_32.png"
   },
   {
     "code": "113A",
@@ -4752,7 +4785,7 @@
     "rawTrough": "88",
     "rawCoverWidth": "960",
     "rawOverallWidth": "1038",
-    "image_file": "assets/images/113A.png"
+    "image_file": "assets/images/precision_metal_forming_r32.png"
   },
   {
     "code": "116B",
@@ -4771,7 +4804,7 @@
     "rawTrough": "27",
     "rawCoverWidth": "960",
     "rawOverallWidth": "995",
-    "image_file": "assets/images/116B.png"
+    "image_file": "assets/images/precision_metal_forming_c32s.png"
   },
   {
     "code": "113B",
@@ -4790,7 +4823,7 @@
     "rawTrough": "27",
     "rawCoverWidth": "960",
     "rawOverallWidth": "1023",
-    "image_file": "assets/images/113B.png"
+    "image_file": "assets/images/precision_metal_forming_c32.png"
   },
   {
     "code": "171G",
@@ -4809,7 +4842,7 @@
     "rawTrough": "90",
     "rawCoverWidth": "960",
     "rawOverallWidth": "1000",
-    "image_file": "assets/images/171G.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr38s.png"
   },
   {
     "code": "171A",
@@ -4828,7 +4861,7 @@
     "rawTrough": "90",
     "rawCoverWidth": "960",
     "rawOverallWidth": "1000",
-    "image_file": "assets/images/171A.png"
+    "image_file": "assets/images/h_h_robertson_uk_ibr6.png"
   },
   {
     "code": "171D",
@@ -4847,7 +4880,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "960",
     "rawOverallWidth": "989",
-    "image_file": "assets/images/171D.png"
+    "image_file": "assets/images/h_h_robertson_uk_br6_c.png"
   },
   {
     "code": "171F",
@@ -4866,7 +4899,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "960",
     "rawOverallWidth": "989",
-    "image_file": "assets/images/171F.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr38v.png"
   },
   {
     "code": "171B",
@@ -4885,7 +4918,7 @@
     "rawTrough": "19",
     "rawCoverWidth": "960",
     "rawOverallWidth": "1000",
-    "image_file": "assets/images/171B.png"
+    "image_file": "assets/images/h_h_robertson_uk_br6_s.png"
   },
   {
     "code": "382A",
@@ -4904,7 +4937,7 @@
     "rawTrough": "100",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1090",
-    "image_file": "assets/images/382A.png"
+    "image_file": "assets/images/ayrshire_metal_products_lss_500_1000mm_cover.png"
   },
   {
     "code": "204A",
@@ -4923,7 +4956,7 @@
     "rawTrough": "117",
     "rawCoverWidth": "825",
     "rawOverallWidth": "883",
-    "image_file": "assets/images/204A.png"
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_825r.png"
   },
   {
     "code": "204B",
@@ -4942,7 +4975,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "825",
     "rawOverallWidth": "864",
-    "image_file": "assets/images/204B.png"
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_825c.png"
   },
   {
     "code": "339A",
@@ -4961,7 +4994,7 @@
     "rawTrough": "92",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1100",
-    "image_file": "assets/images/339A.png"
+    "image_file": "assets/images/steelpress_profiles_sp_15_1000_liner.png"
   },
   {
     "code": "488A",
@@ -4980,7 +5013,7 @@
     "rawTrough": "112",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/488A.png"
+    "image_file": "assets/images/quedron_distribution_qlp_17s_1000_liner_modified.png"
   },
   {
     "code": "260A",
@@ -4999,7 +5032,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1059",
-    "image_file": "assets/images/260A.png"
+    "image_file": "assets/images/quedron_distribution_qlp_17s_1000_liner.png"
   },
   {
     "code": "342A",
@@ -5017,7 +5050,8 @@
     "rawCrown": "25",
     "rawTrough": "109",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1061"
+    "rawOverallWidth": "1061",
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_1000_17_liner.png"
   },
   {
     "code": "527A",
@@ -5036,7 +5070,7 @@
     "rawTrough": "120",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1055",
-    "image_file": "assets/images/527A.png"
+    "image_file": "assets/images/brohome_19_1000_liner.png"
   },
   {
     "code": "292A",
@@ -5055,7 +5089,7 @@
     "rawTrough": "104",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1092",
-    "image_file": "assets/images/292A.png"
+    "image_file": "assets/images/euroclad_19_1000_liner.png"
   },
   {
     "code": "153A",
@@ -5074,7 +5108,7 @@
     "rawTrough": "107",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1046",
-    "image_file": "assets/images/153A.png"
+    "image_file": "assets/images/british_steel_1000lp_liner.png"
   },
   {
     "code": "153D",
@@ -5093,7 +5127,7 @@
     "rawTrough": "107",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1046",
-    "image_file": "assets/images/153D.png"
+    "image_file": "assets/images/precision_metal_forming_lp1000_liner.png"
   },
   {
     "code": "367A",
@@ -5112,7 +5146,7 @@
     "rawTrough": "88",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/367A.png"
+    "image_file": "assets/images/steelpress_profiles_sp_20_1000_liner.png"
   },
   {
     "code": "352B",
@@ -5131,7 +5165,7 @@
     "rawTrough": "114",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/352B.png"
+    "image_file": "assets/images/a_steadman_son_as_24_1000r.png"
   },
   {
     "code": "352A",
@@ -5150,7 +5184,7 @@
     "rawTrough": "114",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1063",
-    "image_file": "assets/images/352A.png"
+    "image_file": "assets/images/a_steadman_son_as_24_1000r_pbl.png"
   },
   {
     "code": "352C",
@@ -5169,7 +5203,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1026",
-    "image_file": "assets/images/352C.png"
+    "image_file": "assets/images/a_steadman_son_as_24_1000w.png"
   },
   {
     "code": "436A",
@@ -5188,7 +5222,7 @@
     "rawTrough": "85",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1061",
-    "image_file": "assets/images/436A.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_26r.png"
   },
   {
     "code": "297D",
@@ -5207,7 +5241,7 @@
     "rawTrough": "87",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/297D.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_26_1000.png"
   },
   {
     "code": "297E",
@@ -5226,7 +5260,7 @@
     "rawTrough": "87",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/297E.png"
+    "image_file": "assets/images/colormet_international_colormet_26_1000.png"
   },
   {
     "code": "297B",
@@ -5245,7 +5279,7 @@
     "rawTrough": "87",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/297B.png"
+    "image_file": "assets/images/shufflebottom_sh_1000_26_rw.png"
   },
   {
     "code": "297A",
@@ -5264,7 +5298,7 @@
     "rawTrough": "87",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/297A.png"
+    "image_file": "assets/images/industrial_cladding_systems_cladrite_26_1000.png"
   },
   {
     "code": "436B",
@@ -5283,7 +5317,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1064",
-    "image_file": "assets/images/436B.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_26w.png"
   },
   {
     "code": "297C",
@@ -5302,7 +5336,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/297C.png"
+    "image_file": "assets/images/shufflebottom_sh_1000_26_w.png"
   },
   {
     "code": "297F",
@@ -5321,7 +5355,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1061",
-    "image_file": "assets/images/297F.png"
+    "image_file": "assets/images/industrial_cladding_systems_cladrite_26_1000_reverse.png"
   },
   {
     "code": "402C",
@@ -5340,7 +5374,7 @@
     "rawTrough": "87",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1073",
-    "image_file": "assets/images/402C.png"
+    "image_file": "assets/images/moores_profiles_mp30r.png"
   },
   {
     "code": "402A",
@@ -5359,7 +5393,7 @@
     "rawTrough": "87",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1073",
-    "image_file": "assets/images/402A.png"
+    "image_file": "assets/images/steel_shield_ss31r.png"
   },
   {
     "code": "402D",
@@ -5378,7 +5412,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1058",
-    "image_file": "assets/images/402D.png"
+    "image_file": "assets/images/moores_profiles_mp30w.png"
   },
   {
     "code": "402B",
@@ -5397,7 +5431,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1058",
-    "image_file": "assets/images/402B.png"
+    "image_file": "assets/images/steel_shield_ss31w.png"
   },
   {
     "code": "216E",
@@ -5416,7 +5450,7 @@
     "rawTrough": "99",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1042",
-    "image_file": "assets/images/216E.png"
+    "image_file": "assets/images/architectural_profiles_ap_31r.png"
   },
   {
     "code": "216A",
@@ -5435,7 +5469,7 @@
     "rawTrough": "99",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1042",
-    "image_file": "assets/images/216A.png"
+    "image_file": "assets/images/quedron_distribution_mw31r.png"
   },
   {
     "code": "216B",
@@ -5453,7 +5487,8 @@
     "rawCrown": "23",
     "rawTrough": "99",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1065"
+    "rawOverallWidth": "1065",
+    "image_file": "assets/images/quedron_distribution_mw31r_pbl.png"
   },
   {
     "code": "216D",
@@ -5471,7 +5506,8 @@
     "rawCrown": "23",
     "rawTrough": "99",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1065"
+    "rawOverallWidth": "1065",
+    "image_file": "assets/images/quedron_distribution_fsm_31r.png"
   },
   {
     "code": "216C",
@@ -5490,7 +5526,7 @@
     "rawTrough": "23",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1038",
-    "image_file": "assets/images/216C.png"
+    "image_file": "assets/images/quedron_distribution_mw31c.png"
   },
   {
     "code": "283A",
@@ -5509,11 +5545,11 @@
     "rawTrough": "94",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/283A.png"
+    "image_file": "assets/images/euroclad_32_1000_f.png"
   },
   {
     "code": "283C",
-    "profileName": "32/1000/F ‘Special’",
+    "profileName": "32/1000/F \u2018Special\u2019",
     "manufacturer": "Euroclad",
     "shape": "unknown",
     "pitch": 167,
@@ -5528,7 +5564,7 @@
     "rawTrough": "94",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/283C.png"
+    "image_file": "assets/images/euroclad_32_1000_f_special.png"
   },
   {
     "code": "283D",
@@ -5547,7 +5583,7 @@
     "rawTrough": "94",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/283D.png"
+    "image_file": "assets/images/rollaclad_rc_32_1000.png"
   },
   {
     "code": "283G",
@@ -5566,7 +5602,7 @@
     "rawTrough": "94",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1071",
-    "image_file": "assets/images/283G.png"
+    "image_file": "assets/images/gasell_profiles_ga_32_23_sr.png"
   },
   {
     "code": "341A",
@@ -5585,7 +5621,7 @@
     "rawTrough": "93",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/341A.png"
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_1000_32r.png"
   },
   {
     "code": "700B",
@@ -5604,7 +5640,7 @@
     "rawTrough": "101",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/700B.png"
+    "image_file": "assets/images/rigidal_industries_classic_32_167_1000r.png"
   },
   {
     "code": "700A",
@@ -5623,7 +5659,7 @@
     "rawTrough": "101",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1058",
-    "image_file": "assets/images/700A.png"
+    "image_file": "assets/images/rigidal_industries_classic_32_167_1000r_pbl.png"
   },
   {
     "code": "700D",
@@ -5642,7 +5678,7 @@
     "rawTrough": "101",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1070",
-    "image_file": "assets/images/700D.png"
+    "image_file": "assets/images/rigidal_industries_classic_32_167_1000_liner.png"
   },
   {
     "code": "361A",
@@ -5661,7 +5697,7 @@
     "rawTrough": "86",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/361A.png"
+    "image_file": "assets/images/ca_profiles_ca_32_1000r.png"
   },
   {
     "code": "361B",
@@ -5680,7 +5716,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1043",
-    "image_file": "assets/images/361B.png"
+    "image_file": "assets/images/ca_profiles_ca_32_1000w.png"
   },
   {
     "code": "341B",
@@ -5699,7 +5735,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1033",
-    "image_file": "assets/images/341B.png"
+    "image_file": "assets/images/adam_g_brown_brown_glegg_formaclad_1000_32c.png"
   },
   {
     "code": "283B",
@@ -5718,7 +5754,7 @@
     "rawTrough": "23",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/283B.png"
+    "image_file": "assets/images/euroclad_32_1000_r.png"
   },
   {
     "code": "283F",
@@ -5737,7 +5773,7 @@
     "rawTrough": "23",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/283F.png"
+    "image_file": "assets/images/rollaclad_rc_32_1000_r.png"
   },
   {
     "code": "700C",
@@ -5756,7 +5792,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1034",
-    "image_file": "assets/images/700C.png"
+    "image_file": "assets/images/rigidal_industries_classic_32_167_1000v.png"
   },
   {
     "code": "Brunel Steel Services",
@@ -5774,7 +5810,8 @@
     "rawCrown": "33",
     "rawTrough": "29",
     "rawCoverWidth": "67",
-    "rawOverallWidth": "1000"
+    "rawOverallWidth": "1000",
+    "image_file": "assets/images/33_1000_roof_1060.png"
   },
   {
     "code": "361C",
@@ -5793,7 +5830,7 @@
     "rawTrough": "86",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/361C.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc32_1000.png"
   },
   {
     "code": "192A",
@@ -5812,7 +5849,7 @@
     "rawTrough": "85/251",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1070",
-    "image_file": "assets/images/192A.png"
+    "image_file": "assets/images/ash_lacy_al33_1000.png"
   },
   {
     "code": "179Q",
@@ -5831,7 +5868,7 @@
     "rawTrough": "29",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/179Q.png"
+    "image_file": "assets/images/brunel_steel_services_33_1000_wall.png"
   },
   {
     "code": "192B",
@@ -5850,7 +5887,7 @@
     "rawTrough": "33",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/192B.png"
+    "image_file": "assets/images/ash_lacy_al33_1000_reverse.png"
   },
   {
     "code": "361D",
@@ -5869,7 +5906,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1043",
-    "image_file": "assets/images/361D.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc32w_1000.png"
   },
   {
     "code": "278A",
@@ -5888,7 +5925,7 @@
     "rawTrough": "75",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/278A.png"
+    "image_file": "assets/images/a_steadman_son_as_34_1000r.png"
   },
   {
     "code": "278B",
@@ -5907,7 +5944,7 @@
     "rawTrough": "75",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1091",
-    "image_file": "assets/images/278B.png"
+    "image_file": "assets/images/a_steadman_son_as_34_1000r_pbl.png"
   },
   {
     "code": "312A",
@@ -5926,7 +5963,7 @@
     "rawTrough": "71",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/312A.png"
+    "image_file": "assets/images/hi_tech_industrial_cladding_34_rib.png"
   },
   {
     "code": "179F",
@@ -5945,7 +5982,7 @@
     "rawTrough": "67",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/179F.png"
+    "image_file": "assets/images/alpha_building_components_alpha_metre.png"
   },
   {
     "code": "179D",
@@ -5964,7 +6001,7 @@
     "rawTrough": "67",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/179D.png"
+    "image_file": "assets/images/brohome_34_1000_forward.png"
   },
   {
     "code": "179A",
@@ -5983,7 +6020,7 @@
     "rawTrough": "66",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/179A.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_34.png"
   },
   {
     "code": "179L",
@@ -6002,7 +6039,7 @@
     "rawTrough": "66",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/179L.png"
+    "image_file": "assets/images/colormet_international_colormet_profile_34.png"
   },
   {
     "code": "179R",
@@ -6021,7 +6058,7 @@
     "rawTrough": "66",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/179R.png"
+    "image_file": "assets/images/coverworld_uk_cr_34.png"
   },
   {
     "code": "179K",
@@ -6040,7 +6077,7 @@
     "rawTrough": "66",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/179K.png"
+    "image_file": "assets/images/industrial_cladding_systems_cladrite_34_1000.png"
   },
   {
     "code": "179I",
@@ -6059,7 +6096,7 @@
     "rawTrough": "66",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/179I.png"
+    "image_file": "assets/images/profiled_cladding_systems_34_1000_forward.png"
   },
   {
     "code": "179G",
@@ -6078,7 +6115,7 @@
     "rawTrough": "66",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/179G.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_34r.png"
   },
   {
     "code": "612C",
@@ -6097,7 +6134,7 @@
     "rawTrough": "81",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1068",
-    "image_file": "assets/images/612C.png"
+    "image_file": "assets/images/coloured_metal_profiles_q34_1000r.png"
   },
   {
     "code": "612A",
@@ -6116,7 +6153,7 @@
     "rawTrough": "81",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1068",
-    "image_file": "assets/images/612A.png"
+    "image_file": "assets/images/cover_structure_q34_1000r.png"
   },
   {
     "code": "179B",
@@ -6135,7 +6172,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/179B.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_34_reverse.png"
   },
   {
     "code": "179M",
@@ -6154,7 +6191,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/179M.png"
+    "image_file": "assets/images/colormet_international_colormet_profile_34_reverse.png"
   },
   {
     "code": "179S",
@@ -6173,7 +6210,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/179S.png"
+    "image_file": "assets/images/coverworld_uk_cw_34.png"
   },
   {
     "code": "179J",
@@ -6192,7 +6229,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/179J.png"
+    "image_file": "assets/images/profiled_cladding_systems_34_1000_reverse.png"
   },
   {
     "code": "179H",
@@ -6211,7 +6248,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/179H.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_34w.png"
   },
   {
     "code": "179N",
@@ -6230,7 +6267,7 @@
     "rawTrough": "29",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/179N.png"
+    "image_file": "assets/images/alpha_building_components_alpha_metre_reverse.png"
   },
   {
     "code": "179E",
@@ -6249,7 +6286,7 @@
     "rawTrough": "29",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/179E.png"
+    "image_file": "assets/images/brohome_34_1000_reverse.png"
   },
   {
     "code": "312B",
@@ -6268,7 +6305,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1035",
-    "image_file": "assets/images/312B.png"
+    "image_file": "assets/images/hi_tech_industrial_cladding_34_crest.png"
   },
   {
     "code": "278C",
@@ -6287,7 +6324,7 @@
     "rawTrough": "23",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1031",
-    "image_file": "assets/images/278C.png"
+    "image_file": "assets/images/a_steadman_son_as_34_1000w.png"
   },
   {
     "code": "612D",
@@ -6306,7 +6343,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/612D.png"
+    "image_file": "assets/images/coloured_metal_profiles_q34_1000w.png"
   },
   {
     "code": "612B",
@@ -6325,7 +6362,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/612B.png"
+    "image_file": "assets/images/cover_structure_q34_1000w.png"
   },
   {
     "code": "338A",
@@ -6344,7 +6381,7 @@
     "rawTrough": "95",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/338A.png"
+    "image_file": "assets/images/steelpress_profiles_sp_36_1000r.png"
   },
   {
     "code": "338B",
@@ -6363,7 +6400,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1035",
-    "image_file": "assets/images/338B.png"
+    "image_file": "assets/images/steelpress_profiles_sp_36_1000w.png"
   },
   {
     "code": "429A",
@@ -6382,7 +6419,7 @@
     "rawTrough": "75",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1066",
-    "image_file": "assets/images/429A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_50_1000.png"
   },
   {
     "code": "429B",
@@ -6400,7 +6437,8 @@
     "rawCrown": "25",
     "rawTrough": "75",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1066"
+    "rawOverallWidth": "1066",
+    "image_file": "assets/images/rigidal_industries_rigidal_50_1000.png"
   },
   {
     "code": "429C",
@@ -6418,7 +6456,8 @@
     "rawCrown": "25",
     "rawTrough": "75",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1066"
+    "rawOverallWidth": "1066",
+    "image_file": "assets/images/rigidal_industries_classic_50_167_1000.png"
   },
   {
     "code": "257A",
@@ -6437,7 +6476,7 @@
     "rawTrough": "87",
     "rawCoverWidth": "1020",
     "rawOverallWidth": "1117",
-    "image_file": "assets/images/257A.png"
+    "image_file": "assets/images/a_steadman_son_as_27_1020r.png"
   },
   {
     "code": "257B",
@@ -6456,7 +6495,7 @@
     "rawTrough": "29",
     "rawCoverWidth": "1020",
     "rawOverallWidth": "1092",
-    "image_file": "assets/images/257B.png"
+    "image_file": "assets/images/a_steadman_son_as_27_1020w.png"
   },
   {
     "code": "022A",
@@ -6475,7 +6514,7 @@
     "rawTrough": "105",
     "rawCoverWidth": "686",
     "rawOverallWidth": "749",
-    "image_file": "assets/images/022A.png"
+    "image_file": "assets/images/h_h_robertson_uk_ibr4_imperial.png"
   },
   {
     "code": "022B",
@@ -6494,7 +6533,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "686",
     "rawOverallWidth": "724",
-    "image_file": "assets/images/022B.png"
+    "image_file": "assets/images/h_h_robertson_uk_br4_imperial.png"
   },
   {
     "code": "033A",
@@ -6513,7 +6552,7 @@
     "rawTrough": "98",
     "rawCoverWidth": "686",
     "rawOverallWidth": "733",
-    "image_file": "assets/images/033A.png"
+    "image_file": "assets/images/british_steel_broad_rib_roof.png"
   },
   {
     "code": "033B",
@@ -6532,7 +6571,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "686",
     "rawOverallWidth": "722",
-    "image_file": "assets/images/033B.png"
+    "image_file": "assets/images/british_steel_broad_rib_vertical.png"
   },
   {
     "code": "553A",
@@ -6551,7 +6590,7 @@
     "rawTrough": "68",
     "rawCoverWidth": "855",
     "rawOverallWidth": "959",
-    "image_file": "assets/images/553A.png"
+    "image_file": "assets/images/architectural_profiles_ap48.png"
   },
   {
     "code": "097B",
@@ -6570,7 +6609,7 @@
     "rawTrough": "102",
     "rawCoverWidth": "700",
     "rawOverallWidth": "753",
-    "image_file": "assets/images/097B.png"
+    "image_file": "assets/images/british_steel_long_rib_700_roof.png"
   },
   {
     "code": "097A",
@@ -6589,7 +6628,7 @@
     "rawTrough": "102",
     "rawCoverWidth": "875",
     "rawOverallWidth": "928",
-    "image_file": "assets/images/097A.png"
+    "image_file": "assets/images/british_steel_long_rib_875.png"
   },
   {
     "code": "097C",
@@ -6608,7 +6647,7 @@
     "rawTrough": "38",
     "rawCoverWidth": "700",
     "rawOverallWidth": "739",
-    "image_file": "assets/images/097C.png"
+    "image_file": "assets/images/british_steel_long_rib_700_vertical.png"
   },
   {
     "code": "543A",
@@ -6627,7 +6666,7 @@
     "rawTrough": "72",
     "rawCoverWidth": "880",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/543A.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_45_pa45.png"
   },
   {
     "code": "543B",
@@ -6646,7 +6685,7 @@
     "rawTrough": "40",
     "rawCoverWidth": "880",
     "rawOverallWidth": "970",
-    "image_file": "assets/images/543B.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_45f_pa45f.png"
   },
   {
     "code": "059A",
@@ -6665,7 +6704,7 @@
     "rawTrough": "105",
     "rawCoverWidth": "711",
     "rawOverallWidth": "765",
-    "image_file": "assets/images/059A.png"
+    "image_file": "assets/images/british_steel_long_rib_roof.png"
   },
   {
     "code": "059B",
@@ -6684,7 +6723,7 @@
     "rawTrough": "38",
     "rawCoverWidth": "711",
     "rawOverallWidth": "751",
-    "image_file": "assets/images/059B.png"
+    "image_file": "assets/images/british_steel_long_rib_vertical.png"
   },
   {
     "code": "107A",
@@ -6703,7 +6742,7 @@
     "rawTrough": "50",
     "rawCoverWidth": "712",
     "rawOverallWidth": "804",
-    "image_file": "assets/images/107A.png"
+    "image_file": "assets/images/h_h_robertson_uk_hr4.png"
   },
   {
     "code": "107B",
@@ -6722,7 +6761,7 @@
     "rawTrough": "50",
     "rawCoverWidth": "890",
     "rawOverallWidth": "982",
-    "image_file": "assets/images/107B.png"
+    "image_file": "assets/images/h_h_robertson_uk_hr5.png"
   },
   {
     "code": "088A",
@@ -6741,7 +6780,7 @@
     "rawTrough": "107",
     "rawCoverWidth": "900",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/088A.png"
+    "image_file": "assets/images/british_steel_long_rib_900_roof.png"
   },
   {
     "code": "088B",
@@ -6760,7 +6799,7 @@
     "rawTrough": "38",
     "rawCoverWidth": "900",
     "rawOverallWidth": "939",
-    "image_file": "assets/images/088B.png"
+    "image_file": "assets/images/british_steel_long_rib_900_vertical.png"
   },
   {
     "code": "090A",
@@ -6779,7 +6818,7 @@
     "rawTrough": "75",
     "rawCoverWidth": "900",
     "rawOverallWidth": "980",
-    "image_file": "assets/images/090A.png"
+    "image_file": "assets/images/briggs_amasco_profile_375.png"
   },
   {
     "code": "378B",
@@ -6798,7 +6837,7 @@
     "rawTrough": "100",
     "rawCoverWidth": "900",
     "rawOverallWidth": "980",
-    "image_file": "assets/images/378B.png"
+    "image_file": "assets/images/construction_metal_products_cmp_900_38_rib_face.png"
   },
   {
     "code": "378F",
@@ -6817,7 +6856,7 @@
     "rawTrough": "100",
     "rawCoverWidth": "900",
     "rawOverallWidth": "980",
-    "image_file": "assets/images/378F.png"
+    "image_file": "assets/images/ecometal_ecometal_38_180.png"
   },
   {
     "code": "378D",
@@ -6836,7 +6875,7 @@
     "rawTrough": "100",
     "rawCoverWidth": "900",
     "rawOverallWidth": "980",
-    "image_file": "assets/images/378D.png"
+    "image_file": "assets/images/ward_building_components_moduclad_38_900.png"
   },
   {
     "code": "378A",
@@ -6855,7 +6894,7 @@
     "rawTrough": "100",
     "rawCoverWidth": "900",
     "rawOverallWidth": "982",
-    "image_file": "assets/images/378A.png"
+    "image_file": "assets/images/construction_metal_products_cape_900_38_rib_face.png"
   },
   {
     "code": "378C",
@@ -6874,7 +6913,7 @@
     "rawTrough": "34",
     "rawCoverWidth": "900",
     "rawOverallWidth": "943",
-    "image_file": "assets/images/378C.png"
+    "image_file": "assets/images/construction_metal_products_cmp_900_38_crest_face.png"
   },
   {
     "code": "378E",
@@ -6893,7 +6932,7 @@
     "rawTrough": "34",
     "rawCoverWidth": "900",
     "rawOverallWidth": "943",
-    "image_file": "assets/images/378E.png"
+    "image_file": "assets/images/ward_building_components_moduclad_38_900w.png"
   },
   {
     "code": "213C",
@@ -6912,7 +6951,7 @@
     "rawTrough": "110",
     "rawCoverWidth": "900",
     "rawOverallWidth": "948",
-    "image_file": "assets/images/213C.png"
+    "image_file": "assets/images/european_profiles_ep_40_900_continental.png"
   },
   {
     "code": "213A",
@@ -6931,7 +6970,7 @@
     "rawTrough": "110",
     "rawCoverWidth": "900",
     "rawOverallWidth": "973",
-    "image_file": "assets/images/213A.png"
+    "image_file": "assets/images/european_profiles_ep_40_900.png"
   },
   {
     "code": "213B",
@@ -6950,7 +6989,7 @@
     "rawTrough": "32",
     "rawCoverWidth": "900",
     "rawOverallWidth": "936",
-    "image_file": "assets/images/213B.png"
+    "image_file": "assets/images/european_profiles_ep_40_900_reversed.png"
   },
   {
     "code": "246A",
@@ -6969,7 +7008,7 @@
     "rawTrough": "108",
     "rawCoverWidth": "914",
     "rawOverallWidth": "967",
-    "image_file": "assets/images/246A.png"
+    "image_file": "assets/images/roll_form_fabrications_rf36r.png"
   },
   {
     "code": "246B",
@@ -6988,7 +7027,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "914",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/246B.png"
+    "image_file": "assets/images/roll_form_fabrications_rf36c.png"
   },
   {
     "code": "560B",
@@ -7007,7 +7046,7 @@
     "rawTrough": "119",
     "rawCoverWidth": "915",
     "rawOverallWidth": "971",
-    "image_file": "assets/images/560B.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr40s.png"
   },
   {
     "code": "560A",
@@ -7026,7 +7065,7 @@
     "rawTrough": "119",
     "rawCoverWidth": "915",
     "rawOverallWidth": "971",
-    "image_file": "assets/images/560A.png"
+    "image_file": "assets/images/hoesch_building_products_e40d.png"
   },
   {
     "code": "105D",
@@ -7045,7 +7084,7 @@
     "rawTrough": "105",
     "rawCoverWidth": "736",
     "rawOverallWidth": "800",
-    "image_file": "assets/images/105D.png"
+    "image_file": "assets/images/h_h_robertson_uk_ibr4_736.png"
   },
   {
     "code": "105B",
@@ -7064,7 +7103,7 @@
     "rawTrough": "105",
     "rawCoverWidth": "922",
     "rawOverallWidth": "982",
-    "image_file": "assets/images/105B.png"
+    "image_file": "assets/images/haironville_tac_r5.png"
   },
   {
     "code": "105A",
@@ -7083,7 +7122,7 @@
     "rawTrough": "105",
     "rawCoverWidth": "922",
     "rawOverallWidth": "982",
-    "image_file": "assets/images/105A.png"
+    "image_file": "assets/images/h_h_robertson_uk_ibr5.png"
   },
   {
     "code": "105G",
@@ -7102,7 +7141,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "736",
     "rawOverallWidth": "780",
-    "image_file": "assets/images/105G.png"
+    "image_file": "assets/images/h_h_robertson_uk_br4_736.png"
   },
   {
     "code": "105C",
@@ -7121,7 +7160,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "922",
     "rawOverallWidth": "971",
-    "image_file": "assets/images/105C.png"
+    "image_file": "assets/images/haironville_tac_c5.png"
   },
   {
     "code": "105F",
@@ -7140,7 +7179,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "922",
     "rawOverallWidth": "971",
-    "image_file": "assets/images/105F.png"
+    "image_file": "assets/images/h_h_robertson_uk_br5.png"
   },
   {
     "code": "127A",
@@ -7159,7 +7198,7 @@
     "rawTrough": "149",
     "rawCoverWidth": "750",
     "rawOverallWidth": "776",
-    "image_file": "assets/images/127A.png"
+    "image_file": "assets/images/composite_panels_ltd_p750_glamet_g5.png"
   },
   {
     "code": "161A",
@@ -7178,7 +7217,7 @@
     "rawTrough": "120",
     "rawCoverWidth": "950",
     "rawOverallWidth": "998",
-    "image_file": "assets/images/161A.png"
+    "image_file": "assets/images/construction_metal_products_cape_950_40w_rib_face.png"
   },
   {
     "code": "161B",
@@ -7197,7 +7236,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "950",
     "rawOverallWidth": "981",
-    "image_file": "assets/images/161B.png"
+    "image_file": "assets/images/construction_metal_products_cape_950_40w_crest_face.png"
   },
   {
     "code": "584A",
@@ -7216,7 +7255,7 @@
     "rawTrough": "148",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1057",
-    "image_file": "assets/images/584A.png"
+    "image_file": "assets/images/quedron_distribution_qlp5s_liner.png"
   },
   {
     "code": "416A",
@@ -7234,7 +7273,8 @@
     "rawCrown": "35",
     "rawTrough": "132",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1077"
+    "rawOverallWidth": "1077",
+    "image_file": "assets/images/ca_profiles_ca_lt17_1000_liner.png"
   },
   {
     "code": "313A",
@@ -7253,7 +7293,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1058",
-    "image_file": "assets/images/313A.png"
+    "image_file": "assets/images/hi_tech_industrial_cladding_ht_18_1000_liner.png"
   },
   {
     "code": "399F",
@@ -7272,7 +7312,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399F.png"
+    "image_file": "assets/images/caf_19_1000_liner.png"
   },
   {
     "code": "399A",
@@ -7291,7 +7331,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399A.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_jl_1000_liner.png"
   },
   {
     "code": "399C/E",
@@ -7309,7 +7349,8 @@
     "rawCrown": "20",
     "rawTrough": "150",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1054"
+    "rawOverallWidth": "1054",
+    "image_file": "assets/images/colormet_international_colormet_jl_1000_pcs_1000_liner.png"
   },
   {
     "code": "399N",
@@ -7328,7 +7369,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399N.png"
+    "image_file": "assets/images/coverworld_uk_cr_20.png"
   },
   {
     "code": "399L",
@@ -7347,7 +7388,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399L.png"
+    "image_file": "assets/images/coverworld_uk_cl_20_liner.png"
   },
   {
     "code": "Eternit (UK)",
@@ -7365,7 +7406,8 @@
     "rawCrown": "19",
     "rawTrough": "20",
     "rawCoverWidth": "150",
-    "rawOverallWidth": "1000"
+    "rawOverallWidth": "1000",
+    "image_file": "assets/images/el_19_200_liner_1054.png"
   },
   {
     "code": "399B",
@@ -7384,7 +7426,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399B.png"
+    "image_file": "assets/images/industrial_cladding_systems_cladrite_19_1000_liner.png"
   },
   {
     "code": "399K",
@@ -7403,7 +7445,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399K.png"
+    "image_file": "assets/images/olympic_cladding_1000_19_liner.png"
   },
   {
     "code": "399D",
@@ -7422,7 +7464,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399D.png"
+    "image_file": "assets/images/profiled_cladding_systems_pcs_1000_19_liner.png"
   },
   {
     "code": "399H",
@@ -7441,7 +7483,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399H.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_20r.png"
   },
   {
     "code": "399J",
@@ -7460,7 +7502,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399J.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_liner_uc_1000.png"
   },
   {
     "code": "231A",
@@ -7479,7 +7521,7 @@
     "rawTrough": "86",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/231A.png"
+    "image_file": "assets/images/european_profiles_ep_19_1000_liner_old_type.png"
   },
   {
     "code": "158I",
@@ -7498,7 +7540,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/158I.png"
+    "image_file": "assets/images/architectural_profiles_ap_22her_liner.png"
   },
   {
     "code": "158H",
@@ -7517,7 +7559,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/158H.png"
+    "image_file": "assets/images/architectural_profiles_ap_22hew_liner.png"
   },
   {
     "code": "399P",
@@ -7536,7 +7578,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399P.png"
+    "image_file": "assets/images/coverworld_uk_cw_20.png"
   },
   {
     "code": "399G",
@@ -7555,7 +7597,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399G.png"
+    "image_file": "assets/images/profiled_cladding_systems_19_1000_reverse_liner.png"
   },
   {
     "code": "399I",
@@ -7574,7 +7616,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1054",
-    "image_file": "assets/images/399I.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_20w.png"
   },
   {
     "code": "252A",
@@ -7593,7 +7635,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1065",
-    "image_file": "assets/images/252A.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_trp_20_200_liner.png"
   },
   {
     "code": "516C",
@@ -7611,7 +7653,8 @@
     "rawCrown": "30",
     "rawTrough": "142",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1065"
+    "rawOverallWidth": "1065",
+    "image_file": "assets/images/rigidal_industries_classic_20_200_1000.png"
   },
   {
     "code": "516A",
@@ -7629,7 +7672,8 @@
     "rawCrown": "30",
     "rawTrough": "142",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1065"
+    "rawOverallWidth": "1065",
+    "image_file": "assets/images/rigidal_industries_talspan_20_200.png"
   },
   {
     "code": "516B",
@@ -7647,7 +7691,8 @@
     "rawCrown": "30",
     "rawTrough": "142",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1065"
+    "rawOverallWidth": "1065",
+    "image_file": "assets/images/rigidal_industries_talspan_20_200i.png"
   },
   {
     "code": "158G",
@@ -7666,7 +7711,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/158G.png"
+    "image_file": "assets/images/alpha_building_components_alpha_metre_liner.png"
   },
   {
     "code": "158C",
@@ -7685,7 +7730,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/158C.png"
+    "image_file": "assets/images/atlas_coated_steels_super_six_lt_liner.png"
   },
   {
     "code": "158A",
@@ -7704,7 +7749,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/158A.png"
+    "image_file": "assets/images/ayrshire_metal_products_20_1000_liner_ayrshire_liner.png"
   },
   {
     "code": "158B",
@@ -7723,11 +7768,11 @@
     "rawTrough": "80",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/158B.png"
+    "image_file": "assets/images/corrugated_sheets_profiles_hi_19l_liner.png"
   },
   {
     "code": "158F",
-    "profileName": "Norclad Liner ‘A’",
+    "profileName": "Norclad Liner \u2018A\u2019",
     "manufacturer": "Firth Steels",
     "shape": "unknown",
     "pitch": 200,
@@ -7742,7 +7787,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/158F.png"
+    "image_file": "assets/images/firth_steels_norclad_liner_a.png"
   },
   {
     "code": "158E",
@@ -7761,7 +7806,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/158E.png"
+    "image_file": "assets/images/heys_shaw_supersix_l_t1000_liner.png"
   },
   {
     "code": "158D",
@@ -7780,7 +7825,7 @@
     "rawTrough": "80",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/158D.png"
+    "image_file": "assets/images/a_s_steadman_son_as_20_liner.png"
   },
   {
     "code": "287E",
@@ -7799,7 +7844,7 @@
     "rawTrough": "121",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/287E.png"
+    "image_file": "assets/images/architectural_profiles_ap_30_35r.png"
   },
   {
     "code": "287H",
@@ -7818,7 +7863,7 @@
     "rawTrough": "122",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/287H.png"
+    "image_file": "assets/images/architectural_profiles_ap_22_30h_liner.png"
   },
   {
     "code": "287A",
@@ -7837,7 +7882,7 @@
     "rawTrough": "122",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/287A.png"
+    "image_file": "assets/images/corrugated_sheets_profiles_hi_30.png"
   },
   {
     "code": "287F",
@@ -7856,7 +7901,7 @@
     "rawTrough": "122",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/287F.png"
+    "image_file": "assets/images/corrugated_sheets_profiles_country_clad.png"
   },
   {
     "code": "287C",
@@ -7875,7 +7920,7 @@
     "rawTrough": "122",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/287C.png"
+    "image_file": "assets/images/firth_steels_norclad_n_1000c_liner.png"
   },
   {
     "code": "547A",
@@ -7894,7 +7939,7 @@
     "rawTrough": "131",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1068",
-    "image_file": "assets/images/547A.png"
+    "image_file": "assets/images/a_steadman_son_as30_1000r.png"
   },
   {
     "code": "287G",
@@ -7913,7 +7958,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/287G.png"
+    "image_file": "assets/images/architectural_profiles_ap_30_35w.png"
   },
   {
     "code": "287B",
@@ -7932,7 +7977,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/287B.png"
+    "image_file": "assets/images/corrugated_sheets_profiles_hi_30r.png"
   },
   {
     "code": "287D",
@@ -7951,7 +7996,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1078",
-    "image_file": "assets/images/287D.png"
+    "image_file": "assets/images/firth_steels_norclad_n_1000c.png"
   },
   {
     "code": "547B",
@@ -7970,7 +8015,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/547B.png"
+    "image_file": "assets/images/a_steadman_son_as30_1000w.png"
   },
   {
     "code": "674A",
@@ -7989,7 +8034,7 @@
     "rawTrough": "125",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1078",
-    "image_file": "assets/images/674A.png"
+    "image_file": "assets/images/cladfab_cladfab_31_1000r.png"
   },
   {
     "code": "688A",
@@ -8008,7 +8053,7 @@
     "rawTrough": "121",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1072",
-    "image_file": "assets/images/688A.png"
+    "image_file": "assets/images/haironville_tac_r31_5_200_31t_introduced_2001.png"
   },
   {
     "code": "233C",
@@ -8027,7 +8072,7 @@
     "rawTrough": "105",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1058",
-    "image_file": "assets/images/233C.png"
+    "image_file": "assets/images/haironville_tac_5_200_31t_old_haironville_sa.png"
   },
   {
     "code": "233A",
@@ -8046,7 +8091,7 @@
     "rawTrough": "106",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1058",
-    "image_file": "assets/images/233A.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr32s.png"
   },
   {
     "code": "233D",
@@ -8065,7 +8110,7 @@
     "rawTrough": "32",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1052",
-    "image_file": "assets/images/233D.png"
+    "image_file": "assets/images/haironville_tac_5_200_31b_old_haironville_sa.png"
   },
   {
     "code": "233B",
@@ -8084,7 +8129,7 @@
     "rawTrough": "33",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1052",
-    "image_file": "assets/images/233B.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr32v.png"
   },
   {
     "code": "688B",
@@ -8103,7 +8148,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1055",
-    "image_file": "assets/images/688B.png"
+    "image_file": "assets/images/haironville_tac_c31_5_200_31b_introduced_2001.png"
   },
   {
     "code": "555A",
@@ -8122,7 +8167,7 @@
     "rawTrough": "129",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/555A.png"
+    "image_file": "assets/images/brunel_steel_services_32_1000_roof.png"
   },
   {
     "code": "579A",
@@ -8141,7 +8186,7 @@
     "rawTrough": "132",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1071",
-    "image_file": "assets/images/579A.png"
+    "image_file": "assets/images/quedron_distribution_mw5r.png"
   },
   {
     "code": "334A",
@@ -8160,7 +8205,7 @@
     "rawTrough": "128",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1065",
-    "image_file": "assets/images/334A.png"
+    "image_file": "assets/images/gleno_industries_gl32.png"
   },
   {
     "code": "370A",
@@ -8179,7 +8224,7 @@
     "rawTrough": "130",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1064",
-    "image_file": "assets/images/370A.png"
+    "image_file": "assets/images/coverworld_uk_cr_32.png"
   },
   {
     "code": "370E",
@@ -8198,7 +8243,7 @@
     "rawTrough": "130",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1064",
-    "image_file": "assets/images/370E.png"
+    "image_file": "assets/images/eternit_uk_er_32_200.png"
   },
   {
     "code": "370B",
@@ -8217,7 +8262,7 @@
     "rawTrough": "130",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1064",
-    "image_file": "assets/images/370B.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_32r.png"
   },
   {
     "code": "676A",
@@ -8236,7 +8281,7 @@
     "rawTrough": "120",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1082",
-    "image_file": "assets/images/676A.png"
+    "image_file": "assets/images/jacksons_j_1000.png"
   },
   {
     "code": "482A",
@@ -8255,7 +8300,7 @@
     "rawTrough": "128",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1078",
-    "image_file": "assets/images/482A.png"
+    "image_file": "assets/images/precision_metal_forming_r32_1000_wide_rib_32_1000r.png"
   },
   {
     "code": "482D",
@@ -8274,7 +8319,7 @@
     "rawTrough": "128",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1078",
-    "image_file": "assets/images/482D.png"
+    "image_file": "assets/images/tegral_metal_forming_wide_rib_33_roof.png"
   },
   {
     "code": "482F",
@@ -8293,7 +8338,7 @@
     "rawTrough": "128",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1078",
-    "image_file": "assets/images/482F.png"
+    "image_file": "assets/images/tegral_metal_forming_wide_rib_33c_liner.png"
   },
   {
     "code": "675C",
@@ -8312,7 +8357,7 @@
     "rawTrough": "111",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1073",
-    "image_file": "assets/images/675C.png"
+    "image_file": "assets/images/colormet_international_colormet_32_1000_pbl_forward.png"
   },
   {
     "code": "675A",
@@ -8331,7 +8376,7 @@
     "rawTrough": "111",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1073",
-    "image_file": "assets/images/675A.png"
+    "image_file": "assets/images/profiled_cladding_systems_32_1000_pbl_forward.png"
   },
   {
     "code": "221C",
@@ -8350,7 +8395,7 @@
     "rawTrough": "120",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1058",
-    "image_file": "assets/images/221C.png"
+    "image_file": "assets/images/european_profiles_ep_32_1000_continental.png"
   },
   {
     "code": "221D",
@@ -8369,7 +8414,7 @@
     "rawTrough": "120",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1074",
-    "image_file": "assets/images/221D.png"
+    "image_file": "assets/images/shufflebottom_sh_1000_33_rw.png"
   },
   {
     "code": "221A",
@@ -8388,7 +8433,7 @@
     "rawTrough": "120",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/221A.png"
+    "image_file": "assets/images/european_profiles_ep_32_1000.png"
   },
   {
     "code": "221G",
@@ -8407,7 +8452,7 @@
     "rawTrough": "120",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/221G.png"
+    "image_file": "assets/images/olympic_cladding_32_1000.png"
   },
   {
     "code": "267A",
@@ -8426,7 +8471,7 @@
     "rawTrough": "127",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1069",
-    "image_file": "assets/images/267A.png"
+    "image_file": "assets/images/ayrshire_metal_products_32_1000r.png"
   },
   {
     "code": "675D",
@@ -8445,7 +8490,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1048",
-    "image_file": "assets/images/675D.png"
+    "image_file": "assets/images/colormet_international_colormet_32_1000_pbl_reverse.png"
   },
   {
     "code": "675B",
@@ -8464,7 +8509,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1048",
-    "image_file": "assets/images/675B.png"
+    "image_file": "assets/images/profiled_cladding_systems_32_1000_pbl_reverse.png"
   },
   {
     "code": "676B",
@@ -8483,7 +8528,7 @@
     "rawTrough": "25",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1061",
-    "image_file": "assets/images/676B.png"
+    "image_file": "assets/images/jacksons_s_1000.png"
   },
   {
     "code": "221B",
@@ -8502,7 +8547,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1040",
-    "image_file": "assets/images/221B.png"
+    "image_file": "assets/images/european_profiles_ep_32_1000_reversed.png"
   },
   {
     "code": "221E",
@@ -8521,7 +8566,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1048",
-    "image_file": "assets/images/221E.png"
+    "image_file": "assets/images/shufflebottom_sh_1000_33w.png"
   },
   {
     "code": "267B",
@@ -8540,7 +8585,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1076",
-    "image_file": "assets/images/267B.png"
+    "image_file": "assets/images/ayrshire_metal_products_32_1000w.png"
   },
   {
     "code": "334B",
@@ -8559,7 +8604,7 @@
     "rawTrough": "24",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1055",
-    "image_file": "assets/images/334B.png"
+    "image_file": "assets/images/gleno_industries_gl32r.png"
   },
   {
     "code": "482B",
@@ -8578,7 +8623,7 @@
     "rawTrough": "27",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1063",
-    "image_file": "assets/images/482B.png"
+    "image_file": "assets/images/precision_metal_forming_c32_1000_wide_rib_32_1000c.png"
   },
   {
     "code": "482E",
@@ -8597,7 +8642,7 @@
     "rawTrough": "27",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1063",
-    "image_file": "assets/images/482E.png"
+    "image_file": "assets/images/tegral_metal_forming_wide_rib_33_cladding.png"
   },
   {
     "code": "555B",
@@ -8616,7 +8661,7 @@
     "rawTrough": "21",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/555B.png"
+    "image_file": "assets/images/brunel_steel_services_32_1000_wall.png"
   },
   {
     "code": "370C",
@@ -8635,7 +8680,7 @@
     "rawTrough": "24",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1052",
-    "image_file": "assets/images/370C.png"
+    "image_file": "assets/images/coverworld_uk_cw_32.png"
   },
   {
     "code": "370F",
@@ -8654,7 +8699,7 @@
     "rawTrough": "24",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1052",
-    "image_file": "assets/images/370F.png"
+    "image_file": "assets/images/eternit_uk_ew_32_200.png"
   },
   {
     "code": "370D",
@@ -8673,7 +8718,7 @@
     "rawTrough": "24",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1052",
-    "image_file": "assets/images/370D.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_32w.png"
   },
   {
     "code": "579B",
@@ -8692,7 +8737,7 @@
     "rawTrough": "23",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1052",
-    "image_file": "assets/images/579B.png"
+    "image_file": "assets/images/quedron_distribution_mw5c.png"
   },
   {
     "code": "301A",
@@ -8711,7 +8756,7 @@
     "rawTrough": "110",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1082",
-    "image_file": "assets/images/301A.png"
+    "image_file": "assets/images/atlas_coated_steels_super_six_r1000_mk1.png"
   },
   {
     "code": "435A",
@@ -8730,7 +8775,7 @@
     "rawTrough": "110",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1082",
-    "image_file": "assets/images/435A.png"
+    "image_file": "assets/images/atlas_coated_steels_super_six_r1000_mk2.png"
   },
   {
     "code": "435C",
@@ -8749,7 +8794,7 @@
     "rawTrough": "110",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1082",
-    "image_file": "assets/images/435C.png"
+    "image_file": "assets/images/heys_shaw_supersix_r1000.png"
   },
   {
     "code": "301B",
@@ -8768,7 +8813,7 @@
     "rawTrough": "26",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1070",
-    "image_file": "assets/images/301B.png"
+    "image_file": "assets/images/atlas_coated_steels_super_six_c1000_mk1.png"
   },
   {
     "code": "435B",
@@ -8787,7 +8832,7 @@
     "rawTrough": "26",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1070",
-    "image_file": "assets/images/435B.png"
+    "image_file": "assets/images/atlas_coated_steels_super_six_c1000_mk2.png"
   },
   {
     "code": "435D",
@@ -8806,7 +8851,7 @@
     "rawTrough": "26",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1070",
-    "image_file": "assets/images/435D.png"
+    "image_file": "assets/images/heys_shaw_supersix_c1000.png"
   },
   {
     "code": "398C",
@@ -8825,7 +8870,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/398C.png"
+    "image_file": "assets/images/architectural_profiles_ap_33_35.png"
   },
   {
     "code": "398B",
@@ -8844,7 +8889,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/398B.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1000_pbl_vertical.png"
   },
   {
     "code": "239D",
@@ -8863,7 +8908,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/239D.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1000_symmetrical.png"
   },
   {
     "code": "174C",
@@ -8882,7 +8927,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/174C.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1000a_symmetrical.png"
   },
   {
     "code": "239J",
@@ -8901,7 +8946,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1077",
-    "image_file": "assets/images/239J.png"
+    "image_file": "assets/images/architectural_profiles_ap_33_35m.png"
   },
   {
     "code": "239H",
@@ -8920,7 +8965,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1077",
-    "image_file": "assets/images/239H.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1000_pbl_sloping.png"
   },
   {
     "code": "174E",
@@ -8939,7 +8984,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1077",
-    "image_file": "assets/images/174E.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1000a_pbl_sloping.png"
   },
   {
     "code": "398A",
@@ -8958,7 +9003,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1244",
-    "image_file": "assets/images/398A.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1200_pbl_vertical.png"
   },
   {
     "code": "174A",
@@ -8977,7 +9022,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1249",
-    "image_file": "assets/images/174A.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_1200sp_symmetrical.png"
   },
   {
     "code": "Cladding & Decking (UK)",
@@ -8995,7 +9040,8 @@
     "rawCrown": "35",
     "rawTrough": "30",
     "rawCoverWidth": "115",
-    "rawOverallWidth": "1200"
+    "rawOverallWidth": "1200",
+    "image_file": "assets/images/proclad_1200_symmetrical_1249.png"
   },
   {
     "code": "239F",
@@ -9013,7 +9059,8 @@
     "rawCrown": "30",
     "rawTrough": "115",
     "rawCoverWidth": "1200",
-    "rawOverallWidth": "1250"
+    "rawOverallWidth": "1250",
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1200_symmetrical.png"
   },
   {
     "code": "239B",
@@ -9031,7 +9078,8 @@
     "rawCrown": "30",
     "rawTrough": "115",
     "rawCoverWidth": "1200",
-    "rawOverallWidth": "1277"
+    "rawOverallWidth": "1277",
+    "image_file": "assets/images/cladding_decking_uk_proclad_1200_pbl_sloping.png"
   },
   {
     "code": "174B",
@@ -9050,7 +9098,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1277",
-    "image_file": "assets/images/174B.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_1200_pbl_sloping_174b.png"
   },
   {
     "code": "239I",
@@ -9068,7 +9116,8 @@
     "rawCrown": "30",
     "rawTrough": "115",
     "rawCoverWidth": "1200",
-    "rawOverallWidth": "1277"
+    "rawOverallWidth": "1277",
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1200_pbl_sloping.png"
   },
   {
     "code": "078A",
@@ -9087,7 +9136,7 @@
     "rawTrough": "127",
     "rawCoverWidth": "800",
     "rawOverallWidth": "853",
-    "image_file": "assets/images/078A.png"
+    "image_file": "assets/images/british_steel_long_rib_800_roof.png"
   },
   {
     "code": "152A",
@@ -9106,7 +9155,7 @@
     "rawTrough": "127",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/152A.png"
+    "image_file": "assets/images/british_steel_long_rib_1000r.png"
   },
   {
     "code": "152C",
@@ -9125,7 +9174,7 @@
     "rawTrough": "127",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/152C.png"
+    "image_file": "assets/images/precision_metal_forming_long_rib_1000r.png"
   },
   {
     "code": "152E",
@@ -9144,7 +9193,7 @@
     "rawTrough": "127",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/152E.png"
+    "image_file": "assets/images/spicehawk_sh35_1000r.png"
   },
   {
     "code": "239E",
@@ -9163,7 +9212,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1062",
-    "image_file": "assets/images/239E.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1000w.png"
   },
   {
     "code": "174D",
@@ -9182,7 +9231,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1062",
-    "image_file": "assets/images/174D.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1000aw.png"
   },
   {
     "code": "239G",
@@ -9200,7 +9249,8 @@
     "rawCrown": "115",
     "rawTrough": "30",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1262"
+    "rawOverallWidth": "1262",
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc1200w.png"
   },
   {
     "code": "239C",
@@ -9218,7 +9268,8 @@
     "rawCrown": "115",
     "rawTrough": "30",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1262"
+    "rawOverallWidth": "1262",
+    "image_file": "assets/images/cladding_decking_uk_proclad_1200w.png"
   },
   {
     "code": "078B",
@@ -9237,7 +9288,7 @@
     "rawTrough": "38",
     "rawCoverWidth": "800",
     "rawOverallWidth": "839",
-    "image_file": "assets/images/078B.png"
+    "image_file": "assets/images/british_steel_long_rib_800_vertical.png"
   },
   {
     "code": "152B",
@@ -9256,7 +9307,7 @@
     "rawTrough": "38",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/152B.png"
+    "image_file": "assets/images/british_steel_long_rib_1000w.png"
   },
   {
     "code": "152D",
@@ -9275,7 +9326,7 @@
     "rawTrough": "38",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/152D.png"
+    "image_file": "assets/images/precision_metal_forming_long_rib_1000w.png"
   },
   {
     "code": "152F",
@@ -9294,7 +9345,7 @@
     "rawTrough": "38",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/152F.png"
+    "image_file": "assets/images/spicehawk_sh35_1000w.png"
   },
   {
     "code": "554A",
@@ -9313,7 +9364,7 @@
     "rawTrough": "116",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/554A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_37_1000.png"
   },
   {
     "code": "554B",
@@ -9332,7 +9383,7 @@
     "rawTrough": "116",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1085",
-    "image_file": "assets/images/554B.png"
+    "image_file": "assets/images/ward_building_components_moduclad_37_1000p.png"
   },
   {
     "code": "377A",
@@ -9351,7 +9402,7 @@
     "rawTrough": "116",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1285",
-    "image_file": "assets/images/377A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_37_1200p.png"
   },
   {
     "code": "554C",
@@ -9370,7 +9421,7 @@
     "rawTrough": "38",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/554C.png"
+    "image_file": "assets/images/ward_building_components_moduclad_37_1000w.png"
   },
   {
     "code": "377B",
@@ -9389,7 +9440,7 @@
     "rawTrough": "38",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1280",
-    "image_file": "assets/images/377B.png"
+    "image_file": "assets/images/ward_building_components_moduclad_37_1200w.png"
   },
   {
     "code": "411B",
@@ -9407,7 +9458,8 @@
     "rawCrown": "19",
     "rawTrough": "130",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1032"
+    "rawOverallWidth": "1032",
+    "image_file": "assets/images/rigidal_industries_classic_38_200_1000.png"
   },
   {
     "code": "411A",
@@ -9425,7 +9477,8 @@
     "rawCrown": "19",
     "rawTrough": "130",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1032"
+    "rawOverallWidth": "1032",
+    "image_file": "assets/images/rigidal_industries_talspan_r38_200.png"
   },
   {
     "code": "652A",
@@ -9444,7 +9497,7 @@
     "rawTrough": "106",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1074",
-    "image_file": "assets/images/652A.png"
+    "image_file": "assets/images/caf_caf_38_1000r.png"
   },
   {
     "code": "652B",
@@ -9463,7 +9516,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1047",
-    "image_file": "assets/images/652B.png"
+    "image_file": "assets/images/caf_caf_38_1000w.png"
   },
   {
     "code": "224A",
@@ -9482,7 +9535,7 @@
     "rawTrough": "132",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1066",
-    "image_file": "assets/images/224A.png"
+    "image_file": "assets/images/construction_metal_products_cape_1000_40w_rib_face.png"
   },
   {
     "code": "217A",
@@ -9501,7 +9554,7 @@
     "rawTrough": "130",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1072",
-    "image_file": "assets/images/217A.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_trp_40rt_200.png"
   },
   {
     "code": "217B",
@@ -9520,7 +9573,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/217B.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_trp_40r_200.png"
   },
   {
     "code": "224B",
@@ -9539,7 +9592,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1030",
-    "image_file": "assets/images/224B.png"
+    "image_file": "assets/images/construction_metal_products_cape_1000_40w_crest_face.png"
   },
   {
     "code": "493A",
@@ -9558,7 +9611,7 @@
     "rawTrough": "105",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1095",
-    "image_file": "assets/images/493A.png"
+    "image_file": "assets/images/ecometal_ecometal_50_200r.png"
   },
   {
     "code": "493B",
@@ -9577,7 +9630,7 @@
     "rawTrough": "46",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/493B.png"
+    "image_file": "assets/images/ecometal_ecometal_50_200v.png"
   },
   {
     "code": "114A",
@@ -9596,7 +9649,7 @@
     "rawTrough": "90",
     "rawCoverWidth": "800",
     "rawOverallWidth": "880",
-    "image_file": "assets/images/114A.png"
+    "image_file": "assets/images/precision_metal_forming_r60_deep_rib_60r.png"
   },
   {
     "code": "114C",
@@ -9615,7 +9668,7 @@
     "rawTrough": "90",
     "rawCoverWidth": "800",
     "rawOverallWidth": "880",
-    "image_file": "assets/images/114C.png"
+    "image_file": "assets/images/tegral_metal_forming_deep_rib_60_roof.png"
   },
   {
     "code": "114B",
@@ -9634,7 +9687,7 @@
     "rawTrough": "64",
     "rawCoverWidth": "800",
     "rawOverallWidth": "865",
-    "image_file": "assets/images/114B.png"
+    "image_file": "assets/images/precision_metal_forming_c60_deep_rib_60c.png"
   },
   {
     "code": "114D",
@@ -9653,7 +9706,7 @@
     "rawTrough": "64",
     "rawCoverWidth": "800",
     "rawOverallWidth": "865",
-    "image_file": "assets/images/114D.png"
+    "image_file": "assets/images/tegral_metal_forming_deep_rib_60_cladding.png"
   },
   {
     "code": "306B",
@@ -9671,7 +9724,8 @@
     "rawCrown": "85",
     "rawTrough": "85",
     "rawCoverWidth": "1016",
-    "rawOverallWidth": "1072"
+    "rawOverallWidth": "1072",
+    "image_file": "assets/images/haironville_tac_r26_5_203_26t.png"
   },
   {
     "code": "306A",
@@ -9689,7 +9743,8 @@
     "rawCrown": "85",
     "rawTrough": "85",
     "rawCoverWidth": "1016",
-    "rawOverallWidth": "1072"
+    "rawOverallWidth": "1072",
+    "image_file": "assets/images/haironville_tac_c26_5_203_26b.png"
   },
   {
     "code": "140A",
@@ -9708,7 +9763,7 @@
     "rawTrough": "115",
     "rawCoverWidth": "1035",
     "rawOverallWidth": "1090",
-    "image_file": "assets/images/140A.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr35s.png"
   },
   {
     "code": "140B",
@@ -9727,7 +9782,7 @@
     "rawTrough": "34",
     "rawCoverWidth": "1035",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/140B.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr35v.png"
   },
   {
     "code": "401A",
@@ -9746,7 +9801,7 @@
     "rawTrough": "127",
     "rawCoverWidth": "1250",
     "rawOverallWidth": "1329",
-    "image_file": "assets/images/401A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_32_1250.png"
   },
   {
     "code": "293A",
@@ -9765,7 +9820,7 @@
     "rawTrough": "140",
     "rawCoverWidth": "840",
     "rawOverallWidth": "890",
-    "image_file": "assets/images/293A.png"
+    "image_file": "assets/images/british_steel_deep_line_840r.png"
   },
   {
     "code": "293B",
@@ -9784,7 +9839,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "840",
     "rawOverallWidth": "905",
-    "image_file": "assets/images/293B.png"
+    "image_file": "assets/images/british_steel_deep_line_840w.png"
   },
   {
     "code": "265A",
@@ -9803,7 +9858,7 @@
     "rawTrough": "126",
     "rawCoverWidth": "642",
     "rawOverallWidth": "708",
-    "image_file": "assets/images/265A.png"
+    "image_file": "assets/images/h_h_robertson_uk_ibr3_642.png"
   },
   {
     "code": "176A",
@@ -9822,7 +9877,7 @@
     "rawTrough": "127",
     "rawCoverWidth": "860",
     "rawOverallWidth": "922",
-    "image_file": "assets/images/176A.png"
+    "image_file": "assets/images/h_h_robertson_uk_idr4.png"
   },
   {
     "code": "176D",
@@ -9841,7 +9896,7 @@
     "rawTrough": "46",
     "rawCoverWidth": "860",
     "rawOverallWidth": "898",
-    "image_file": "assets/images/176D.png"
+    "image_file": "assets/images/h_h_robertson_uk_dr4_c.png"
   },
   {
     "code": "176B",
@@ -9860,7 +9915,7 @@
     "rawTrough": "46",
     "rawCoverWidth": "860",
     "rawOverallWidth": "922",
-    "image_file": "assets/images/176B.png"
+    "image_file": "assets/images/h_h_robertson_uk_dr4_s.png"
   },
   {
     "code": "307A",
@@ -9879,7 +9934,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "1100",
     "rawOverallWidth": "1190",
-    "image_file": "assets/images/307A.png"
+    "image_file": "assets/images/architectural_profiles_ap_22_1100_liner.png"
   },
   {
     "code": "317A",
@@ -9898,7 +9953,7 @@
     "rawTrough": "185",
     "rawCoverWidth": "900",
     "rawOverallWidth": "960",
-    "image_file": "assets/images/317A.png"
+    "image_file": "assets/images/kingspan_building_products_20mm_liner_225mm_pitch.png"
   },
   {
     "code": "190A",
@@ -9917,7 +9972,7 @@
     "rawTrough": "150",
     "rawCoverWidth": "900",
     "rawOverallWidth": "967",
-    "image_file": "assets/images/190A.png"
+    "image_file": "assets/images/kingspan_building_products_35_900.png"
   },
   {
     "code": "190B",
@@ -9936,7 +9991,7 @@
     "rawTrough": "32",
     "rawCoverWidth": "900",
     "rawOverallWidth": "948",
-    "image_file": "assets/images/190B.png"
+    "image_file": "assets/images/kingspan_building_products_35_900_reverse.png"
   },
   {
     "code": "156A",
@@ -9955,7 +10010,7 @@
     "rawTrough": "105",
     "rawCoverWidth": "900",
     "rawOverallWidth": "995",
-    "image_file": "assets/images/156A.png"
+    "image_file": "assets/images/precision_metal_forming_r46_mid_rib_46r.png"
   },
   {
     "code": "156D",
@@ -9974,7 +10029,7 @@
     "rawTrough": "105",
     "rawCoverWidth": "900",
     "rawOverallWidth": "995",
-    "image_file": "assets/images/156D.png"
+    "image_file": "assets/images/tegral_metal_forming_mid_rib_46_roof.png"
   },
   {
     "code": "156C",
@@ -9993,7 +10048,7 @@
     "rawTrough": "67",
     "rawCoverWidth": "900",
     "rawOverallWidth": "978",
-    "image_file": "assets/images/156C.png"
+    "image_file": "assets/images/precision_metal_forming_c46_mid_rib_46c.png"
   },
   {
     "code": "156E",
@@ -10012,7 +10067,7 @@
     "rawTrough": "67",
     "rawCoverWidth": "900",
     "rawOverallWidth": "978",
-    "image_file": "assets/images/156E.png"
+    "image_file": "assets/images/tegral_metal_forming_mid_rib_46_cladding.png"
   },
   {
     "code": "156B",
@@ -10031,7 +10086,7 @@
     "rawTrough": "67",
     "rawCoverWidth": "900",
     "rawOverallWidth": "987",
-    "image_file": "assets/images/156B.png"
+    "image_file": "assets/images/precision_metal_forming_d46.png"
   },
   {
     "code": "316A",
@@ -10050,7 +10105,7 @@
     "rawTrough": "210",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1043",
-    "image_file": "assets/images/316A.png"
+    "image_file": "assets/images/brohome_15_1000_liner.png"
   },
   {
     "code": "366A",
@@ -10069,7 +10124,7 @@
     "rawTrough": "165",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/366A.png"
+    "image_file": "assets/images/markris_profiles_mpl_1000l_liner.png"
   },
   {
     "code": "225A",
@@ -10088,7 +10143,7 @@
     "rawTrough": "105",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1069",
-    "image_file": "assets/images/225A.png"
+    "image_file": "assets/images/construction_metal_products_cape_1000_liner.png"
   },
   {
     "code": "302A",
@@ -10107,7 +10162,7 @@
     "rawTrough": "106",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1036",
-    "image_file": "assets/images/302A.png"
+    "image_file": "assets/images/european_profiles_ep_19_1000_liner_new_type.png"
   },
   {
     "code": "209C",
@@ -10126,7 +10181,7 @@
     "rawTrough": "140",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1055",
-    "image_file": "assets/images/209C.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_lp1000_liner.png"
   },
   {
     "code": "209D",
@@ -10145,7 +10200,7 @@
     "rawTrough": "140",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1055",
-    "image_file": "assets/images/209D.png"
+    "image_file": "assets/images/colormet_international_colormet_lp_1000_liner.png"
   },
   {
     "code": "209A",
@@ -10164,7 +10219,7 @@
     "rawTrough": "140",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1055",
-    "image_file": "assets/images/209A.png"
+    "image_file": "assets/images/profiled_cladding_systems_lp20_1000_liner.png"
   },
   {
     "code": "209B",
@@ -10183,7 +10238,7 @@
     "rawTrough": "140",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1105",
-    "image_file": "assets/images/209B.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_20.png"
   },
   {
     "code": "209F",
@@ -10202,7 +10257,7 @@
     "rawTrough": "140",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1105",
-    "image_file": "assets/images/209F.png"
+    "image_file": "assets/images/colormet_international_colormet_profile_20.png"
   },
   {
     "code": "209E",
@@ -10221,7 +10276,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1105",
-    "image_file": "assets/images/209E.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_20_reverse.png"
   },
   {
     "code": "209G",
@@ -10240,7 +10295,7 @@
     "rawTrough": "70",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1105",
-    "image_file": "assets/images/209G.png"
+    "image_file": "assets/images/colormet_international_colormet_profile_20_reverse.png"
   },
   {
     "code": "117A",
@@ -10259,7 +10314,7 @@
     "rawTrough": "190",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1069",
-    "image_file": "assets/images/117A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_metral_1000.png"
   },
   {
     "code": "285A",
@@ -10278,7 +10333,7 @@
     "rawTrough": "190",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1070",
-    "image_file": "assets/images/285A.png"
+    "image_file": "assets/images/speeddeck_building_systems_stramclad_1000.png"
   },
   {
     "code": "365A",
@@ -10297,7 +10352,7 @@
     "rawTrough": "165",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/365A.png"
+    "image_file": "assets/images/markris_profiles_mpl_1000.png"
   },
   {
     "code": "507E",
@@ -10316,7 +10371,7 @@
     "rawTrough": "168",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1089",
-    "image_file": "assets/images/507E.png"
+    "image_file": "assets/images/eternit_uk_er_32_250.png"
   },
   {
     "code": "507C",
@@ -10335,7 +10390,7 @@
     "rawTrough": "168",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1089",
-    "image_file": "assets/images/507C.png"
+    "image_file": "assets/images/trimform_products_rf1_32_rib.png"
   },
   {
     "code": "365B",
@@ -10354,7 +10409,7 @@
     "rawTrough": "36",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/365B.png"
+    "image_file": "assets/images/markris_profiles_mpl_1000r.png"
   },
   {
     "code": "507F",
@@ -10373,7 +10428,7 @@
     "rawTrough": "36",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1089",
-    "image_file": "assets/images/507F.png"
+    "image_file": "assets/images/eternit_uk_ew_32_250.png"
   },
   {
     "code": "507D",
@@ -10392,7 +10447,7 @@
     "rawTrough": "36",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1089",
-    "image_file": "assets/images/507D.png"
+    "image_file": "assets/images/trimform_products_rf1_32_crest.png"
   },
   {
     "code": "318A",
@@ -10411,7 +10466,7 @@
     "rawTrough": "168",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/318A.png"
+    "image_file": "assets/images/ash_lacy_al1000.png"
   },
   {
     "code": "318C",
@@ -10430,7 +10485,7 @@
     "rawTrough": "168",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1075",
-    "image_file": "assets/images/318C.png"
+    "image_file": "assets/images/national_cladding_wales_nc_33_1000.png"
   },
   {
     "code": "249A",
@@ -10448,7 +10503,8 @@
     "rawCrown": "36",
     "rawTrough": "168",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1063"
+    "rawOverallWidth": "1063",
+    "image_file": "assets/images/construction_metal_products_cape_1000_33w_rib_face.png"
   },
   {
     "code": "249C",
@@ -10466,7 +10522,8 @@
     "rawCrown": "36",
     "rawTrough": "168",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1063"
+    "rawOverallWidth": "1063",
+    "image_file": "assets/images/construction_metal_products_cmp_1000_33_rib_face.png"
   },
   {
     "code": "249E",
@@ -10485,7 +10542,7 @@
     "rawTrough": "168",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1063",
-    "image_file": "assets/images/249E.png"
+    "image_file": "assets/images/ward_building_components_moduclad_33_1000.png"
   },
   {
     "code": "249G",
@@ -10504,7 +10561,7 @@
     "rawTrough": "168",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1084",
-    "image_file": "assets/images/249G.png"
+    "image_file": "assets/images/ward_building_components_moduclad_33_1000p.png"
   },
   {
     "code": "318B",
@@ -10523,7 +10580,7 @@
     "rawTrough": "33",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1079",
-    "image_file": "assets/images/318B.png"
+    "image_file": "assets/images/ash_lacy_al1000_reverse.png"
   },
   {
     "code": "318D",
@@ -10542,7 +10599,7 @@
     "rawTrough": "33",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1079",
-    "image_file": "assets/images/318D.png"
+    "image_file": "assets/images/national_cladding_wales_nc_33_1000w.png"
   },
   {
     "code": "249B",
@@ -10560,7 +10617,8 @@
     "rawCrown": "168",
     "rawTrough": "36",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1048"
+    "rawOverallWidth": "1048",
+    "image_file": "assets/images/construction_metal_products_cape_1000_33w_crest_face.png"
   },
   {
     "code": "249D",
@@ -10578,7 +10636,8 @@
     "rawCrown": "168",
     "rawTrough": "36",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1048"
+    "rawOverallWidth": "1048",
+    "image_file": "assets/images/construction_metal_products_cmp_1000_33_crest_face.png"
   },
   {
     "code": "249F",
@@ -10597,7 +10656,7 @@
     "rawTrough": "36",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1048",
-    "image_file": "assets/images/249F.png"
+    "image_file": "assets/images/ward_building_components_moduclad_33_1000w.png"
   },
   {
     "code": "Brohome",
@@ -10615,7 +10674,8 @@
     "rawCrown": "34",
     "rawTrough": "30",
     "rawCoverWidth": "160",
-    "rawOverallWidth": "1000"
+    "rawOverallWidth": "1000",
+    "image_file": "assets/images/34_1000ap_1080.png"
   },
   {
     "code": "178A",
@@ -10634,7 +10694,7 @@
     "rawTrough": "178",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/178A.png"
+    "image_file": "assets/images/haironville_tac_r34_4_250_34t.png"
   },
   {
     "code": "362B",
@@ -10653,7 +10713,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1065",
-    "image_file": "assets/images/362B.png"
+    "image_file": "assets/images/brohome_34_1000ap_reverse.png"
   },
   {
     "code": "178B",
@@ -10672,7 +10732,7 @@
     "rawTrough": "35",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1047",
-    "image_file": "assets/images/178B.png"
+    "image_file": "assets/images/haironville_tac_c34_4_250_34b.png"
   },
   {
     "code": "226A",
@@ -10691,7 +10751,7 @@
     "rawTrough": "187",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/226A.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr35_250s.png"
   },
   {
     "code": "226B",
@@ -10710,7 +10770,7 @@
     "rawTrough": "187",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/226B.png"
+    "image_file": "assets/images/haironville_tac_r35_4_250_35t.png"
   },
   {
     "code": "175A",
@@ -10729,7 +10789,7 @@
     "rawTrough": "96",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1056",
-    "image_file": "assets/images/175A.png"
+    "image_file": "assets/images/ayrshire_metal_products_35_1000r.png"
   },
   {
     "code": "175B",
@@ -10748,7 +10808,7 @@
     "rawTrough": "96",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1074",
-    "image_file": "assets/images/175B.png"
+    "image_file": "assets/images/ayrshire_metal_products_35_1000w.png"
   },
   {
     "code": "226D",
@@ -10767,7 +10827,7 @@
     "rawTrough": "22",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1027",
-    "image_file": "assets/images/226D.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr35_250v.png"
   },
   {
     "code": "226C",
@@ -10786,7 +10846,7 @@
     "rawTrough": "22",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1027",
-    "image_file": "assets/images/226C.png"
+    "image_file": "assets/images/haironville_tac_c35_4_250_35b.png"
   },
   {
     "code": "185A",
@@ -10805,7 +10865,7 @@
     "rawTrough": "144",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1100",
-    "image_file": "assets/images/185A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_38_250.png"
   },
   {
     "code": "304B",
@@ -10824,7 +10884,7 @@
     "rawTrough": "185",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1038",
-    "image_file": "assets/images/304B.png"
+    "image_file": "assets/images/haironville_tac_1000r.png"
   },
   {
     "code": "131A",
@@ -10843,7 +10903,7 @@
     "rawTrough": "185",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1038",
-    "image_file": "assets/images/131A.png"
+    "image_file": "assets/images/united_continental_steels_cobacier_1004.png"
   },
   {
     "code": "383A",
@@ -10862,7 +10922,7 @@
     "rawTrough": "189",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1042",
-    "image_file": "assets/images/383A.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr40_250s.png"
   },
   {
     "code": "310A",
@@ -10881,7 +10941,7 @@
     "rawTrough": "184",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/310A.png"
+    "image_file": "assets/images/british_steel_40_1000r.png"
   },
   {
     "code": "310C",
@@ -10900,7 +10960,7 @@
     "rawTrough": "184",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/310C.png"
+    "image_file": "assets/images/european_profiles_ep_40_1000.png"
   },
   {
     "code": "310B",
@@ -10919,7 +10979,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1027",
-    "image_file": "assets/images/310B.png"
+    "image_file": "assets/images/british_steel_40_1000w.png"
   },
   {
     "code": "310D",
@@ -10938,7 +10998,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1027",
-    "image_file": "assets/images/310D.png"
+    "image_file": "assets/images/european_profiles_ep_40_1000_reversed.png"
   },
   {
     "code": "172A",
@@ -10957,7 +11017,7 @@
     "rawTrough": "139",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1057",
-    "image_file": "assets/images/172A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_45_250_export_trim.png"
   },
   {
     "code": "172B",
@@ -10976,7 +11036,7 @@
     "rawTrough": "139",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1094",
-    "image_file": "assets/images/172B.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_45_250.png"
   },
   {
     "code": "646A",
@@ -10995,7 +11055,7 @@
     "rawTrough": "189",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/646A.png"
+    "image_file": "assets/images/architectural_profiles_ap_45_50_sf_1000mm_cover.png"
   },
   {
     "code": "124A",
@@ -11014,7 +11074,7 @@
     "rawTrough": "180",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1042",
-    "image_file": "assets/images/124A.png"
+    "image_file": "assets/images/composite_panels_ltd_glamet_p1000.png"
   },
   {
     "code": "369A",
@@ -11033,7 +11093,7 @@
     "rawTrough": "205",
     "rawCoverWidth": "750",
     "rawOverallWidth": "790",
-    "image_file": "assets/images/369A.png"
+    "image_file": "assets/images/european_profiles_ep_clipfix_750.png"
   },
   {
     "code": "615A",
@@ -11052,7 +11112,7 @@
     "rawTrough": "162",
     "rawCoverWidth": "1020",
     "rawOverallWidth": "1124",
-    "image_file": "assets/images/615A.png"
+    "image_file": "assets/images/foregale_foreclad_1000.png"
   },
   {
     "code": "568A",
@@ -11071,7 +11131,7 @@
     "rawTrough": "193/185",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1065",
-    "image_file": "assets/images/568A.png"
+    "image_file": "assets/images/speeddeck_building_systems_stramclad_32_1000.png"
   },
   {
     "code": "569B",
@@ -11090,7 +11150,7 @@
     "rawTrough": "193/196",
     "rawCoverWidth": "1022",
     "rawOverallWidth": "1087",
-    "image_file": "assets/images/569B.png"
+    "image_file": "assets/images/speeddeck_building_systems_stramclad_32_1022.png"
   },
   {
     "code": "569A",
@@ -11109,7 +11169,7 @@
     "rawTrough": "193/196",
     "rawCoverWidth": "1022",
     "rawOverallWidth": "1087",
-    "image_file": "assets/images/569A.png"
+    "image_file": "assets/images/speeddeck_building_systems_stramliner_32_1022.png"
   },
   {
     "code": "404A",
@@ -11128,7 +11188,7 @@
     "rawTrough": "194",
     "rawCoverWidth": "1016",
     "rawOverallWidth": "1081",
-    "image_file": "assets/images/404A.png"
+    "image_file": "assets/images/speeddeck_building_systems_stramclad_1016_old_type.png"
   },
   {
     "code": "404B",
@@ -11147,7 +11207,7 @@
     "rawTrough": "194",
     "rawCoverWidth": "1016",
     "rawOverallWidth": "1106",
-    "image_file": "assets/images/404B.png"
+    "image_file": "assets/images/speeddeck_building_systems_stramliner_1016_old_type.png"
   },
   {
     "code": "434A",
@@ -11166,7 +11226,7 @@
     "rawTrough": "212",
     "rawCoverWidth": "508",
     "rawOverallWidth": "544",
-    "image_file": "assets/images/434A.png"
+    "image_file": "assets/images/speeddeck_building_systems_speeddeck_508_ridge_down.png"
   },
   {
     "code": "434B",
@@ -11185,7 +11245,7 @@
     "rawTrough": "212",
     "rawCoverWidth": "1016",
     "rawOverallWidth": "1052",
-    "image_file": "assets/images/434B.png"
+    "image_file": "assets/images/speeddeck_building_systems_speeddeck_1016_ridge_down.png"
   },
   {
     "code": "484A",
@@ -11204,7 +11264,7 @@
     "rawTrough": "214",
     "rawCoverWidth": "1016",
     "rawOverallWidth": "1066",
-    "image_file": "assets/images/484A.png"
+    "image_file": "assets/images/haironville_tac_tacdeck_508_ridge_down.png"
   },
   {
     "code": "308A",
@@ -11223,7 +11283,7 @@
     "rawTrough": "165",
     "rawCoverWidth": "1050",
     "rawOverallWidth": "1150",
-    "image_file": "assets/images/308A.png"
+    "image_file": "assets/images/architectural_profiles_ap_30kde.png"
   },
   {
     "code": "222A",
@@ -11242,7 +11302,7 @@
     "rawTrough": "185",
     "rawCoverWidth": "550",
     "rawOverallWidth": "603",
-    "image_file": "assets/images/222A.png"
+    "image_file": "assets/images/ash_lacy_al55_550_dekex.png"
   },
   {
     "code": "395A",
@@ -11261,7 +11321,7 @@
     "rawTrough": "185",
     "rawCoverWidth": "1100",
     "rawOverallWidth": "1129",
-    "image_file": "assets/images/395A.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_dekex_1100.png"
   },
   {
     "code": "476A",
@@ -11280,7 +11340,7 @@
     "rawTrough": "239/240",
     "rawCoverWidth": "900",
     "rawOverallWidth": "944",
-    "image_file": "assets/images/476A.png"
+    "image_file": "assets/images/h_h_robertson_uk_tr3b.png"
   },
   {
     "code": "478A",
@@ -11299,7 +11359,7 @@
     "rawTrough": "239/240",
     "rawCoverWidth": "900",
     "rawOverallWidth": "947",
-    "image_file": "assets/images/478A.png"
+    "image_file": "assets/images/h_h_robertson_uk_tr3_overlap_metal_on_both_sides.png"
   },
   {
     "code": "380A",
@@ -11318,7 +11378,7 @@
     "rawTrough": "260",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1247",
-    "image_file": "assets/images/380A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_la1200_liner.png"
   },
   {
     "code": "380B",
@@ -11337,7 +11397,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1247",
-    "image_file": "assets/images/380B.png"
+    "image_file": "assets/images/ward_building_components_moduclad_lar1200_liner.png"
   },
   {
     "code": "354B",
@@ -11356,7 +11416,7 @@
     "rawTrough": "248",
     "rawCoverWidth": "900",
     "rawOverallWidth": "958",
-    "image_file": "assets/images/354B.png"
+    "image_file": "assets/images/construction_metal_products_cmp_900l_liner.png"
   },
   {
     "code": "354D",
@@ -11375,7 +11435,7 @@
     "rawTrough": "248",
     "rawCoverWidth": "900",
     "rawOverallWidth": "958",
-    "image_file": "assets/images/354D.png"
+    "image_file": "assets/images/ecometal_ecometal_lt900_liner.png"
   },
   {
     "code": "354C",
@@ -11394,7 +11454,7 @@
     "rawTrough": "248",
     "rawCoverWidth": "900",
     "rawOverallWidth": "958",
-    "image_file": "assets/images/354C.png"
+    "image_file": "assets/images/ward_building_components_moduclad_lt900_liner.png"
   },
   {
     "code": "354A",
@@ -11413,7 +11473,7 @@
     "rawTrough": "248",
     "rawCoverWidth": "900",
     "rawOverallWidth": "976",
-    "image_file": "assets/images/354A.png"
+    "image_file": "assets/images/construction_metal_products_cape_900_l_liner.png"
   },
   {
     "code": "391A",
@@ -11432,7 +11492,7 @@
     "rawTrough": "248",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1255",
-    "image_file": "assets/images/391A.png"
+    "image_file": "assets/images/construction_metal_products_cmp_1200l_liner.png"
   },
   {
     "code": "391B",
@@ -11451,7 +11511,7 @@
     "rawTrough": "248",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1255",
-    "image_file": "assets/images/391B.png"
+    "image_file": "assets/images/ward_building_components_moduclad_lt1200_liner.png"
   },
   {
     "code": "168A",
@@ -11470,7 +11530,7 @@
     "rawTrough": "243",
     "rawCoverWidth": "900",
     "rawOverallWidth": "977",
-    "image_file": "assets/images/168A.png"
+    "image_file": "assets/images/precision_metal_forming_cl3_900_liner.png"
   },
   {
     "code": "616A",
@@ -11489,7 +11549,7 @@
     "rawTrough": "236",
     "rawCoverWidth": "600",
     "rawOverallWidth": "688",
-    "image_file": "assets/images/616A.png"
+    "image_file": "assets/images/butler_europe_600_lite_panel_type_2.png"
   },
   {
     "code": "357A",
@@ -11508,7 +11568,7 @@
     "rawTrough": "236/263",
     "rawCoverWidth": "900",
     "rawOverallWidth": "910",
-    "image_file": "assets/images/357A.png"
+    "image_file": "assets/images/butler_europe_900_inner_lite_panel_tray.png"
   },
   {
     "code": "214C",
@@ -11527,7 +11587,7 @@
     "rawTrough": "236",
     "rawCoverWidth": "900",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/214C.png"
+    "image_file": "assets/images/butler_europe_inner_lite_panel_tray_type_2.png"
   },
   {
     "code": "699A/ 698A",
@@ -11545,7 +11605,8 @@
     "rawCrown": "26",
     "rawTrough": "236",
     "rawCoverWidth": "600/900",
-    "rawOverallWidth": "688/988"
+    "rawOverallWidth": "688/988",
+    "image_file": "assets/images/butler_europe_600_900_liner_lite_panel_with_swages.png"
   },
   {
     "code": "214A",
@@ -11564,7 +11625,7 @@
     "rawTrough": "236",
     "rawCoverWidth": "900",
     "rawOverallWidth": "990",
-    "image_file": "assets/images/214A.png"
+    "image_file": "assets/images/european_profiles_ep_19_900_liner.png"
   },
   {
     "code": "143A",
@@ -11583,7 +11644,7 @@
     "rawTrough": "233",
     "rawCoverWidth": "900",
     "rawOverallWidth": "999",
-    "image_file": "assets/images/143A.png"
+    "image_file": "assets/images/cladding_decking_uk_m169_117_liner.png"
   },
   {
     "code": "143B",
@@ -11602,7 +11663,7 @@
     "rawTrough": "233",
     "rawCoverWidth": "1200",
     "rawOverallWidth": "1299",
-    "image_file": "assets/images/143B.png"
+    "image_file": "assets/images/cladding_decking_uk_m169_121_liner.png"
   },
   {
     "code": "210B",
@@ -11621,7 +11682,7 @@
     "rawTrough": "260",
     "rawCoverWidth": "900",
     "rawOverallWidth": "960",
-    "image_file": "assets/images/210B.png"
+    "image_file": "assets/images/kingspan_building_products_20mm_liner_300mm_pitch.png"
   },
   {
     "code": "177B",
@@ -11640,7 +11701,7 @@
     "rawTrough": "218",
     "rawCoverWidth": "600",
     "rawOverallWidth": "671",
-    "image_file": "assets/images/177B.png"
+    "image_file": "assets/images/butler_europe_600_lite_panel_type_1.png"
   },
   {
     "code": "177A",
@@ -11659,7 +11720,7 @@
     "rawTrough": "218",
     "rawCoverWidth": "900",
     "rawOverallWidth": "971",
-    "image_file": "assets/images/177A.png"
+    "image_file": "assets/images/butler_europe_inner_lite_panel_tray_type_1.png"
   },
   {
     "code": "235B",
@@ -11678,7 +11739,7 @@
     "rawTrough": "220",
     "rawCoverWidth": "900",
     "rawOverallWidth": "943",
-    "image_file": "assets/images/235B.png"
+    "image_file": "assets/images/astron_pr.png"
   },
   {
     "code": "235A",
@@ -11697,7 +11758,7 @@
     "rawTrough": "220",
     "rawCoverWidth": "900",
     "rawOverallWidth": "982",
-    "image_file": "assets/images/235A.png"
+    "image_file": "assets/images/astron_pra.png"
   },
   {
     "code": "212A",
@@ -11716,7 +11777,7 @@
     "rawTrough": "225",
     "rawCoverWidth": "900",
     "rawOverallWidth": "974",
-    "image_file": "assets/images/212A.png"
+    "image_file": "assets/images/european_profiles_ep_35_900.png"
   },
   {
     "code": "081A",
@@ -11735,7 +11796,7 @@
     "rawTrough": "227",
     "rawCoverWidth": "900",
     "rawOverallWidth": "964",
-    "image_file": "assets/images/081A.png"
+    "image_file": "assets/images/butler_europe_butlerib_e_lite_panel.png"
   },
   {
     "code": "187A",
@@ -11754,7 +11815,7 @@
     "rawTrough": "232",
     "rawCoverWidth": "900",
     "rawOverallWidth": "944",
-    "image_file": "assets/images/187A.png"
+    "image_file": "assets/images/construction_metal_products_cape_900r.png"
   },
   {
     "code": "164E",
@@ -11773,7 +11834,7 @@
     "rawTrough": "234",
     "rawCoverWidth": "903",
     "rawOverallWidth": "995",
-    "image_file": "assets/images/164E.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cl900_liner.png"
   },
   {
     "code": "164F",
@@ -11792,7 +11853,7 @@
     "rawTrough": "234",
     "rawCoverWidth": "1204",
     "rawOverallWidth": "1295",
-    "image_file": "assets/images/164F.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cl1200_liner.png"
   },
   {
     "code": "164A",
@@ -11810,7 +11871,8 @@
     "rawCrown": "35",
     "rawTrough": "235",
     "rawCoverWidth": "1208",
-    "rawOverallWidth": "1299"
+    "rawOverallWidth": "1299",
+    "image_file": "assets/images/cladding_decking_uk_m169_864_liner.png"
   },
   {
     "code": "164D",
@@ -11829,7 +11891,7 @@
     "rawTrough": "235",
     "rawCoverWidth": "1208",
     "rawOverallWidth": "1299",
-    "image_file": "assets/images/164D.png"
+    "image_file": "assets/images/haironville_tac_tactray_1200_liner.png"
   },
   {
     "code": "164C",
@@ -11847,7 +11909,8 @@
     "rawCrown": "35",
     "rawTrough": "235",
     "rawCoverWidth": "1208",
-    "rawOverallWidth": "1299"
+    "rawOverallWidth": "1299",
+    "image_file": "assets/images/cladding_decking_uk_proline_1200_liner.png"
   },
   {
     "code": "115A",
@@ -11866,7 +11929,7 @@
     "rawTrough": "206",
     "rawCoverWidth": "906",
     "rawOverallWidth": "966",
-    "image_file": "assets/images/115A.png"
+    "image_file": "assets/images/h_h_robertson_uk_lr3.png"
   },
   {
     "code": "115B",
@@ -11885,7 +11948,7 @@
     "rawTrough": "206",
     "rawCoverWidth": "906",
     "rawOverallWidth": "966",
-    "image_file": "assets/images/115B.png"
+    "image_file": "assets/images/h_h_robertson_uk_ibr_300.png"
   },
   {
     "code": "330A",
@@ -11904,7 +11967,7 @@
     "rawTrough": "255",
     "rawCoverWidth": "914",
     "rawOverallWidth": "981",
-    "image_file": "assets/images/330A.png"
+    "image_file": "assets/images/hi_tech_industrial_cladding_ht_18_914_liner.png"
   },
   {
     "code": "189A",
@@ -11923,7 +11986,7 @@
     "rawTrough": "235",
     "rawCoverWidth": "914",
     "rawOverallWidth": "975",
-    "image_file": "assets/images/189A.png"
+    "image_file": "assets/images/atlas_coated_steels_914_19_liner.png"
   },
   {
     "code": "189C",
@@ -11942,7 +12005,7 @@
     "rawTrough": "235",
     "rawCoverWidth": "914",
     "rawOverallWidth": "975",
-    "image_file": "assets/images/189C.png"
+    "image_file": "assets/images/ecometal_ecometal_914_liner.png"
   },
   {
     "code": "189B",
@@ -11961,7 +12024,7 @@
     "rawTrough": "235",
     "rawCoverWidth": "914",
     "rawOverallWidth": "975",
-    "image_file": "assets/images/189B.png"
+    "image_file": "assets/images/heys_shaw_914_19_liner.png"
   },
   {
     "code": "256A",
@@ -11980,7 +12043,7 @@
     "rawTrough": "247",
     "rawCoverWidth": "914",
     "rawOverallWidth": "988",
-    "image_file": "assets/images/256A.png"
+    "image_file": "assets/images/haironville_tac_tactray_914_liner.png"
   },
   {
     "code": "149A",
@@ -11999,7 +12062,7 @@
     "rawTrough": "248",
     "rawCoverWidth": "914",
     "rawOverallWidth": "991",
-    "image_file": "assets/images/149A.png"
+    "image_file": "assets/images/precision_metal_forming_cl3_914_liner.png"
   },
   {
     "code": "208A",
@@ -12018,7 +12081,7 @@
     "rawTrough": "255",
     "rawCoverWidth": "914",
     "rawOverallWidth": "996",
-    "image_file": "assets/images/208A.png"
+    "image_file": "assets/images/cladcolor_profiling_cladcolor_lp_914_liner.png"
   },
   {
     "code": "Fibre Cement Profiles",
@@ -12036,7 +12099,8 @@
     "rawCrown": "25",
     "rawTrough": "S",
     "rawCoverWidth": "V",
-    "rawOverallWidth": "914"
+    "rawOverallWidth": "914",
+    "image_file": "assets/images/tunnel_td6_liner_946.png"
   },
   {
     "code": "038A",
@@ -12055,7 +12119,7 @@
     "rawTrough": "32",
     "rawCoverWidth": "610",
     "rawOverallWidth": "676",
-    "image_file": "assets/images/038A.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_classic_2.png"
   },
   {
     "code": "038B",
@@ -12074,7 +12138,7 @@
     "rawTrough": "32",
     "rawCoverWidth": "914",
     "rawOverallWidth": "981",
-    "image_file": "assets/images/038B.png"
+    "image_file": "assets/images/british_alcan_building_products_rigidal_classic_3.png"
   },
   {
     "code": "061A",
@@ -12093,7 +12157,7 @@
     "rawTrough": "235",
     "rawCoverWidth": "914",
     "rawOverallWidth": "981",
-    "image_file": "assets/images/061A.png"
+    "image_file": "assets/images/butler_europe_butlerib_2_lite_panel.png"
   },
   {
     "code": "389A",
@@ -12112,7 +12176,7 @@
     "rawTrough": "273",
     "rawCoverWidth": "1250",
     "rawOverallWidth": "1297",
-    "image_file": "assets/images/389A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_la1250_liner.png"
   },
   {
     "code": "207A",
@@ -12131,7 +12195,7 @@
     "rawTrough": "277",
     "rawCoverWidth": "950",
     "rawOverallWidth": "997",
-    "image_file": "assets/images/207A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_la950_liner.png"
   },
   {
     "code": "241A",
@@ -12150,7 +12214,7 @@
     "rawTrough": "236",
     "rawCoverWidth": "950",
     "rawOverallWidth": "1030",
-    "image_file": "assets/images/241A.png"
+    "image_file": "assets/images/european_profiles_ep_shadowline.png"
   },
   {
     "code": "241B",
@@ -12169,7 +12233,7 @@
     "rawTrough": "30",
     "rawCoverWidth": "950",
     "rawOverallWidth": "1010",
-    "image_file": "assets/images/241B.png"
+    "image_file": "assets/images/european_profiles_ep_shadowline_reversed.png"
   },
   {
     "code": "272A",
@@ -12188,7 +12252,7 @@
     "rawTrough": "190",
     "rawCoverWidth": "950",
     "rawOverallWidth": "1027",
-    "image_file": "assets/images/272A.png"
+    "image_file": "assets/images/plannja_inc_korrugal_aluminium_top_40_top_40a.png"
   },
   {
     "code": "148A",
@@ -12207,7 +12271,7 @@
     "rawTrough": "263",
     "rawCoverWidth": "960",
     "rawOverallWidth": "1036",
-    "image_file": "assets/images/148A.png"
+    "image_file": "assets/images/precision_metal_forming_cl3_960_liner.png"
   },
   {
     "code": "148B",
@@ -12226,7 +12290,7 @@
     "rawTrough": "263",
     "rawCoverWidth": "960",
     "rawOverallWidth": "1036",
-    "image_file": "assets/images/148B.png"
+    "image_file": "assets/images/tegral_metal_forming_tmr_19_960_liner.png"
   },
   {
     "code": "136A",
@@ -12245,7 +12309,7 @@
     "rawTrough": "253",
     "rawCoverWidth": "960",
     "rawOverallWidth": "1059",
-    "image_file": "assets/images/136A.png"
+    "image_file": "assets/images/cladding_decking_uk_m169_118_liner.png"
   },
   {
     "code": "159A",
@@ -12263,7 +12327,8 @@
     "rawCrown": "35",
     "rawTrough": "255",
     "rawCoverWidth": "966",
-    "rawOverallWidth": "1057"
+    "rawOverallWidth": "1057",
+    "image_file": "assets/images/cladding_decking_uk_m169_861_liner.png"
   },
   {
     "code": "159B",
@@ -12281,7 +12346,8 @@
     "rawCrown": "35",
     "rawTrough": "255",
     "rawCoverWidth": "966",
-    "rawOverallWidth": "1057"
+    "rawOverallWidth": "1057",
+    "image_file": "assets/images/cladding_decking_uk_proline_960_liner.png"
   },
   {
     "code": "567A",
@@ -12300,7 +12366,7 @@
     "rawTrough": "260/270",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1038",
-    "image_file": "assets/images/567A.png"
+    "image_file": "assets/images/speeddeck_building_systems_liner_20_1000.png"
   },
   {
     "code": "442B",
@@ -12319,7 +12385,7 @@
     "rawTrough": "298",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/442B.png"
+    "image_file": "assets/images/brunel_steel_services_16_1000_liner.png"
   },
   {
     "code": "442A",
@@ -12338,7 +12404,7 @@
     "rawTrough": "298",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/442A.png"
+    "image_file": "assets/images/b_w_industries_bw_l1_liner.png"
   },
   {
     "code": "146A",
@@ -12357,7 +12423,7 @@
     "rawTrough": "295",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1047",
-    "image_file": "assets/images/146A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_la1000_liner.png"
   },
   {
     "code": "506C",
@@ -12376,7 +12442,7 @@
     "rawTrough": "284",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1105",
-    "image_file": "assets/images/506C.png"
+    "image_file": "assets/images/eternit_uk_el_19_333_liner.png"
   },
   {
     "code": "506B",
@@ -12395,7 +12461,7 @@
     "rawTrough": "284",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1105",
-    "image_file": "assets/images/506B.png"
+    "image_file": "assets/images/trimform_products_rf_1_1l_liner.png"
   },
   {
     "code": "353B",
@@ -12414,7 +12480,7 @@
     "rawTrough": "281",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1059",
-    "image_file": "assets/images/353B.png"
+    "image_file": "assets/images/construction_metal_products_cmp_1000l_liner.png"
   },
   {
     "code": "353C",
@@ -12433,7 +12499,7 @@
     "rawTrough": "281",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1059",
-    "image_file": "assets/images/353C.png"
+    "image_file": "assets/images/ward_building_components_moduclad_lt1000_liner.png"
   },
   {
     "code": "353A",
@@ -12452,7 +12518,7 @@
     "rawTrough": "281",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1076",
-    "image_file": "assets/images/353A.png"
+    "image_file": "assets/images/construction_metal_products_cape_1000_l_liner.png"
   },
   {
     "code": "371A",
@@ -12471,7 +12537,7 @@
     "rawTrough": "278",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1070",
-    "image_file": "assets/images/371A.png"
+    "image_file": "assets/images/coverworld_uk_cl18_liner.png"
   },
   {
     "code": "371B",
@@ -12490,7 +12556,7 @@
     "rawTrough": "278",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1070",
-    "image_file": "assets/images/371B.png"
+    "image_file": "assets/images/uniclad_systems_uniclad_liner_uc_18_1000.png"
   },
   {
     "code": "353D",
@@ -12509,7 +12575,7 @@
     "rawTrough": "20",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1059",
-    "image_file": "assets/images/353D.png"
+    "image_file": "assets/images/ward_building_components_moduclad_ltr1000_liner.png"
   },
   {
     "code": "681A",
@@ -12528,7 +12594,7 @@
     "rawTrough": "275",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/681A.png"
+    "image_file": "assets/images/cladfab_19_1000_liner.png"
   },
   {
     "code": "244A",
@@ -12547,7 +12613,7 @@
     "rawTrough": "276",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1074",
-    "image_file": "assets/images/244A.png"
+    "image_file": "assets/images/haironville_tac_tactray_1000_liner.png"
   },
   {
     "code": "253A",
@@ -12566,7 +12632,7 @@
     "rawTrough": "276",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1077",
-    "image_file": "assets/images/253A.png"
+    "image_file": "assets/images/precision_metal_forming_cl3_1000_liner.png"
   },
   {
     "code": "371C",
@@ -12585,7 +12651,7 @@
     "rawTrough": "278",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1070",
-    "image_file": "assets/images/371C.png"
+    "image_file": "assets/images/firth_steels_norclad_19_1000_liner.png"
   },
   {
     "code": "144D",
@@ -12604,7 +12670,7 @@
     "rawTrough": "266",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1077",
-    "image_file": "assets/images/144D.png"
+    "image_file": "assets/images/coloured_metal_profiles_q19_1000_liner.png"
   },
   {
     "code": "144B",
@@ -12623,7 +12689,7 @@
     "rawTrough": "266",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1077",
-    "image_file": "assets/images/144B.png"
+    "image_file": "assets/images/cover_structure_q19_1000_liner.png"
   },
   {
     "code": "144A",
@@ -12642,7 +12708,7 @@
     "rawTrough": "266",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1099",
-    "image_file": "assets/images/144A.png"
+    "image_file": "assets/images/cladding_decking_uk_m169_119_liner.png"
   },
   {
     "code": "227B",
@@ -12661,7 +12727,7 @@
     "rawTrough": "247",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/227B.png"
+    "image_file": "assets/images/ward_building_components_moduclad_d1000.png"
   },
   {
     "code": "227A",
@@ -12680,7 +12746,7 @@
     "rawTrough": "247",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1084",
-    "image_file": "assets/images/227A.png"
+    "image_file": "assets/images/ward_building_components_moduclad_c1000.png"
   },
   {
     "code": "400A",
@@ -12699,7 +12765,7 @@
     "rawTrough": "271",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1045",
-    "image_file": "assets/images/400A.png"
+    "image_file": "assets/images/kingspan_building_products_35_1000.png"
   },
   {
     "code": "238C",
@@ -12718,7 +12784,7 @@
     "rawTrough": "255",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1060",
-    "image_file": "assets/images/238C.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc35.png"
   },
   {
     "code": "238A",
@@ -12737,7 +12803,7 @@
     "rawTrough": "255",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/238A.png"
+    "image_file": "assets/images/ash_lacy_al35_1000.png"
   },
   {
     "code": "238D",
@@ -12756,7 +12822,7 @@
     "rawTrough": "255",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1080",
-    "image_file": "assets/images/238D.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cc35_pbl.png"
   },
   {
     "code": "290B",
@@ -12775,7 +12841,7 @@
     "rawTrough": "261",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/290B.png"
+    "image_file": "assets/images/haironville_tac_r39_3_333_39t.png"
   },
   {
     "code": "290A",
@@ -12794,7 +12860,7 @@
     "rawTrough": "258",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1044",
-    "image_file": "assets/images/290A.png"
+    "image_file": "assets/images/gavle_uk_gavle_tr39_333s.png"
   },
   {
     "code": "290C",
@@ -12813,7 +12879,7 @@
     "rawTrough": "22",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1027",
-    "image_file": "assets/images/290C.png"
+    "image_file": "assets/images/haironville_tac_c39_3_333_39b.png"
   },
   {
     "code": "248A",
@@ -12832,7 +12898,7 @@
     "rawTrough": "292",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1028",
-    "image_file": "assets/images/248A.png"
+    "image_file": "assets/images/composite_panels_ltd_e_com_super_4_glamet_g4.png"
   },
   {
     "code": "385A",
@@ -12851,7 +12917,7 @@
     "rawTrough": "242",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1085",
-    "image_file": "assets/images/385A.png"
+    "image_file": "assets/images/precision_metal_forming_r40_broad_rib_40r.png"
   },
   {
     "code": "385C",
@@ -12870,7 +12936,7 @@
     "rawTrough": "242",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1085",
-    "image_file": "assets/images/385C.png"
+    "image_file": "assets/images/tegral_metal_forming_broad_rib_40_roof.png"
   },
   {
     "code": "385B",
@@ -12889,7 +12955,7 @@
     "rawTrough": "31",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1067",
-    "image_file": "assets/images/385B.png"
+    "image_file": "assets/images/precision_metal_forming_c40_broad_rib_40c.png"
   },
   {
     "code": "385D",
@@ -12908,7 +12974,7 @@
     "rawTrough": "31",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1067",
-    "image_file": "assets/images/385D.png"
+    "image_file": "assets/images/tegral_metal_forming_broad_rib_40_cladding.png"
   },
   {
     "code": "155A",
@@ -12927,7 +12993,7 @@
     "rawTrough": "272",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1049",
-    "image_file": "assets/images/155A.png"
+    "image_file": "assets/images/haironville_tac_metaclad_r42.png"
   },
   {
     "code": "347A",
@@ -12946,7 +13012,7 @@
     "rawTrough": "258",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1050",
-    "image_file": "assets/images/347A.png"
+    "image_file": "assets/images/azimex_nervesco_1000ts.png"
   },
   {
     "code": "180C",
@@ -12965,7 +13031,7 @@
     "rawTrough": "268",
     "rawCoverWidth": "1003",
     "rawOverallWidth": "1094",
-    "image_file": "assets/images/180C.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cl1000_liner.png"
   },
   {
     "code": "397A",
@@ -12984,7 +13050,7 @@
     "rawTrough": "268",
     "rawCoverWidth": "1103",
     "rawOverallWidth": "1195",
-    "image_file": "assets/images/397A.png"
+    "image_file": "assets/images/cladding_decking_uk_proclad_cl1100_liner.png"
   },
   {
     "code": "180A",
@@ -13002,7 +13068,8 @@
     "rawCrown": "35",
     "rawTrough": "268",
     "rawCoverWidth": "1006",
-    "rawOverallWidth": "1097"
+    "rawOverallWidth": "1097",
+    "image_file": "assets/images/cladding_decking_uk_m169_862_liner.png"
   },
   {
     "code": "180B",
@@ -13020,7 +13087,8 @@
     "rawCrown": "35",
     "rawTrough": "268",
     "rawCoverWidth": "1006",
-    "rawOverallWidth": "1097"
+    "rawOverallWidth": "1097",
+    "image_file": "assets/images/cladding_decking_uk_proline_1000_liner.png"
   },
   {
     "code": "315A",
@@ -13039,7 +13107,7 @@
     "rawTrough": "281",
     "rawCoverWidth": "1016",
     "rawOverallWidth": "1090",
-    "image_file": "assets/images/315A.png"
+    "image_file": "assets/images/haironville_tac_tactray_1016_liner.png"
   },
   {
     "code": "237A",
@@ -13058,7 +13126,7 @@
     "rawTrough": "282",
     "rawCoverWidth": "1016",
     "rawOverallWidth": "1093",
-    "image_file": "assets/images/237A.png"
+    "image_file": "assets/images/precision_metal_forming_cl3_1016_liner.png"
   },
   {
     "code": "137A",
@@ -13077,7 +13145,7 @@
     "rawTrough": "272",
     "rawCoverWidth": "1016",
     "rawOverallWidth": "1115",
-    "image_file": "assets/images/137A.png"
+    "image_file": "assets/images/cladding_decking_uk_m169_120_liner.png"
   },
   {
     "code": "160A",
@@ -13095,7 +13163,8 @@
     "rawCrown": "35",
     "rawTrough": "274",
     "rawCoverWidth": "1022",
-    "rawOverallWidth": "1113"
+    "rawOverallWidth": "1113",
+    "image_file": "assets/images/cladding_decking_uk_m169_863_liner.png"
   },
   {
     "code": "160B",
@@ -13113,7 +13182,8 @@
     "rawCrown": "35",
     "rawTrough": "274",
     "rawCoverWidth": "1022",
-    "rawOverallWidth": "1113"
+    "rawOverallWidth": "1113",
+    "image_file": "assets/images/cladding_decking_uk_proline_1016_liner.png"
   },
   {
     "code": "160C",
@@ -13132,7 +13202,7 @@
     "rawTrough": "274",
     "rawCoverWidth": "1022",
     "rawOverallWidth": "1113",
-    "image_file": "assets/images/160C.png"
+    "image_file": "assets/images/haironville_tac_tactray_1016_liner_old_type.png"
   },
   {
     "code": "544A",
@@ -13151,7 +13221,7 @@
     "rawTrough": "270",
     "rawCoverWidth": "1020",
     "rawOverallWidth": "1058",
-    "image_file": "assets/images/544A.png"
+    "image_file": "assets/images/speeddeck_building_systems_stramliner_20_1020.png"
   },
   {
     "code": "215A",
@@ -13170,7 +13240,7 @@
     "rawTrough": "270",
     "rawCoverWidth": "1065",
     "rawOverallWidth": "1140",
-    "image_file": "assets/images/215A.png"
+    "image_file": "assets/images/euroclad_30_1066.png"
   },
   {
     "code": "199A",
@@ -13189,7 +13259,7 @@
     "rawTrough": "V",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1014",
-    "image_file": "assets/images/199A.png"
+    "image_file": "assets/images/ash_lacy_al1000_liner.png"
   },
   {
     "code": "266A",
@@ -13208,7 +13278,7 @@
     "rawTrough": "406",
     "rawCoverWidth": "914",
     "rawOverallWidth": "986",
-    "image_file": "assets/images/266A.png"
+    "image_file": "assets/images/gleno_industries_gl914_liner.png"
   },
   {
     "code": "280A",
@@ -13227,7 +13297,7 @@
     "rawTrough": "428",
     "rawCoverWidth": "550",
     "rawOverallWidth": "564",
-    "image_file": "assets/images/280A.png"
+    "image_file": "assets/images/ash_lacy_al550_liner.png"
   },
   {
     "code": "335A",
@@ -13246,7 +13316,7 @@
     "rawTrough": "448",
     "rawCoverWidth": "1000",
     "rawOverallWidth": "1070",
-    "image_file": "assets/images/335A.png"
+    "image_file": "assets/images/gleno_industries_gl1000_liner.png"
   },
   {
     "code": "359A",
@@ -13264,7 +13334,8 @@
     "rawCrown": "30",
     "rawTrough": "420",
     "rawCoverWidth": "1000",
-    "rawOverallWidth": "1070"
+    "rawOverallWidth": "1070",
+    "image_file": "assets/images/shufflebottom_sh_1000_26_l_liner.png"
   },
   {
     "code": "Shufflebottom",
@@ -13282,7 +13353,8 @@
     "rawCrown": "25",
     "rawTrough": "30",
     "rawCoverWidth": "420",
-    "rawOverallWidth": "1000"
+    "rawOverallWidth": "1000",
+    "image_file": "assets/images/sh_1000_26_lw_1070.png"
   },
   {
     "code": "096A",
@@ -13301,11 +13373,11 @@
     "rawTrough": "482",
     "rawCoverWidth": "600",
     "rawOverallWidth": "560",
-    "image_file": "assets/images/096A.png"
+    "image_file": "assets/images/butler_europe_mr24_lite_panel.png"
   },
   {
     "code": "011A",
-    "profileName": "R.P.M. 10.1/2 x 2.5/8”",
+    "profileName": "R.P.M. 10.1/2 x 2.5/8\u201d",
     "manufacturer": "H.H.Robertson (UK)",
     "shape": "unknown",
     "pitch": 67,
@@ -13320,11 +13392,11 @@
     "rawTrough": "S",
     "rawCoverWidth": "600",
     "rawOverallWidth": "698",
-    "image_file": "assets/images/011A.png"
+    "image_file": "assets/images/h_h_robertson_uk_r_p_m_10_1_2_x_2_5_8.png"
   },
   {
     "code": "011B",
-    "profileName": "R.P.M. 11 x 2.5/8”",
+    "profileName": "R.P.M. 11 x 2.5/8\u201d",
     "manufacturer": "H.H.Robertson (UK)",
     "shape": "unknown",
     "pitch": 67,
@@ -13339,11 +13411,11 @@
     "rawTrough": "S",
     "rawCoverWidth": "600",
     "rawOverallWidth": "732",
-    "image_file": "assets/images/011B.png"
+    "image_file": "assets/images/h_h_robertson_uk_r_p_m_11_x_2_5_8.png"
   },
   {
     "code": "011C",
-    "profileName": "R.P.M. 12.1/2 x 2.5/8”",
+    "profileName": "R.P.M. 12.1/2 x 2.5/8\u201d",
     "manufacturer": "H.H.Robertson (UK)",
     "shape": "unknown",
     "pitch": 67,
@@ -13358,11 +13430,11 @@
     "rawTrough": "S",
     "rawCoverWidth": "733",
     "rawOverallWidth": "832",
-    "image_file": "assets/images/011C.png"
+    "image_file": "assets/images/h_h_robertson_uk_r_p_m_12_1_2_x_2_5_8.png"
   },
   {
     "code": "011D",
-    "profileName": "R.P.M. 13 x 2.5/8”",
+    "profileName": "R.P.M. 13 x 2.5/8\u201d",
     "manufacturer": "H.H.Robertson (UK)",
     "shape": "unknown",
     "pitch": 67,
@@ -13377,11 +13449,11 @@
     "rawTrough": "S",
     "rawCoverWidth": "733",
     "rawOverallWidth": "865",
-    "image_file": "assets/images/011D.png"
+    "image_file": "assets/images/h_h_robertson_uk_r_p_m_13_x_2_5_8.png"
   },
   {
     "code": "011E",
-    "profileName": "R.P.M. 13.1/2 x 2.5/8”",
+    "profileName": "R.P.M. 13.1/2 x 2.5/8\u201d",
     "manufacturer": "H.H.Robertson (UK)",
     "shape": "unknown",
     "pitch": 67,
@@ -13396,7 +13468,7 @@
     "rawTrough": "S",
     "rawCoverWidth": "800",
     "rawOverallWidth": "899",
-    "image_file": "assets/images/011E.png"
+    "image_file": "assets/images/h_h_robertson_uk_r_p_m_13_1_2_x_2_5_8.png"
   },
   {
     "code": "002D",
@@ -13414,7 +13486,8 @@
     "rawCrown": "S",
     "rawTrough": "S",
     "rawCoverWidth": "651",
-    "rawOverallWidth": "749"
+    "rawOverallWidth": "749",
+    "image_file": "assets/images/fibre_cement_profiles_eternit_2000_profile_3.png"
   },
   {
     "code": "002C",
@@ -13432,11 +13505,12 @@
     "rawCrown": "S",
     "rawTrough": "S",
     "rawCoverWidth": "651",
-    "rawOverallWidth": "749"
+    "rawOverallWidth": "749",
+    "image_file": "assets/images/fibre_cement_profiles_standard_3.png"
   },
   {
     "code": "599A",
-    "profileName": "E.P. Corrugated 10 x 3”",
+    "profileName": "E.P. Corrugated 10 x 3\u201d",
     "manufacturer": "European Profiles",
     "shape": "unknown",
     "pitch": 75,
@@ -13451,11 +13525,11 @@
     "rawTrough": "S",
     "rawCoverWidth": "754",
     "rawOverallWidth": "804",
-    "image_file": "assets/images/599A.png"
+    "image_file": "assets/images/european_profiles_e_p_corrugated_10_x_3.png"
   },
   {
     "code": "599B",
-    "profileName": "E.P. Corrugated 10.1/2 x 3”",
+    "profileName": "E.P. Corrugated 10.1/2 x 3\u201d",
     "manufacturer": "European Profiles",
     "shape": "unknown",
     "pitch": 75,
@@ -13470,11 +13544,11 @@
     "rawTrough": "S",
     "rawCoverWidth": "754",
     "rawOverallWidth": "839",
-    "image_file": "assets/images/599B.png"
+    "image_file": "assets/images/european_profiles_e_p_corrugated_10_1_2_x_3.png"
   },
   {
     "code": "599C",
-    "profileName": "E.P. Corrugated 12 x 3”",
+    "profileName": "E.P. Corrugated 12 x 3\u201d",
     "manufacturer": "European Profiles",
     "shape": "unknown",
     "pitch": 75,
@@ -13489,11 +13563,11 @@
     "rawTrough": "S",
     "rawCoverWidth": "904",
     "rawOverallWidth": "954",
-    "image_file": "assets/images/599C.png"
+    "image_file": "assets/images/european_profiles_e_p_corrugated_12_x_3.png"
   },
   {
     "code": "599D",
-    "profileName": "E.P. Corrugated 13 x 3”",
+    "profileName": "E.P. Corrugated 13 x 3\u201d",
     "manufacturer": "European Profiles",
     "shape": "unknown",
     "pitch": 75,
@@ -13508,11 +13582,11 @@
     "rawTrough": "S",
     "rawCoverWidth": "980",
     "rawOverallWidth": "1030",
-    "image_file": "assets/images/599D.png"
+    "image_file": "assets/images/european_profiles_e_p_corrugated_13_x_3.png"
   },
   {
     "code": "599E",
-    "profileName": "E.P. Corrugated 13.1/2 x 3”",
+    "profileName": "E.P. Corrugated 13.1/2 x 3\u201d",
     "manufacturer": "European Profiles",
     "shape": "unknown",
     "pitch": 75,
@@ -13527,12 +13601,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "980",
     "rawOverallWidth": "1065",
-    "image_file": "assets/images/599E.png"
+    "image_file": "assets/images/european_profiles_e_p_corrugated_13_1_2_x_3.png"
   },
   {
     "code": "001A",
-    "profileName": "8 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "8 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13546,12 +13620,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "610",
     "rawOverallWidth": "660",
-    "image_file": "assets/images/001A.png"
+    "image_file": "assets/images/3_metal_profiles_8_x_3_iron.png"
   },
   {
     "code": "001L",
-    "profileName": "8.1/2 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "8.1/2 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13565,12 +13639,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "610",
     "rawOverallWidth": "698",
-    "image_file": "assets/images/001L.png"
+    "image_file": "assets/images/3_metal_profiles_8_1_2_x_3_iron.png"
   },
   {
     "code": "001T",
-    "profileName": "9 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "9 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13584,12 +13658,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "686",
     "rawOverallWidth": "736",
-    "image_file": "assets/images/001T.png"
+    "image_file": "assets/images/3_metal_profiles_9_x_3_iron.png"
   },
   {
     "code": "001U",
-    "profileName": "9.1/2 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "9.1/2 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13603,12 +13677,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "686",
     "rawOverallWidth": "775",
-    "image_file": "assets/images/001U.png"
+    "image_file": "assets/images/3_metal_profiles_9_1_2_x_3_iron.png"
   },
   {
     "code": "001B",
-    "profileName": "10 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "10 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13622,12 +13696,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "762",
     "rawOverallWidth": "812",
-    "image_file": "assets/images/001B.png"
+    "image_file": "assets/images/3_metal_profiles_10_x_3_iron.png"
   },
   {
     "code": "001C",
-    "profileName": "10.1/2 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "10.1/2 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13641,7 +13715,7 @@
     "rawTrough": "S",
     "rawCoverWidth": "762",
     "rawOverallWidth": "851",
-    "image_file": "assets/images/001C.png"
+    "image_file": "assets/images/3_metal_profiles_10_1_2_x_3_iron.png"
   },
   {
     "code": "001J",
@@ -13660,12 +13734,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "762",
     "rawOverallWidth": "876",
-    "image_file": "assets/images/001J.png"
+    "image_file": "assets/images/british_uralite_cellactite.png"
   },
   {
     "code": "001K",
-    "profileName": "11 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "11 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13679,12 +13753,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "838",
     "rawOverallWidth": "889",
-    "image_file": "assets/images/001K.png"
+    "image_file": "assets/images/3_metal_profiles_11_x_3_iron.png"
   },
   {
     "code": "001V",
-    "profileName": "11.1/2 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "11.1/2 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13698,12 +13772,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "838",
     "rawOverallWidth": "927",
-    "image_file": "assets/images/001V.png"
+    "image_file": "assets/images/3_metal_profiles_11_1_2_x_3_iron.png"
   },
   {
     "code": "001D",
-    "profileName": "12 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "12 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13717,12 +13791,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "914",
     "rawOverallWidth": "965",
-    "image_file": "assets/images/001D.png"
+    "image_file": "assets/images/3_metal_profiles_12_x_3_iron.png"
   },
   {
     "code": "001E",
-    "profileName": "12.1/2 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "12.1/2 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13736,12 +13810,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "914",
     "rawOverallWidth": "1003",
-    "image_file": "assets/images/001E.png"
+    "image_file": "assets/images/3_metal_profiles_12_1_2_x_3_iron.png"
   },
   {
     "code": "001F",
-    "profileName": "13 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "13 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13755,12 +13829,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "991",
     "rawOverallWidth": "1041",
-    "image_file": "assets/images/001F.png"
+    "image_file": "assets/images/3_metal_profiles_13_x_3_iron.png"
   },
   {
     "code": "001G",
-    "profileName": "13.1/2 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "13.1/2 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13774,12 +13848,12 @@
     "rawTrough": "S",
     "rawCoverWidth": "991",
     "rawOverallWidth": "1079",
-    "image_file": "assets/images/001G.png"
+    "image_file": "assets/images/3_metal_profiles_13_1_2_x_3_iron.png"
   },
   {
     "code": "001H",
-    "profileName": "14 x 3” Iron",
-    "manufacturer": "3” Metal Profiles",
+    "profileName": "14 x 3\u201d Iron",
+    "manufacturer": "3\u201d Metal Profiles",
     "shape": "unknown",
     "pitch": 76,
     "depth": 19,
@@ -13793,11 +13867,11 @@
     "rawTrough": "S",
     "rawCoverWidth": "1067",
     "rawOverallWidth": "1118",
-    "image_file": "assets/images/001H.png"
+    "image_file": "assets/images/3_metal_profiles_14_x_3_iron.png"
   },
   {
     "code": "019B",
-    "profileName": "R.P.M. ‘V’ Beam (4 trough)",
+    "profileName": "R.P.M. \u2018V\u2019 Beam (4 trough)",
     "manufacturer": "H.H.Robertson (UK)",
     "shape": "unknown",
     "pitch": 135,
@@ -13812,6 +13886,6 @@
     "rawTrough": "S",
     "rawCoverWidth": "540",
     "rawOverallWidth": "633",
-    "image_file": "assets/images/019B.png"
+    "image_file": "assets/images/h_h_robertson_uk_r_p_m_v_beam_4_trough.png"
   }
 ]
