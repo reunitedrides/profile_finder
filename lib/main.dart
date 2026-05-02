@@ -38,7 +38,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await FCMService.init();
+  unawaited(FCMService.init()); // don't block startup waiting for APNs token
   // Restore Google Sign-In to Firebase Auth on cold start
   if (FirebaseAuth.instance.currentUser == null) {
     try {
