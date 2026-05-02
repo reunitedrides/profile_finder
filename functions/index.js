@@ -1,34 +1,27 @@
-const functions = require('firebase-functions/v2');
+const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
+const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
 
 admin.initializeApp();
 
+const EMAIL_PASSWORD = defineSecret('EMAIL_PASSWORD');
 const ADMIN_EMAIL = 'marksjones73@gmail.com';
 
-function createTransporter() {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: ADMIN_EMAIL,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-}
-
 // ── Email when correction/photo submitted ─────────────────────
-exports.onCorrectionSubmitted = functions.firestore.onDocumentCreated(
-  { document: 'image_corrections/{id}', region: 'europe-west2' },
+exports.onCorrectionSubmitted = onDocumentCreated(
+  { document: 'image_corrections/{id}', region: 'europe-west2', secrets: [EMAIL_PASSWORD] },
   async (event) => {
     const data = event.data?.data();
     if (!data) return null;
 
-    const id   = event.params.id;
-    const type = data.type === 'sheet_photo' ? 'New Photo Submission' : 'Correction Report';
-    const name = data.profileName ?? data.originalName ?? 'Unknown';
-    const mfr  = data.manufacturer ?? data.originalMfr ?? '';
-    const by   = data.submittedBy ?? 'anonymous';
-    const notes = data.notes ?? data.correctedName ?? '';
+    const id     = event.params.id;
+    const type   = data.type === 'sheet_photo' ? 'New Photo Submission' : 'Correction Report';
+    const name   = data.profileName ?? data.originalName ?? 'Unknown';
+    const mfr    = data.manufacturer ?? data.originalMfr ?? '';
+    const by     = data.submittedBy ?? 'anonymous';
+    const notes  = data.notes ?? data.correctedName ?? '';
     const photoUrl = data.photoUrl ?? null;
 
     const photoHtml = photoUrl
@@ -40,8 +33,16 @@ exports.onCorrectionSubmitted = functions.firestore.onDocumentCreated(
       <p><strong>Corrected name:</strong> ${data.correctedName ?? '-'}</p>
       <p><strong>Corrected manufacturer:</strong> ${data.correctedMfr ?? '-'}</p>` : '';
 
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: ADMIN_EMAIL,
+        pass: EMAIL_PASSWORD.value(),
+      },
+    });
+
     try {
-      await createTransporter().sendMail({
+      await transporter.sendMail({
         from: `Roof Profile App <${ADMIN_EMAIL}>`,
         to: ADMIN_EMAIL,
         subject: `[Roof App] ${type}: ${name}`,
@@ -72,7 +73,7 @@ exports.onCorrectionSubmitted = functions.firestore.onDocumentCreated(
 );
 
 // ── Push notifications for new profiles ───────────────────────
-exports.sendNewProfileNotification = functions.firestore.onDocumentCreated(
+exports.sendNewProfileNotification = onDocumentCreated(
   { document: 'notifications/{id}', region: 'europe-west2' },
   async (event) => {
     const data = event.data?.data();
@@ -118,10 +119,10 @@ exports.sendNewProfileNotification = functions.firestore.onDocumentCreated(
 );
 
 // ── Approve correction ─────────────────────────────────────────
-exports.approveCorrection = functions.https.onCall(
+exports.approveCorrection = onCall(
   { region: 'europe-west2' },
   async (request) => {
-    if (!request.auth) throw new functions.https.HttpsError('unauthenticated', 'Must be logged in');
+    if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
     const { correctionId } = request.data;
     await admin.firestore().collection('image_corrections').doc(correctionId).update({
       status: 'approved',
@@ -132,10 +133,10 @@ exports.approveCorrection = functions.https.onCall(
 );
 
 // ── Reject correction ──────────────────────────────────────────
-exports.rejectCorrection = functions.https.onCall(
+exports.rejectCorrection = onCall(
   { region: 'europe-west2' },
   async (request) => {
-    if (!request.auth) throw new functions.https.HttpsError('unauthenticated', 'Must be logged in');
+    if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
     const { correctionId } = request.data;
     const doc = await admin.firestore().collection('image_corrections').doc(correctionId).get();
     const photoUrl = doc.data()?.photoUrl;
