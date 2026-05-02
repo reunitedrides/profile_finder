@@ -3,14 +3,14 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-// ═══════════════════════════════════════════════════════════════
+// ================================================================
 // Cloud Function: sendNewProfileNotification
 // Triggers when admin adds a doc to 'notifications' collection
 // Fans out to all registered user FCM tokens
-// ═══════════════════════════════════════════════════════════════
+// ================================================================
 
 exports.sendNewProfileNotification = functions.firestore.onDocumentCreated(
-  'notifications/{notificationId}',
+  { document: 'notifications/{notificationId}', region: 'europe-west2' },
   async (event) => {
     const data = event.data?.data();
     if (!data) return;
@@ -28,7 +28,7 @@ exports.sendNewProfileNotification = functions.firestore.onDocumentCreated(
     });
 
     if (tokens.length === 0) {
-      console.log('No FCM tokens found — no notifications sent.');
+      console.log('No FCM tokens found - no notifications sent.');
       return;
     }
 
@@ -64,7 +64,7 @@ exports.sendNewProfileNotification = functions.firestore.onDocumentCreated(
       // Clean up invalid tokens
       const toDelete = [];
       response.responses.forEach((r, idx) => {
-        if (!r.success && 
+        if (!r.success &&
             (r.error?.code === 'messaging/invalid-registration-token' ||
              r.error?.code === 'messaging/registration-token-not-registered')) {
           toDelete.push(batch[idx]);
