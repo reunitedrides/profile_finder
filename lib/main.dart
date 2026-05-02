@@ -1407,11 +1407,12 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
           'materialLists': matLists,
         };
         final String filename = 'roof_finder_backup_${DateTime.now().millisecondsSinceEpoch}.json';
-        await Share.shareXFiles(
-          [XFile.fromData(utf8.encode(jsonEncode(fullBackup)), name: filename, mimeType: 'application/json')],
+        await SharePlus.instance.share(ShareParams(
+          files: [XFile.fromData(utf8.encode(jsonEncode(fullBackup)), name: filename, mimeType: 'application/json')],
           subject: 'Roof Profile Finder — Full Backup',
           text: 'Sign in to back up to the cloud automatically!',
-        );
+          sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+        ));
       } catch (e) {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Backup failed: $e'), backgroundColor: Colors.red));
@@ -2158,10 +2159,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       final entries = selectedHistory.map((i) => _history[i]).toList();
       final Uint8List pdfBytes = await PdfService.generateHistoryPdf(entries);
       final String filename = 'roof_history_${DateTime.now().millisecondsSinceEpoch}.pdf';
-      await Share.shareXFiles(
-        [XFile.fromData(pdfBytes, name: filename, mimeType: 'application/pdf')],
-        subject: 'Roof Profile History',
-      );
+      await SharePlus.instance.share(ShareParams(files: [XFile.fromData(XFile.fromData(pdfBytes, name: filename, mimeType: 'application/pdf'))], subject: 'Roof Profile History', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: $e'), backgroundColor: Colors.red));
     }
@@ -2171,11 +2169,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
     try {
       final String backup = await HistoryService.exportBackup();
       final String filename = 'roof_profile_backup_${DateTime.now().millisecondsSinceEpoch}.json';
-      await Share.shareXFiles(
-        [XFile.fromData(utf8.encode(backup), name: filename, mimeType: 'application/json')],
+      await SharePlus.instance.share(ShareParams(
+        files: [XFile.fromData(utf8.encode(backup), name: filename, mimeType: 'application/json')],
         subject: 'Roof Profile Finder — History Backup',
         text: 'My saved roof profiles backup. To restore, open the app and use Import Backup.',
-      );
+        sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+      ));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Backup failed: $e')));
     }
@@ -2439,10 +2438,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               final pdfBytes = await PdfService.generateHistoryPdf([entry]);
                               final safeName = p.displayTitle.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
                               final safeDate = DateTime.now().millisecondsSinceEpoch.toString();
-                              await Share.shareXFiles(
-                                [XFile.fromData(pdfBytes, name: '${safeName}_$safeDate.pdf', mimeType: 'application/pdf')],
-                                subject: 'Roof Profile — ${p.displayTitle}',
-                              );
+                              await SharePlus.instance.share(ShareParams(files: [XFile.fromData(XFile.fromData(pdfBytes, name: '${safeName}_$safeDate.pdf', mimeType: 'application/pdf'))], subject: 'Roof Profile — ${p.displayTitle}', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
                             } catch (e) {
                               if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: \$e'), backgroundColor: Colors.red));
                             }
@@ -2844,7 +2840,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
     if ((p.sourceUrl ?? '').isNotEmpty) sb.writeln('Source: ${p.sourceUrl}');
     sb.writeln('─────────────────────');
     sb.writeln('Shared via Roof Profile Finder');
-    Share.share(sb.toString(), subject: p.displayTitle);
+    SharePlus.instance.share(ShareParams(text: sb.toString(), subject: p.displayTitle, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
   }
 
   Widget _shareButton(ProfileRecord p) {
@@ -2884,327 +2880,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 
-  // ── Submit Real Photo (sheets only) ───────────────────────────
-  Widget _realPhotoSection(BuildContext context, ProfileRecord p) {
-    if (p.photoUrl != null && p.photoUrl!.isNotEmpty) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 10, bottom: 4),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Icon(Icons.photo_camera, size: 14, color: Colors.green.shade700),
-            const SizedBox(width: 4),
-            Text('Real Photo', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.green.shade700)),
-          ]),
-          const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: SizedBox(height: 160, width: double.infinity,
-              child: CachedNetworkImage(
-                imageUrl: p.photoUrl!, fit: BoxFit.cover,
-                placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                errorWidget: (_, __, ___) => const Center(child: Icon(Icons.broken_image)),
-              ),
-            ),
-          ),
-        ]),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.blue.shade50,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.blue.shade200),
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Icon(Icons.add_a_photo_outlined, color: Colors.blue.shade700, size: 18),
-            const SizedBox(width: 8),
-            Text('No real photo yet', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.blue.shade700)),
-          ]),
-          const SizedBox(height: 4),
-          Text('Do you recognise this sheet? Help others by submitting a photo!',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-          const SizedBox(height: 10),
-          SizedBox(width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => _showSubmitPhotoSheet(context, p),
-              icon: const Icon(Icons.upload_outlined, size: 18),
-              label: const Text('Submit image for approval'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade700,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-              ),
-            ),
-          ),
-        ]),
-      ),
-    );
-  }
-
-  Future<void> _showSubmitPhotoSheet(BuildContext context, ProfileRecord p) async {
-    XFile? pickedImage;
-    bool submitting = false;
-    bool submitted  = false;
-    final notesController = TextEditingController();
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheet) => SingleChildScrollView(
-          padding: EdgeInsets.only(
-            left: 20, right: 20, top: 20,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + MediaQuery.of(ctx).padding.bottom + 20),
-          child: submitted
-            ? Column(mainAxisSize: MainAxisSize.min, children: [
-                const SizedBox(height: 20),
-                Icon(Icons.check_circle, color: Colors.green.shade600, size: 56),
-                const SizedBox(height: 12),
-                const Text('Thank you!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                const Text('Your photo has been submitted for approval.',
-                  textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
-                const SizedBox(height: 24),
-                ElevatedButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
-                const SizedBox(height: 12),
-              ])
-            : Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Center(child: Container(width: 40, height: 4,
-                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
-                const SizedBox(height: 16),
-                Row(children: [
-                  Icon(Icons.add_a_photo_outlined, color: Colors.blue.shade700),
-                  const SizedBox(width: 8),
-                  const Text('Submit Image for Approval', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                ]),
-                const SizedBox(height: 4),
-                Text(p.displayTitle, style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
-                const SizedBox(height: 20),
-                const Text('Photo of Sheet / Profile', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                const SizedBox(height: 10),
-                Row(children: [
-                  Expanded(child: OutlinedButton.icon(
-                    onPressed: () async {
-                      final img = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 80);
-                      if (img != null) setSheet(() => pickedImage = img);
-                    },
-                    icon: const Icon(Icons.camera_alt_outlined), label: const Text('Camera'),
-                  )),
-                  const SizedBox(width: 10),
-                  Expanded(child: OutlinedButton.icon(
-                    onPressed: () async {
-                      final img = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 80);
-                      if (img != null) setSheet(() => pickedImage = img);
-                    },
-                    icon: const Icon(Icons.photo_library_outlined), label: const Text('Gallery'),
-                  )),
-                ]),
-                if (pickedImage != null) ...[
-                  const SizedBox(height: 8),
-                  Row(children: [
-                    const Icon(Icons.check_circle, color: Colors.green, size: 18),
-                    const SizedBox(width: 6),
-                    Expanded(child: Text(pickedImage!.name, style: const TextStyle(fontSize: 12), overflow: TextOverflow.ellipsis)),
-                  ]),
-                ],
-                const SizedBox(height: 14),
-                const Text('Notes (optional)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                const SizedBox(height: 6),
-                TextField(controller: notesController, maxLines: 2,
-                  decoration: InputDecoration(
-                    hintText: 'e.g. Photographed on a factory in Birmingham...',
-                    border: const OutlineInputBorder(), isDense: true,
-                    hintStyle: TextStyle(fontSize: 12, color: Colors.grey.shade400))),
-                const SizedBox(height: 20),
-                SizedBox(width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: (submitting || pickedImage == null) ? null : () async {
-                      setSheet(() => submitting = true);
-                      try {
-                        final ref = FirebaseStorage.instance
-                          .ref('sheet_photos/${p.code}_${DateTime.now().millisecondsSinceEpoch}.jpg');
-                        await ref.putFile(File(pickedImage!.path));
-                        final uploadedUrl = await ref.getDownloadURL();
-                        await FirebaseFirestore.instance.collection('image_corrections').add({
-                          'type': 'sheet_photo', 'profileId': p.code,
-                          'profileName': p.profileName, 'manufacturer': p.manufacturer,
-                          'photoUrl': uploadedUrl, 'notes': notesController.text.trim(),
-                          'submittedBy': FirebaseAuth.instance.currentUser?.email ?? 'anonymous',
-                          'submittedAt': FieldValue.serverTimestamp(), 'status': 'pending',
-                        });
-                        setSheet(() { submitting = false; submitted = true; });
-                      } catch (e) {
-                        setSheet(() => submitting = false);
-                        if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(
-                          SnackBar(content: Text('Error: \$e'), backgroundColor: Colors.red));
-                      }
-                    },
-                    icon: submitting
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Icon(Icons.upload_outlined),
-                    label: Text(submitting ? 'Uploading...' : 'Submit for Approval'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14)),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Center(child: Text('Photos are reviewed before appearing in the app.',
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500))),
-              ]),
-        ),
-      ),
-    );
-  }
-
-  Widget _reportButton(BuildContext context, ProfileRecord p) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: SizedBox(width: double.infinity,
-        child: OutlinedButton.icon(
-          onPressed: () => _showReportSheet(context, p),
-          icon: const Icon(Icons.flag_outlined, size: 18),
-          label: const Text('Report incorrect image / details'),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.orange.shade700,
-            side: BorderSide(color: Colors.orange.shade300),
-            padding: const EdgeInsets.symmetric(vertical: 10),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _showReportSheet(BuildContext context, ProfileRecord p) async {
-    final nameCtrl = TextEditingController(text: p.profileName);
-    final mfrCtrl  = TextEditingController(text: p.manufacturer);
-    XFile? pickedImage;
-    bool submitting = false;
-    bool submitted  = false;
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheet) => SingleChildScrollView(
-          padding: EdgeInsets.only(
-            left: 20, right: 20, top: 20,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + MediaQuery.of(ctx).padding.bottom + 20),
-          child: submitted
-            ? Column(mainAxisSize: MainAxisSize.min, children: [
-                const SizedBox(height: 20),
-                Icon(Icons.check_circle, color: Colors.green.shade600, size: 56),
-                const SizedBox(height: 12),
-                const Text('Thank you!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                const Text('Your correction has been sent.',
-                  textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
-                const SizedBox(height: 24),
-                ElevatedButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
-                const SizedBox(height: 12),
-              ])
-            : Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Center(child: Container(width: 40, height: 4,
-                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
-                const SizedBox(height: 16),
-                Row(children: [
-                  Icon(Icons.flag_outlined, color: Colors.orange.shade700),
-                  const SizedBox(width: 8),
-                  const Text('Report Incorrect Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                ]),
-                const SizedBox(height: 4),
-                Text(p.displayTitle, style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
-                const SizedBox(height: 20),
-                const Text('Profile Name', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                const SizedBox(height: 6),
-                TextField(controller: nameCtrl,
-                  decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true, prefixIcon: Icon(Icons.label_outline))),
-                const SizedBox(height: 14),
-                const Text('Manufacturer', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                const SizedBox(height: 6),
-                TextField(controller: mfrCtrl,
-                  decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true, prefixIcon: Icon(Icons.business_outlined))),
-                const SizedBox(height: 14),
-                const Text('Photo (optional)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                const SizedBox(height: 8),
-                Row(children: [
-                  Expanded(child: OutlinedButton.icon(
-                    onPressed: () async {
-                      final img = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 70);
-                      if (img != null) setSheet(() => pickedImage = img);
-                    },
-                    icon: const Icon(Icons.camera_alt_outlined), label: const Text('Camera'),
-                  )),
-                  const SizedBox(width: 10),
-                  Expanded(child: OutlinedButton.icon(
-                    onPressed: () async {
-                      final img = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 70);
-                      if (img != null) setSheet(() => pickedImage = img);
-                    },
-                    icon: const Icon(Icons.photo_library_outlined), label: const Text('Gallery'),
-                  )),
-                ]),
-                if (pickedImage != null) ...[
-                  const SizedBox(height: 8),
-                  Row(children: [
-                    const Icon(Icons.check_circle, color: Colors.green, size: 18),
-                    const SizedBox(width: 6),
-                    Expanded(child: Text(pickedImage!.name, style: const TextStyle(fontSize: 12), overflow: TextOverflow.ellipsis)),
-                  ]),
-                ],
-                const SizedBox(height: 20),
-                SizedBox(width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: submitting ? null : () async {
-                      setSheet(() => submitting = true);
-                      try {
-                        String? photoUrl;
-                        if (pickedImage != null) {
-                          final ref = FirebaseStorage.instance
-                            .ref('corrections/${p.code}_${DateTime.now().millisecondsSinceEpoch}.jpg');
-                          await ref.putFile(File(pickedImage!.path));
-                          photoUrl = await ref.getDownloadURL();
-                        }
-                        await FirebaseFirestore.instance.collection('image_corrections').add({
-                          'type': 'correction', 'profileId': p.code,
-                          'originalName': p.profileName, 'originalMfr': p.manufacturer,
-                          'correctedName': nameCtrl.text.trim(), 'correctedMfr': mfrCtrl.text.trim(),
-                          'photoUrl': photoUrl,
-                          'submittedBy': FirebaseAuth.instance.currentUser?.email ?? 'anonymous',
-                          'submittedAt': FieldValue.serverTimestamp(), 'status': 'pending',
-                        });
-                        setSheet(() { submitting = false; submitted = true; });
-                      } catch (e) {
-                        setSheet(() => submitting = false);
-                        if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(
-                          SnackBar(content: Text('Error: \$e'), backgroundColor: Colors.red));
-                      }
-                    },
-                    icon: submitting
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Icon(Icons.send_outlined),
-                    label: Text(submitting ? 'Sending...' : 'Send Correction'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange.shade700, foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14)),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Center(child: Text('Corrections are reviewed before going live.',
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500))),
-              ]),
-        ),
-      ),
-    );
-  }
-
   Widget _sheetResultCard(BuildContext context, SearchResult result) {
     final ProfileRecord p = result.profile;
     return Card(margin: const EdgeInsets.only(top: 10),
@@ -3224,11 +2899,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
           Text('Cover Width: ${_formatNumber(p.coverWidth)} mm'),
           Text('Overall Width: ${_formatNumber(p.overallWidth)} mm'),
           Text('Match Score: ${result.score.toStringAsFixed(1)}'),
-          _realPhotoSection(context, p),
           _saveButton(context, p),
           _shareButton(p),
           _favouriteButton(p),
-          _reportButton(context, p),
         ])));
   }
 
@@ -3266,7 +2939,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
           _saveButton(context, p),
           _shareButton(p),
           _favouriteButton(p),
-          _reportButton(context, p),
         ])));
   }
 
@@ -4267,7 +3939,7 @@ class _SavedListsScreenState extends State<_SavedListsScreen> {
 
   Future<void> _shareSavedList(Map<String, dynamic> item) async {
     final name = (item['name'] as String?)?.trim().isNotEmpty == true ? item['name'] as String : 'Saved Material List';
-    await Share.share(_savedMaterialListToText(item), subject: name);
+    await SharePlus.instance.share(ShareParams(text: _savedMaterialListToText(item), subject: name, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
   }
 
   Future<void> _openSavedList(Map<String, dynamic> item) async {
@@ -4508,7 +4180,7 @@ class _SavedMaterialListDetailScreen extends StatelessWidget {
           IconButton(
             tooltip: 'Share',
             icon: const Icon(Icons.share_outlined),
-            onPressed: () => Share.share(text, subject: name),
+            onPressed: () => SharePlus.instance.share(ShareParams(text: text, subject: name, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1))),
           ),
         ],
       ),
@@ -4875,10 +4547,7 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
         type: 'Industrial',
         content: sb.toString(),
       );
-      await Share.shareXFiles(
-        [XFile.fromData(pdfBytes, name: 'industrial_list_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf')],
-        subject: 'Industrial Material List',
-      );
+      await SharePlus.instance.share(ShareParams(files: [XFile.fromData(XFile.fromData(pdfBytes, name: 'industrial_list_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf'))], subject: 'Industrial Material List', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: $e'), backgroundColor: Colors.red));
     }
@@ -4981,7 +4650,7 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
 
     sb.writeln('──────────────────────────');
     sb.writeln('Generated by Roof Profile Finder');
-    Share.share(sb.toString(), subject: 'Material List - ${_buildingController.text.isNotEmpty ? _buildingController.text : _date}');
+    SharePlus.instance.share(ShareParams(text: sb.toString(), subject: 'Material List - ${_buildingController.text.isNotEmpty ? _buildingController.text : _date}', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
   }
 
   Widget _sectionHeader(String title, IconData icon, Color color) {
@@ -5519,10 +5188,7 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
         type: 'Domestic',
         content: sb.toString(),
       );
-      await Share.shareXFiles(
-        [XFile.fromData(pdfBytes, name: 'domestic_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf')],
-        subject: 'Domestic Material List',
-      );
+      await SharePlus.instance.share(ShareParams(files: [XFile.fromData(XFile.fromData(pdfBytes, name: 'domestic_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf'))], subject: 'Domestic Material List', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: $e'), backgroundColor: Colors.red));
     }
@@ -5603,7 +5269,7 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
     }
     sb.writeln('\n──────────────────────────');
     sb.writeln('Generated by Roof Profile Finder');
-    Share.share(sb.toString(), subject: 'Domestic Material List - ${_buildingController.text.isNotEmpty ? _buildingController.text : _date}');
+    SharePlus.instance.share(ShareParams(text: sb.toString(), subject: 'Domestic Material List - ${_buildingController.text.isNotEmpty ? _buildingController.text : _date}', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
   }
 
   Widget _dynamicRows<T>({
@@ -6263,7 +5929,7 @@ class _RoofAreaCalculatorState extends State<RoofAreaCalculator> {
                     'Pitched Area: ${_pitchedArea!.toStringAsFixed(2)} m²\n'
                     'Total + ${_wastageController.text}% wastage: ${_totalWithWastage!.toStringAsFixed(2)} m²\n\n'
                     'Calculated by Roof Profile Finder';
-                  Share.share(text);
+                  SharePlus.instance.share(ShareParams(text: text, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
                 },
                 icon: const Icon(Icons.share),
                 label: const Text('Share'),
@@ -6624,7 +6290,7 @@ class _RafterCalculatorState extends State<RafterCalculator> {
                   }
                   if (_numberOfRafters != null) text += '\nRafters needed: $_numberOfRafters\n';
                   text += '\nCalculated by Roof Profile Finder';
-                  Share.share(text);
+                  SharePlus.instance.share(ShareParams(text: text, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
                 },
                 icon: const Icon(Icons.share),
                 label: const Text('Share'),
@@ -7180,9 +6846,7 @@ class _SavedRafterScreenState extends State<SavedRafterScreen> {
           backgroundColor: Colors.green.shade700));
       } else {
         final backup = await RafterSaveService.exportBackup();
-        await Share.shareXFiles(
-          [XFile.fromData(utf8.encode(backup), name: 'rafter_backup_${DateTime.now().millisecondsSinceEpoch}.json', mimeType: 'application/json')],
-          subject: 'Rafter Calculations Backup');
+        await SharePlus.instance.share(ShareParams(files: [XFile.fromData(XFile.fromData(utf8.encode(backup), name: 'rafter_backup_${DateTime.now().millisecondsSinceEpoch}.json', mimeType: 'application/json'))], subject: 'Rafter Calculations Backup', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Backup failed: $e'), backgroundColor: Colors.red));
@@ -7582,10 +7246,10 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         final flat = _calculateFlatArea()!;
-                        Share.share(
+                        SharePlus.instance.share(ShareParams(text:
                           '📐 Perimeter Area Calculation\n'
                           '${_walls.length} walls\n'
-                          'Flat Area: ${flat.toStringAsFixed(2)} m²\n'
+                          'Flat Area: ${flat.toStringAsFixed(2, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)))} m²\n'
                           'Pitched Area: ${(_pitchedArea ?? flat).toStringAsFixed(2)} m²\n'
                           'Total + Wastage: ${(_totalWithWastage ?? flat).toStringAsFixed(2)} m²\n\n'
                           'Calculated by Roof Profile Finder'
