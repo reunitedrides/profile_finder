@@ -19,8 +19,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -1456,7 +1456,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
             content: Text('✓ Restored ${cloudHistory.length} entries + material lists!'),
             backgroundColor: Colors.green));
         } catch (e) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cloud restore failed: $e'), backgroundColor: Colors.red));
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cloud restore failed: \$e'), backgroundColor: Colors.red));
         }
         return;
       }
@@ -2451,7 +2451,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
                               );
                             } catch (e) {
-                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: $e'), backgroundColor: Colors.red));
+                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: \$e'), backgroundColor: Colors.red));
                             }
                           },
                         ),
@@ -3310,6 +3310,159 @@ class _ResultsScreenState extends State<ResultsScreen> {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// Admin Corrections Tab
+// ═══════════════════════════════════════════════════════════════
+
+class _AdminCorrectionsTab extends StatefulWidget {
+  const _AdminCorrectionsTab();
+  @override
+  State<_AdminCorrectionsTab> createState() => _AdminCorrectionsTabState();
+}
+
+class _AdminCorrectionsTabState extends State<_AdminCorrectionsTab> {
+  bool _loading = false;
+
+  Future<void> _approve(String docId, String? photoUrl) async {
+    setState(() => _loading = true);
+    try {
+      final callable = FirebaseFunctions.instanceFor(region: 'europe-west2')
+        .httpsCallable('approveCorrection');
+      await callable.call({'correctionId': docId});
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Approved!'), backgroundColor: Colors.green));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _reject(String docId) async {
+    setState(() => _loading = true);
+    try {
+      final callable = FirebaseFunctions.instanceFor(region: 'europe-west2')
+        .httpsCallable('rejectCorrection');
+      await callable.call({'correctionId': docId});
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Rejected and deleted.'), backgroundColor: Colors.orange));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+        .collection('image_corrections')
+        .where('status', isEqualTo: 'pending')
+        .orderBy('submittedAt', descending: true)
+        .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final docs = snapshot.data?.docs ?? [];
+        if (docs.isEmpty) {
+          return const Center(
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.check_circle_outline, size: 56, color: Colors.green),
+              SizedBox(height: 12),
+              Text('No pending corrections!', style: TextStyle(fontSize: 16)),
+            ]),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(12),
+          itemCount: docs.length,
+          itemBuilder: (context, index) {
+            final doc = docs[index];
+            final data = doc.data() as Map<String, dynamic>;
+            final type = data['type'] == 'sheet_photo' ? 'Photo submission' : 'Correction report';
+            final name = data['profileName'] ?? data['originalName'] ?? 'Unknown';
+            final mfr  = data['manufacturer'] ?? data['originalMfr'] ?? '';
+            final photoUrl = data['photoUrl'] as String?;
+            final notes = data['notes'] ?? data['correctedName'] ?? '';
+            final by = data['submittedBy'] ?? 'anonymous';
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Row(children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: data['type'] == 'sheet_photo' ? Colors.blue.shade50 : Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: data['type'] == 'sheet_photo' ? Colors.blue.shade200 : Colors.orange.shade200),
+                      ),
+                      child: Text(type, style: TextStyle(fontSize: 11, color: data['type'] == 'sheet_photo' ? Colors.blue.shade700 : Colors.orange.shade700)),
+                    ),
+                  ]),
+                  const SizedBox(height: 8),
+                  Text(name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  if (mfr.isNotEmpty) Text(mfr, style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                  if (notes.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text('Notes: $notes', style: const TextStyle(fontSize: 13)),
+                  ],
+                  Text('From: $by', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                  if (photoUrl != null) ...[
+                    const SizedBox(height: 10),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: SizedBox(
+                        height: 180, width: double.infinity,
+                        child: CachedNetworkImage(
+                          imageUrl: photoUrl, fit: BoxFit.cover,
+                          placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+                          errorWidget: (_, __, ___) => const Center(child: Icon(Icons.broken_image)),
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                  Row(children: [
+                    Expanded(child: ElevatedButton.icon(
+                      onPressed: _loading ? null : () => _approve(doc.id, photoUrl),
+                      icon: const Icon(Icons.check, size: 18),
+                      label: const Text('Approve'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green.shade600,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                    )),
+                    const SizedBox(width: 10),
+                    Expanded(child: OutlinedButton.icon(
+                      onPressed: _loading ? null : () => _reject(doc.id),
+                      icon: const Icon(Icons.close, size: 18),
+                      label: const Text('Reject'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red.shade600,
+                        side: BorderSide(color: Colors.red.shade300),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                    )),
+                  ]),
+                ]),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // Full-Screen Image Viewer
 // ═══════════════════════════════════════════════════════════════
 
@@ -4149,7 +4302,7 @@ class _MaterialListScreenState2 extends State<MaterialListScreen> with SingleTic
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _loadCount();
   }
 
@@ -7687,7 +7840,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
   void initState() {
     super.initState();
     _isLoggedIn = AuthService.isLoggedIn;
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -7963,7 +8116,7 @@ class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -7987,6 +8140,7 @@ class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStat
           tabs: const [
             Tab(icon: Icon(Icons.factory_outlined), text: 'Sheet Profile'),
             Tab(icon: Icon(Icons.home_outlined), text: 'Tile Profile'),
+            Tab(icon: Icon(Icons.pending_actions_outlined), text: 'Corrections'),
           ],
         ),
       ),
@@ -7995,6 +8149,7 @@ class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStat
         children: const [
           _AdminSheetForm(),
           _AdminTileForm(),
+          _AdminCorrectionsTab(),
         ],
       ),
     );
