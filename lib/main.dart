@@ -749,7 +749,7 @@ class ProfileSearchScreen extends StatefulWidget {
     super.key,
     this.homeHubMode = false,
     this.initialCategory = 'steel',
-    this.allowedCategories = const ['steel', 'cement', 'tile'],
+    this.allowedCategories = const ['steel', 'cement', 'composite', 'tile'],
     this.screenTitle = 'Profile Finder',
   });
 
@@ -778,6 +778,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   List<ProfileRecord> _nameSuggestions = [];
   bool _loading = true;
   String _selectedCategory = 'steel';
+  final Set<String> _activeSheetFilters = {'steel', 'cement', 'composite'};
   double _toleranceMultiplier = 1.0;
   String? _selectedTileMaterial;
   String? _selectedTileType;
@@ -787,9 +788,10 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   List<String> _tileProfileFamilies = [];
 
   static const Map<String, String> _fileMap = {
-    'steel':  'assets/data/steel_profiles.json',
-    'cement': 'assets/data/cement_profiles.json',
-    'tile':   'assets/data/tile_profiles_uk_phase2.json',
+    'steel':     'assets/data/steel_profiles.json',
+    'cement':    'assets/data/cement_profiles.json',
+    'composite': 'assets/data/steel_profiles.json',
+    'tile':      'assets/data/tile_profiles_uk_phase2.json',
   };
 
   static const double _basePitchTolerance = 5;
@@ -817,7 +819,11 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     _selectedCategory = widget.allowedCategories.contains(widget.initialCategory)
         ? widget.initialCategory
         : (widget.allowedCategories.isNotEmpty ? widget.allowedCategories.first : 'steel');
-    _loadProfilesForCategory(_selectedCategory);
+    if (_selectedCategory == 'tile') {
+      _loadProfilesForCategory('tile');
+    } else {
+      unawaited(_reloadSheetProfiles());
+    }
     _profileSearchController.addListener(_updateNameSuggestions);
     _loadMostUsed();
     unawaited(_prepareHubFeedback());
@@ -1010,6 +1016,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         return 'Steel Sheets';
       case 'cement':
         return 'Cement Sheets';
+      case 'composite':
+        return 'Composite / Liner';
       case 'tile':
         return 'Tiles / Slates';
       default:
@@ -1023,6 +1031,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         return Icons.layers;
       case 'tile':
         return Icons.home;
+      case 'composite':
+        return Icons.layers_outlined;
       case 'steel':
       default:
         return Icons.factory_outlined;
@@ -1035,6 +1045,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         return Colors.grey.shade700;
       case 'tile':
         return Colors.orange.shade700;
+      case 'composite':
+        return Colors.purple.shade700;
       case 'steel':
       default:
         return Colors.blue.shade700;
@@ -1056,70 +1068,94 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   Widget _buildCategorySelector() {
     final categories = _availableCategories;
-    final label = categories.length == 1 ? 'Category:' : 'Profile type:';
-
+    // For tile-only screens keep original compact selector
     if (categories.length == 1) {
-      final category = categories.first;
-      return Row(
-        children: [
-          Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: _categoryColorFor(category),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  Icon(_categoryIconFor(category), color: Colors.white, size: 18),
-                  const SizedBox(width: 8),
-                  Text(
-                    _categoryLabelFor(category),
-                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      );
+      return Row(children: [
+        Text('Category:', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(width: 12),
+        Chip(
+          avatar: Icon(_categoryIconFor(categories.first), color: Colors.white, size: 16),
+          label: Text(_categoryLabelFor(categories.first), style: const TextStyle(color: Colors.white, fontSize: 13)),
+          backgroundColor: _categoryColorFor(categories.first),
+        ),
+      ]);
     }
 
-    return Row(
-      children: [
-        Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        const SizedBox(width: 12),
-        Expanded(
-          child: PopupMenuButton<String>(
-            onSelected: (cat) => _loadProfilesForCategory(cat),
-            offset: const Offset(0, 44),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            itemBuilder: (context) => categories.map(_categoryMenuItem).toList(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: _categoryColorFor(_selectedCategory),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  Icon(_categoryIconFor(_selectedCategory), color: Colors.white, size: 18),
-                  const SizedBox(width: 8),
-                  Text(
-                    _categoryLabelFor(_selectedCategory),
-                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(width: 6),
-                  const Icon(Icons.arrow_drop_down, color: Colors.white, size: 20),
-                ],
-              ),
+    // Sheet screens: show toggle filter buttons
+    final sheetCats = categories.where((c) => c != 'tile').toList();
+    if (sheetCats.isEmpty) return const SizedBox.shrink();
+
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text('Material type:', style: TextStyle(fontSize: 13, color: Colors.black54)),
+      const SizedBox(height: 6),
+      Wrap(spacing: 8, runSpacing: 6, children: sheetCats.map((cat) {
+        final active = _activeSheetFilters.contains(cat);
+        final color = _categoryColorFor(cat);
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              if (active && _activeSheetFilters.length == 1) return; // keep at least one
+              if (active) {
+                _activeSheetFilters.remove(cat);
+              } else {
+                _activeSheetFilters.add(cat);
+              }
+            });
+            _reloadSheetProfiles();
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: active ? color : Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: color, width: 1.5),
             ),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Icon(_categoryIconFor(cat), color: active ? Colors.white : color, size: 16),
+              const SizedBox(width: 6),
+              Text(_categoryLabelFor(cat),
+                style: TextStyle(
+                  color: active ? Colors.white : color,
+                  fontSize: 13, fontWeight: FontWeight.w600)),
+              if (active) ...[
+                const SizedBox(width: 4),
+                Icon(Icons.check, color: Colors.white, size: 14),
+              ],
+            ]),
           ),
-        ),
-      ],
-    );
+        );
+      }).toList()),
+    ]);
+  }
+
+  Future<void> _reloadSheetProfiles() async {
+    setState(() { _loading = true; _nameSuggestions = []; });
+    try {
+      List<ProfileRecord> all = [];
+      for (final cat in _activeSheetFilters) {
+        final file = _fileMap[cat];
+        if (file == null) continue;
+        final String jsonString = await rootBundle.loadString(file);
+        final List<dynamic> decoded = json.decode(jsonString) as List<dynamic>;
+        final List<ProfileRecord> loaded = decoded
+          .map((e) => ProfileRecord.fromJson(e as Map<String, dynamic>))
+          .where((p) {
+            if (cat == 'steel') return (p.materialGroup ?? '').toLowerCase() != 'composite';
+            if (cat == 'composite') return (p.materialGroup ?? '').toLowerCase() == 'composite';
+            return true; // cement - load all
+          }).toList();
+        all.addAll(loaded);
+      }
+      setState(() {
+        _profiles = all;
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() { _profiles = []; _loading = false; });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not load profiles: $e')));
+    }
   }
 
   Widget _buildQuickActionsRow({required bool insideHeader}) {
@@ -1162,7 +1198,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
             MaterialPageRoute<void>(
               builder: (_) => const ProfileSearchScreen(
                 initialCategory: 'steel',
-                allowedCategories: ['steel', 'cement'],
+                allowedCategories: ['steel', 'cement', 'composite'],
                 screenTitle: 'Profile Finder',
               ),
             ),
@@ -1510,7 +1546,13 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     try {
       final String jsonString = await rootBundle.loadString(_fileMap[category]!);
       final List<dynamic> decoded = json.decode(jsonString) as List<dynamic>;
-      final List<ProfileRecord> loaded = decoded.map((e) => ProfileRecord.fromJson(e as Map<String, dynamic>)).toList();
+      List<ProfileRecord> loaded = decoded.map((e) => ProfileRecord.fromJson(e as Map<String, dynamic>)).toList();
+      // Filter composite vs steel from same JSON
+      if (category == 'steel') {
+        loaded = loaded.where((p) => (p.materialGroup ?? '').toLowerCase() != 'composite').toList();
+      } else if (category == 'composite') {
+        loaded = loaded.where((p) => (p.materialGroup ?? '').toLowerCase() == 'composite').toList();
+      }
       setState(() {
         _selectedCategory = category; _profiles = loaded; _loading = false;
         _tileMaterials = _uniqueSorted(loaded.map((p) => p.materialGroup ?? p.material ?? '').where((v) => v.isNotEmpty));
