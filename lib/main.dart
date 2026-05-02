@@ -39,28 +39,13 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await FCMService.init();
-  // Restore Google Sign-In to Firebase Auth on cold start
-  if (FirebaseAuth.instance.currentUser == null) {
-    try {
-      final googleSignIn = GoogleSignIn(
-        clientId: Platform.isIOS
-          ? '899172571973-b5lc827jfa1fr5r01hiv1v69h9gmm0jv.apps.googleusercontent.com'
-          : null,
-        serverClientId: '899172571973-m520kbun1o8aup8f0f1brqdbcq0i9s3c.apps.googleusercontent.com',
-      );
-      final googleUser = await googleSignIn.signInSilently();
-      if (googleUser != null) {
-        final googleAuth = await googleUser.authentication;
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-        await FirebaseAuth.instance.signInWithCredential(credential);
-      }
-    } catch (e) {
-      debugPrint('Silent sign-in restore failed: $e');
-    }
-  }
+  // Always try silent sign-in — Firebase Auth restores asynchronously
+  // so currentUser may be null on cold start even if user was signed in
+  unawaited(GoogleSignIn(
+    clientId: Platform.isIOS
+      ? '899172571973-b5lc827jfa1fr5r01hiv1v69h9gmm0jv.apps.googleusercontent.com'
+      : null,
+  ).signInSilently());
   final prefs = await SharedPreferences.getInstance();
   final bool seenWelcome = prefs.getBool('seen_welcome') ?? false;
   runApp(RoofProfileFinderApp(showWelcome: !seenWelcome));
@@ -3474,7 +3459,9 @@ class _AdminCorrectionsTabState extends State<_AdminCorrectionsTab> {
         .orderBy('submittedAt', descending: true)
         .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        // Show spinner while waiting OR while active but no data yet
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            !snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
         final docs = snapshot.data?.docs ?? [];
