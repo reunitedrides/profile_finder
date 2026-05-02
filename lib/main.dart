@@ -39,15 +39,28 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await FCMService.init();
-  // Wait for Firebase Auth to restore cached session before showing UI
-  // This prevents the brief "signed out" flash on cold start
-  await FirebaseAuth.instance.authStateChanges().first;
-  // Silently restore Google Sign-In token alongside Firebase session
-  unawaited(GoogleSignIn(
-    clientId: Platform.isIOS
-      ? '899172571973-b5lc827jfa1fr5r01hiv1v69h9gmm0jv.apps.googleusercontent.com'
-      : null,
-  ).signInSilently());
+  // Restore Google Sign-In to Firebase Auth on cold start
+  if (FirebaseAuth.instance.currentUser == null) {
+    try {
+      final googleSignIn = GoogleSignIn(
+        clientId: Platform.isIOS
+          ? '899172571973-b5lc827jfa1fr5r01hiv1v69h9gmm0jv.apps.googleusercontent.com'
+          : null,
+        serverClientId: '899172571973-m520kbun1o8aup8f0f1brqdbcq0i9s3c.apps.googleusercontent.com',
+      );
+      final googleUser = await googleSignIn.signInSilently();
+      if (googleUser != null) {
+        final googleAuth = await googleUser.authentication;
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        await FirebaseAuth.instance.signInWithCredential(credential);
+      }
+    } catch (e) {
+      debugPrint('Silent sign-in restore failed: $e');
+    }
+  }
   final prefs = await SharedPreferences.getInstance();
   final bool seenWelcome = prefs.getBool('seen_welcome') ?? false;
   runApp(RoofProfileFinderApp(showWelcome: !seenWelcome));
