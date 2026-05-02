@@ -124,10 +124,42 @@ exports.approveCorrection = onCall(
   async (request) => {
     if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
     const { correctionId } = request.data;
-    await admin.firestore().collection('image_corrections').doc(correctionId).update({
+
+    const docRef = admin.firestore().collection('image_corrections').doc(correctionId);
+    const doc = await docRef.get();
+    if (!doc.exists) throw new HttpsError('not-found', 'Correction not found');
+    const data = doc.data();
+
+    // Mark as approved
+    await docRef.update({
       status: 'approved',
       reviewedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+
+    // For sheet photo submissions, persist the photoUrl to profile_photos
+    // so the Flutter app can overlay it onto the matching ProfileRecord at runtime.
+    if (data.type === 'sheet_photo' && data.photoUrl) {
+      const profileName = (data.profileName ?? data.originalName ?? '').trim();
+      const manufacturer = (data.manufacturer ?? data.originalMfr ?? '').trim();
+
+      if (profileName) {
+        // Key must match the keyFor() function in ProfilePhotoService (main.dart):
+        // lowercase, non-alphanumeric runs → '_', trim leading/trailing '_'
+        const key = `${profileName}_${manufacturer}`
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '_')
+          .replace(/^_+|_+$/g, '');
+
+        await admin.firestore().collection('profile_photos').doc(key).set({
+          profileName,
+          manufacturer,
+          photoUrl: data.photoUrl,
+          approvedAt: admin.firestore.FieldValue.serverTimestamp(),
+          correctionId,
+        }, { merge: true }); // merge so a repeat approval doesn't wipe metadata
+      }
+    }
+
     return { success: true };
   }
 );

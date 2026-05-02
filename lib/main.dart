@@ -39,13 +39,28 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await FCMService.init();
-  // Always try silent sign-in — Firebase Auth restores asynchronously
-  // so currentUser may be null on cold start even if user was signed in
-  unawaited(GoogleSignIn(
-    clientId: Platform.isIOS
-      ? '899172571973-b5lc827jfa1fr5r01hiv1v69h9gmm0jv.apps.googleusercontent.com'
-      : null,
-  ).signInSilently());
+  // Restore Google Sign-In to Firebase Auth on cold start
+  if (FirebaseAuth.instance.currentUser == null) {
+    try {
+      final googleSignIn = GoogleSignIn(
+        clientId: Platform.isIOS
+          ? '899172571973-b5lc827jfa1fr5r01hiv1v69h9gmm0jv.apps.googleusercontent.com'
+          : null,
+        serverClientId: '899172571973-m520kbun1o8aup8f0f1brqdbcq0i9s3c.apps.googleusercontent.com',
+      );
+      final googleUser = await googleSignIn.signInSilently();
+      if (googleUser != null) {
+        final googleAuth = await googleUser.authentication;
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        await FirebaseAuth.instance.signInWithCredential(credential);
+      }
+    } catch (e) {
+      debugPrint('Silent sign-in restore failed: $e');
+    }
+  }
   final prefs = await SharedPreferences.getInstance();
   final bool seenWelcome = prefs.getBool('seen_welcome') ?? false;
   runApp(RoofProfileFinderApp(showWelcome: !seenWelcome));
@@ -645,6 +660,58 @@ class MaterialListService {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// Profile Photo Service — Firestore-backed approved photo URLs
+// ═══════════════════════════════════════════════════════════════
+
+class ProfilePhotoService {
+  // In-memory cache so we only hit Firestore once per app session.
+  static Map<String, String>? _cache; // docKey → photoUrl
+
+  /// Normalise profileName + manufacturer to the same key the Cloud Function
+  /// writes. Both sides must use identical logic.
+  static String keyFor(String profileName, String manufacturer) =>
+    '${profileName.trim()}_${manufacturer.trim()}'
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+      .replaceAll(RegExp(r'^_+|_+$'), '');
+
+  /// Fetch all approved photo URLs from Firestore (cached for the session).
+  static Future<Map<String, String>> fetchAll() async {
+    if (_cache != null) return _cache!;
+    try {
+      final snap = await FirebaseFirestore.instance
+        .collection('profile_photos')
+        .get();
+      _cache = {
+        for (final doc in snap.docs)
+          if (doc.data()['photoUrl'] is String)
+            doc.id: doc.data()['photoUrl'] as String,
+      };
+    } catch (e) {
+      debugPrint('ProfilePhotoService: fetch failed – $e');
+      _cache = {};
+    }
+    return _cache!;
+  }
+
+  /// Call after approving a correction so the next category load picks up
+  /// the new photo without requiring an app restart.
+  static void invalidate() => _cache = null;
+
+  /// Overlay Firestore-approved photoUrls onto a list of ProfileRecords.
+  /// Profiles that already have a photoUrl (baked into JSON) are left unchanged.
+  static Future<List<ProfileRecord>> applyTo(List<ProfileRecord> profiles) async {
+    final photoMap = await fetchAll();
+    if (photoMap.isEmpty) return profiles;
+    return profiles.map((p) {
+      if (p.photoUrl != null) return p;
+      final url = photoMap[keyFor(p.profileName, p.manufacturer)];
+      return url != null ? p.copyWith(photoUrl: url) : p;
+    }).toList();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // ProfileRecord
 // ═══════════════════════════════════════════════════════════════
 
@@ -759,6 +826,22 @@ class ProfileRecord {
       photoUrl: json['photo_url']?.toString() ?? json['photoUrl']?.toString(),
     );
   }
+
+  ProfileRecord copyWith({String? photoUrl}) => ProfileRecord(
+    code: code, profileName: profileName, manufacturer: manufacturer,
+    shape: shape, pitch: pitch, depth: depth, crown: crown, trough: trough,
+    coverWidth: coverWidth, overallWidth: overallWidth, category: category,
+    brand: brand, material: material, materialGroup: materialGroup,
+    tileType: tileType, profile: profile, profileGroup: profileGroup,
+    fixingType: fixingType, aliases: aliases, nominalLengthMm: nominalLengthMm,
+    nominalWidthMm: nominalWidthMm, gaugeMinMm: gaugeMinMm, gaugeMaxMm: gaugeMaxMm,
+    minimumPitchDegMin: minimumPitchDegMin, coveragePerSqm: coveragePerSqm,
+    weightKgPerSqm: weightKgPerSqm, overallSizeText: overallSizeText,
+    coverWidthText: coverWidthText, gaugeText: gaugeText,
+    minimumPitchText: minimumPitchText, coverageText: coverageText,
+    weightText: weightText, sourceUrl: sourceUrl, notes: notes, imageFile: imageFile,
+    photoUrl: photoUrl ?? this.photoUrl,
+  );
 
   bool get isTileCategory => category == 'tile';
   String get displayTitle => code.isNotEmpty && !isTileCategory ? '$code - $profileName' : profileName;
@@ -1201,6 +1284,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
           }).toList();
         all.addAll(loaded);
       }
+      // Overlay any Firestore-approved community photos
+      all = await ProfilePhotoService.applyTo(all);
       setState(() {
         _profiles = all;
         _loading = false;
@@ -1607,6 +1692,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       } else if (category == 'composite') {
         loaded = loaded.where((p) => (p.materialGroup ?? '').toLowerCase() == 'composite').toList();
       }
+      // Overlay any Firestore-approved community photos
+      loaded = await ProfilePhotoService.applyTo(loaded);
       setState(() {
         _selectedCategory = category; _profiles = loaded; _loading = false;
         _tileMaterials = _uniqueSorted(loaded.map((p) => p.materialGroup ?? p.material ?? '').where((v) => v.isNotEmpty));
@@ -3424,6 +3511,7 @@ class _AdminCorrectionsTabState extends State<_AdminCorrectionsTab> {
       final callable = FirebaseFunctions.instanceFor(region: 'europe-west2')
         .httpsCallable('approveCorrection');
       await callable.call({'correctionId': docId});
+      ProfilePhotoService.invalidate(); // force fresh fetch on next profile load
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Approved!'), backgroundColor: Colors.green));
     } catch (e) {
@@ -3456,13 +3544,21 @@ class _AdminCorrectionsTabState extends State<_AdminCorrectionsTab> {
       stream: FirebaseFirestore.instance
         .collection('image_corrections')
         .where('status', isEqualTo: 'pending')
-        .orderBy('submittedAt', descending: true)
         .snapshots(),
       builder: (context, snapshot) {
-        // Show spinner while waiting OR while active but no data yet
-        if (snapshot.connectionState == ConnectionState.waiting ||
-            !snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const Icon(Icons.lock_outline, size: 48, color: Colors.orange),
+              const SizedBox(height: 12),
+              const Text('Please sign in to view corrections',
+                style: TextStyle(fontSize: 16)),
+            ]),
+          ));
         }
         final docs = snapshot.data?.docs ?? [];
         if (docs.isEmpty) {
