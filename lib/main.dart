@@ -36,7 +36,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await FCMService.init();
   final prefs = await SharedPreferences.getInstance();
   final bool seenWelcome = prefs.getBool('seen_welcome') ?? false;
   runApp(RoofProfileFinderApp(showWelcome: !seenWelcome));
@@ -454,7 +453,6 @@ class AuthService {
     await cred.user?.updateDisplayName(name);
     // Fire and forget - don't block on Firestore write
     unawaited(_saveUserProfile(cred.user!, name, email));
-    unawaited(FCMService.onLogin());
     return cred;
   }
 
@@ -480,7 +478,6 @@ class AuthService {
     final cred = await _auth.signInWithCredential(credential);
     // Fire and forget - don't block on Firestore write
     unawaited(_saveUserProfile(cred.user!, cred.user!.displayName ?? '', cred.user!.email ?? ''));
-    unawaited(FCMService.onLogin());
     return cred;
   }
 
@@ -526,64 +523,6 @@ class AuthService {
       try { results.add(HistoryEntry.fromJson(doc.data())); } catch (_) {}
     }
     return results;
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// FCM Service — push notifications
-// ═══════════════════════════════════════════════════════════════
-
-class FCMService {
-  static Future<void> init() async {
-    final messaging = FirebaseMessaging.instance;
-
-    // Request permission (iOS prompts user, Android 13+ prompts user)
-    final settings = await messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      // Get the FCM token and save to Firestore if logged in
-      final token = await messaging.getToken();
-      if (token != null) await _saveToken(token);
-
-      // Refresh token if it changes
-      messaging.onTokenRefresh.listen(_saveToken);
-    }
-
-    // Show notification when app is in foreground
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final notification = message.notification;
-      if (notification != null) {
-        _pendingMessage = '${notification.title}: ${notification.body}';
-      }
-    });
-  }
-
-  // Temporarily holds a message to show via snackbar
-  static String? _pendingMessage;
-  static String? consumePendingMessage() {
-    final msg = _pendingMessage;
-    _pendingMessage = null;
-    return msg;
-  }
-
-  static Future<void> _saveToken(String token) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    await FirebaseFirestore.instance
-      .collection('users')
-      .doc(user.uid)
-      .set({'fcmToken': token, 'updatedAt': FieldValue.serverTimestamp()},
-           SetOptions(merge: true));
-  }
-
-  // Call this after login to save token for newly signed-in user
-  static Future<void> onLogin() async {
-    final token = await FirebaseMessaging.instance.getToken();
-    if (token != null) await _saveToken(token);
   }
 }
 
@@ -2944,6 +2883,167 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 
+  // ── Report Incorrect Image Button ──────────────────────────────
+  Widget _reportButton(BuildContext context, ProfileRecord p) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: SizedBox(width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: () => _showReportSheet(context, p),
+          icon: const Icon(Icons.flag_outlined, size: 18),
+          label: const Text('Report incorrect image / details'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.orange.shade700,
+            side: BorderSide(color: Colors.orange.shade300),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showReportSheet(BuildContext context, ProfileRecord p) async {
+    final nameController         = TextEditingController(text: p.profileName);
+    final manufacturerController = TextEditingController(text: p.manufacturer);
+    XFile? pickedImage;
+    bool submitting = false;
+    bool submitted  = false;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => SingleChildScrollView(
+          padding: EdgeInsets.only(
+            left: 20, right: 20, top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom +
+                    MediaQuery.of(ctx).padding.bottom + 20),
+          child: submitted
+            ? Column(mainAxisSize: MainAxisSize.min, children: [
+                const SizedBox(height: 20),
+                Icon(Icons.check_circle, color: Colors.green.shade600, size: 56),
+                const SizedBox(height: 12),
+                const Text('Thank you!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                const Text('Your correction has been sent.\nWe\'ll review and update it shortly.',
+                  textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+                const SizedBox(height: 24),
+                ElevatedButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+                const SizedBox(height: 12),
+              ])
+            : Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Center(child: Container(width: 40, height: 4,
+                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
+                const SizedBox(height: 16),
+                Row(children: [
+                  Icon(Icons.flag_outlined, color: Colors.orange.shade700),
+                  const SizedBox(width: 8),
+                  const Text('Report Incorrect Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ]),
+                const SizedBox(height: 4),
+                Text(p.displayTitle, style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                const SizedBox(height: 20),
+                const Text('Tile / Profile Name', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(), isDense: true,
+                    prefixIcon: Icon(Icons.label_outline)),
+                ),
+                const SizedBox(height: 14),
+                const Text('Manufacturer', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: manufacturerController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(), isDense: true,
+                    prefixIcon: Icon(Icons.business_outlined)),
+                ),
+                const SizedBox(height: 14),
+                const Text('Photo of Correct Tile / Profile', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                const SizedBox(height: 8),
+                Row(children: [
+                  Expanded(child: OutlinedButton.icon(
+                    onPressed: () async {
+                      final img = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 70);
+                      if (img != null) setSheet(() => pickedImage = img);
+                    },
+                    icon: const Icon(Icons.camera_alt_outlined),
+                    label: const Text('Camera'),
+                  )),
+                  const SizedBox(width: 10),
+                  Expanded(child: OutlinedButton.icon(
+                    onPressed: () async {
+                      final img = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 70);
+                      if (img != null) setSheet(() => pickedImage = img);
+                    },
+                    icon: const Icon(Icons.photo_library_outlined),
+                    label: const Text('Gallery'),
+                  )),
+                ]),
+                if (pickedImage != null) ...[
+                  const SizedBox(height: 8),
+                  Row(children: [
+                    const Icon(Icons.check_circle, color: Colors.green, size: 18),
+                    const SizedBox(width: 6),
+                    Expanded(child: Text(pickedImage!.name, style: const TextStyle(fontSize: 12), overflow: TextOverflow.ellipsis)),
+                  ]),
+                ],
+                const SizedBox(height: 20),
+                SizedBox(width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: submitting ? null : () async {
+                      setSheet(() => submitting = true);
+                      try {
+                        String? photoUrl;
+                        if (pickedImage != null) {
+                          final ref = FirebaseStorage.instance
+                            .ref('corrections/${p.code ?? p.id}_${DateTime.now().millisecondsSinceEpoch}.jpg');
+                          await ref.putFile(File(pickedImage!.path));
+                          photoUrl = await ref.getDownloadURL();
+                        }
+                        await FirebaseFirestore.instance.collection('image_corrections').add({
+                          'profileId'    : p.id ?? p.code,
+                          'originalName' : p.profileName,
+                          'originalMfr'  : p.manufacturer,
+                          'correctedName': nameController.text.trim(),
+                          'correctedMfr' : manufacturerController.text.trim(),
+                          'photoUrl'     : photoUrl,
+                          'submittedBy'  : FirebaseAuth.instance.currentUser?.email ?? 'anonymous',
+                          'submittedAt'  : FieldValue.serverTimestamp(),
+                          'status'       : 'pending',
+                        });
+                        setSheet(() { submitting = false; submitted = true; });
+                      } catch (e) {
+                        setSheet(() => submitting = false);
+                        if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(
+                          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                      }
+                    },
+                    icon: submitting
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : const Icon(Icons.send_outlined),
+                    label: Text(submitting ? 'Sending...' : 'Send Correction'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange.shade700,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Center(child: Text('Corrections are reviewed before going live.',
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500))),
+              ]),
+        ),
+      ),
+    );
+  }
+
   Widget _sheetResultCard(BuildContext context, SearchResult result) {
     final ProfileRecord p = result.profile;
     return Card(margin: const EdgeInsets.only(top: 10),
@@ -2966,6 +3066,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
           _saveButton(context, p),
           _shareButton(p),
           _favouriteButton(p),
+          _reportButton(context, p),
         ])));
   }
 
@@ -3003,6 +3104,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
           _saveButton(context, p),
           _shareButton(p),
           _favouriteButton(p),
+          _reportButton(context, p),
         ])));
   }
 

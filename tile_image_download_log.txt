@@ -1,0 +1,394 @@
+Starting download for 192 tile profiles...
+
+[1/192] Searching: Aldershaw Handmade Tiles - Kent Peg Tile
+  ✓ Downloaded: https://reclamation-yard.co.uk/wp-content/uploads/2024/02/IMG_6717-scaled.jpg
+[2/192] Searching: Aldershaw Handmade Tiles - Standard Handmade Roof Tile
+  ✓ Downloaded: https://images.esi.info/Images/Aldershaw_Handmade_Tiles_Ltd_Ventilation_roof_til
+[3/192] Searching: BMI Redland - 50 Double Roman
+  ✓ Downloaded: https://www.jjroofingsupplies.co.uk/media/catalog/product/5/0/50-double-roman-39
+[4/192] Searching: BMI Redland - DuoPlain
+  ✓ Downloaded: https://www.jjroofingsupplies.co.uk/media/catalog/product/d/u/duoplain_11-tuscan
+[5/192] Searching: BMI Redland - Grovebury
+  ✓ Downloaded: https://i.pinimg.com/736x/fb/a3/ef/fba3ef46f6a77629809d5ca63ae43fcf.jpg
+[6/192] Searching: BMI Redland - Mini Stonewold
+  ✓ Downloaded: https://www.jjroofingsupplies.co.uk/media/catalog/product/m/i/ministonewold-34-t
+[7/192] Searching: BMI Redland - MockBond Mini Stonewold Tile
+  ✓ Downloaded: https://www.buildershoponline.co.uk/image/data/redland-roof-tiles/slate-grey-red
+[8/192] Searching: BMI Redland - MockBond Richmond 10 Slate
+  ✓ Downloaded: https://files.ekmcdn.com/052954/images/redland-mockbond-richmond-10-slate-grey-r
+[9/192] Searching: BMI Redland - Plain Tile
+  ✓ Downloaded: https://ravenroofingsupplies.co.uk/wp-content/uploads/2020/05/Rustic-Red.jpg
+[10/192] Searching: BMI Redland - Redland 49 Tile
+  ✓ Downloaded: https://www.roofingoutlet.co.uk/cdn/shop/products/redland-49-concrete-roof-tile-
+[11/192] Searching: BMI Redland - Regent Tile
+  ✓ Downloaded: https://www.gardinersreclaims.co.uk/wp-content/uploads/2022/11/Redland-Regent-ro
+[12/192] Searching: BMI Redland - Renown Tile
+  ✓ Downloaded: https://www.buildershoponline.co.uk/image/data/redland-roof-tiles/slate-grey-red
+[13/192] Searching: BMI Redland - Richmond 10 Slate
+  ✓ Downloaded: https://files.ekmcdn.com/76e9dd/images/redland-richmond-10-slate-effect-roof-til
+[14/192] Searching: BMI Redland - Rosemary Clay Classic Tile
+  ✓ Downloaded: https://www.jjroofingsupplies.co.uk/media/catalog/product/8/1/81_light_mixed_bri
+[15/192] Searching: BMI Redland - Rosemary Clay Craftsman
+  ✓ Downloaded: https://www.jjroofingsupplies.co.uk/media/catalog/product/8/5/85_albury_1.jpg?op
+[16/192] Searching: Breedon Roof Tiles - Double Roll Tile
+  ✓ Downloaded: https://mbmwebapp01.azurewebsites.net/images/thumbs/0005847_breedon-double-roll-
+[17/192] Searching: Breedon Roof Tiles - Elite Tile
+  ✓ Downloaded: https://www.valleyroofing.co.uk/wp-content/uploads/2023/05/ea0aeb7c-e099-4072-a9
+[18/192] Searching: Breedon Roof Tiles - Flat Tile
+  ✓ Downloaded: https://static.wixstatic.com/media/4f4b9e_316ca5c747a1470985514c1e67dad5de~mv2.j
+[19/192] Searching: Breedon Roof Tiles - Square Top Tile
+  ✓ Downloaded: https://cdn11.bigcommerce.com/s-l4y5j8tpyi/products/42112/images/94731/breedon-s
+[20/192] Searching: Britmet - Ecopan
+  ✓ Downloaded: https://www.britmet.co.uk/images/products/ecopan.jpg
+[21/192] Searching: Britmet - Ecopan Plus
+  ✓ Downloaded: https://www.britmet.co.uk/images/products/ecopanplus.jpg
+[22/192] Searching: Britmet - Liteslate
+  ✓ Downloaded: https://ukroofingstore.co.uk/wp-content/uploads/2023/04/lightweight_plastic_roof
+[23/192] Searching: Britmet - Pantile 2000
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/britmet-pantile-2000-meta
+[24/192] Searching: Britmet - Plaintile
+  ✓ Downloaded: https://www.roofingmegastore.co.uk/media/catalog/product/b/r/britmet_plaintile_p
+[25/192] Searching: Britmet - Profile 49
+  ✓ Downloaded: https://www.britmet.co.uk/images/products/profile49.jpg
+[26/192] Searching: Britmet - Shingle
+  ✓ Downloaded: https://roofingonlinestore.co.uk/wp-content/uploads/2023/08/britmet-lightweight-
+[27/192] Searching: Britmet - UltraTile
+  ✓ Downloaded: https://www.roofingmegastore.co.uk/media/catalog/product/b/r/britmet_ultratile_r
+[28/192] Searching: Britmet - Villatile
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/britmet-villatile-metal-r
+[29/192] Searching: Dreadnought Tiles - Classic Handmade Range
+  ✓ Downloaded: https://images.squarespace-cdn.com/content/v1/653a2a923d144657a744a594/c0a1feb1-
+[30/192] Searching: Dreadnought Tiles - Collingwood Blend
+  ✓ Downloaded: https://s3-eu-west-1.amazonaws.com/specifiedbypro/6270/16503/dreadnought-tiles_C
+[31/192] Searching: Dreadnought Tiles - Dreadnought Classic Tile
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/dreadnought-classic-clay-
+[32/192] Searching: Dreadnought Tiles - Dreadnought Tile
+  ✓ Downloaded: https://images.squarespace-cdn.com/content/v1/653a2a923d144657a744a594/1d9269a4-
+[33/192] Searching: Dreadnought Tiles - Red Blue Blend
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/2/l/red-blue-blend-48339-2.jp
+[34/192] Searching: Dreadnought Tiles - Rustic Tile Range
+  ✓ Downloaded: https://images.squarespace-cdn.com/content/v1/653a2a923d144657a744a594/170549609
+[35/192] Searching: Dreadnought Tiles - Traditional Plain Clay Roof Tiles
+  ✓ Downloaded: https://cdn.shopify.com/s/files/1/0811/4601/products/Brown_Heather_5a47bd88-800f
+[36/192] Searching: FP McCann - Centurion Low Pitch Concrete Roof Tile
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/forticrete-centurion-low-
+[37/192] Searching: FP McCann - Double Roman Concrete Roof Tile
+  ✓ Downloaded: https://images.esi.info/Images/1744800042455.png?tr=w-1024,h-847,cm-extract,x-0,
+[38/192] Searching: FP McCann - Duo Thin Flat Tile
+  ✓ Downloaded: https://d3gqxxq2vswgzu.cloudfront.net/product-images/1000-1000/DuoThinFlat_Antra
+[39/192] Searching: FP McCann - Gemini Concrete Roof Tile
+  ✓ Downloaded: https://fpmccann.co.uk/wp-content/uploads/2023/08/Concrete-Roof-Tiles-Portfolio-
+[40/192] Searching: FP McCann - Mini Slate Concrete Roof Tiles
+  ✓ Downloaded: https://fpmccann.co.uk/wp-content/uploads/2023/08/Concrete-Roof-Tiles-Portfolio-
+[41/192] Searching: FP McCann - Plain Concrete Roof Tiles
+  ✓ Downloaded: https://images.esi.info/Images/1744804809245.jpg?tr=w-1600,h-1323,cm-extract,x-0
+[42/192] Searching: FP McCann - Round Top Concrete Roof Tile
+  ✓ Downloaded: https://fpmccann.co.uk/wp-content/uploads/2023/08/Concrete-Roof-Tiles-Portfolio-
+[43/192] Searching: FP McCann - SL8 Concrete Roof Tiles
+  ✓ Downloaded: https://www.constructionenquirer.com/wp-content/uploads/Screenshot-2025-02-03-at
+[44/192] Searching: FP McCann - Senator Concrete Roof Tiles
+  ✓ Downloaded: https://www.constructionenquirer.com/wp-content/uploads/DSCF4990-Enhanced-NR-400
+[45/192] Searching: FP McCann - Solar Roof Tile
+  ✓ Downloaded: https://images.esi.info/Images/1763546180018.jpg?tr=w-1223,h-1012,cm-extract,x-2
+[46/192] Searching: FP McCann - Square Top Concrete Roof Tile
+  ✓ Downloaded: https://images.esi.info/Images/1744804809245.jpg?tr=w-1600,h-1323,cm-extract,x-0
+[47/192] Searching: FP McCann - Thin Flat Tile
+  ✓ Downloaded: https://cdn11.bigcommerce.com/s-l4y5j8tpyi/products/36982/images/89050/fp-mccann
+[48/192] Searching: FP McCann - V2 Concrete Roof Tiles
+  ✓ Downloaded: https://images.esi.info/Images/1744804809245.jpg?tr=w-1600,h-1323,cm-extract,x-0
+[49/192] Searching: Heritage Clay Tiles - Bat Tiles
+  ✓ Downloaded: https://heritagetiles.co.uk/slider-images/bat-tiles-heritage-clay-roof-tiles/2-c
+[50/192] Searching: Heritage Clay Tiles - Classic Edwardian
+  ✓ Downloaded: https://cdn.shopify.com/s/files/1/0811/4601/products/classic-edwardian_800x.jpg?
+[51/192] Searching: Heritage Clay Tiles - Clayhall Range
+  ✓ Downloaded: http://cdn.shopify.com/s/files/1/0811/4601/products/clayhall-medium-blend_1200x6
+[52/192] Searching: Heritage Clay Tiles - Conservation Peg Tile
+  ✓ Downloaded: https://dtslatebuyers.co.uk/wp-content/uploads/2024/02/HeritagePeg-600x600.jpg
+[53/192] Searching: Heritage Clay Tiles - Conservation Range
+  ✓ Downloaded: https://heritagetiles.co.uk/images/conservation-range-clay-roof-tiles/conservati
+[54/192] Searching: Keymer / Wienerberger - County Peg – Weathered
+  ✓ Downloaded: https://www.keymer.co.uk/wp-content/uploads/2022/11/peg-county-weathered.webp
+[55/192] Searching: Keymer / Wienerberger - Goxhill – Autumn Brown
+  ✓ Downloaded: https://www.wienerberger.be/var/commerce/products/wienerberger/products/wbs_be_w
+[56/192] Searching: Keymer / Wienerberger - Goxhill – Dark Chestnut
+  ✓ Downloaded: https://www.wienerberger.co.uk/var/commerce/products/wienerberger/products/wbs_u
+[57/192] Searching: Keymer / Wienerberger - Goxhill – Dark Red
+  ✓ Downloaded: https://www.wienerberger.be/var/commerce/products/wienerberger/products/wbs_be_w
+[58/192] Searching: Keymer / Wienerberger - Goxhill – Restoration Blend
+  ✓ Downloaded: https://i.pinimg.com/736x/e5/dc/10/e5dc10c719bbcf7feafe00738da08720.jpg
+[59/192] Searching: Keymer / Wienerberger - Kent Peg – Antique
+  ✓ Downloaded: https://www.keymer.co.uk/wp-content/uploads/2022/11/peg-kent-antique.webp
+[60/192] Searching: Keymer / Wienerberger - Keymer County Peg Tile
+  ✓ Downloaded: https://www.keymer.co.uk/wp-content/uploads/2022/10/heritage-services-scaled.web
+[61/192] Searching: Keymer / Wienerberger - Keymer Goxhill
+  ✓ Downloaded: https://www.wienerberger.be/var/commerce/products/wienerberger/products/wbs_be_w
+[62/192] Searching: Keymer / Wienerberger - Keymer Shire
+  ✓ Downloaded: https://www.wienerberger.be/var/commerce/products/wienerberger/products/wbs_be_w
+[63/192] Searching: Keymer / Wienerberger - Keymer Traditional
+  ✓ Downloaded: https://www.keymer.co.uk/wp-content/uploads/2022/11/old-vicarage-03.webp
+[64/192] Searching: Keymer / Wienerberger - Shire – Downs Red
+  ✓ Downloaded: https://www.wienerberger.be/var/commerce/products/wienerberger/products/wbs_be_w
+[65/192] Searching: Keymer / Wienerberger - Shire – Heritage
+  ✓ Downloaded: https://www.wienerberger.be/var/commerce/products/wienerberger/products/wbs_be_w
+[66/192] Searching: Keymer / Wienerberger - Shire – Priory
+  ✓ Downloaded: https://www.wienerberger.be/var/commerce/products/wienerberger/products/wbs_be_w
+[67/192] Searching: Keymer / Wienerberger - Traditional – Antique
+  ✓ Downloaded: https://www.wienerberger.co.uk/reference-projects/the-vyne/jcr:content/root/slid
+[68/192] Searching: Keymer / Wienerberger - Traditional – Elizabethan
+  ✓ Downloaded: https://www.wienerberger.co.uk/var/commerce/products/wienerberger/products/wbs_u
+[69/192] Searching: Keymer / Wienerberger - Traditional – Wealden Red
+  ✓ Downloaded: https://i.pinimg.com/originals/6e/b5/10/6eb510e8031defac895720119f1a4906.jpg
+[70/192] Searching: Marley - Ashmore Interlocking Double Plain
+  ✓ Downloaded: https://roofingtilesdirect.co.uk/wp-content/uploads/2020/04/Old-English-Dark-Red
+[71/192] Searching: Marley - Canterbury Handmade Clay Plain Roof Tiles
+  ✓ Downloaded: https://www.marley.co.uk/-/media/images/products/jb-red-batten/jb-redphotoshop-m
+[72/192] Searching: Marley - Concrete Plain Tile
+  ✓ Downloaded: https://www.onlineinsulation-sales.com/wp-content/uploads/nc/083e2c/images/marle
+[73/192] Searching: Marley - Edgemere Interlocking Slate Roof Tile
+  ✓ Downloaded: https://cdn.shopify.com/s/files/1/0811/4601/products/Edgemere_Textured_Image_1_1
+[74/192] Searching: Marley - Lincoln Clay Interlocking Pantile
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/marley-licoln-clay-interl
+[75/192] Searching: Marley - Mendip Concrete Interlocking Tile
+  ✓ Downloaded: https://files.ekmcdn.com/052954/images/marley-mendip-interlocking-concrete-roof-
+[76/192] Searching: Marley - Modern Concrete Interlocking Tile
+  ✓ Downloaded: https://www.marley.co.uk/-/media/images/case-studies/edgemere/ajc-homes-smooth-g
+[77/192] Searching: Metrotile - Bond
+  ✓ Downloaded: https://roofin.co.uk/wp-content/uploads/2018/10/METROTILE_BOND_ALL_COLOURS.jpg
+[78/192] Searching: Metrotile - Qube
+  ✓ Downloaded: https://www.metrotile.eu/media/mvconvqz/eqube-spec-sheet.jpg?anchor=center&mode=
+[79/192] Searching: Metrotile - Roman
+  ✓ Downloaded: https://www.metrotile.co.uk/wp-content/uploads/2017/09/roman-terracotta.jpg
+[80/192] Searching: Metrotile - Shingle
+  ✓ Downloaded: https://www.metrotile.co.uk/wp-content/uploads/2017/09/Scarlet-Web-2048x1112.png
+[81/192] Searching: Metrotile - Slate
+  ✓ Downloaded: https://roofin.co.uk/wp-content/uploads/2018/10/METROTILE_SLATE_INSTALL_1.jpg
+[82/192] Searching: Metrotile - Woodshake
+  ✓ Downloaded: https://www.metrotile.eu/media/tlzfwe2d/p01f104_0016-020.jpg
+[83/192] Searching: Russell Roof Tiles - Bute3
+  ✓ Downloaded: https://www.total-contractor.co.uk/wp-content/uploads/2025/07/Bute3-on-stand-at-
+[84/192] Searching: Russell Roof Tiles - Cheviot
+  ✓ Downloaded: https://www.russellrooftiles.com/wp-content/uploads/2016/10/CHEV-RIG-AN-626x431.
+[85/192] Searching: Russell Roof Tiles - Double Roman
+  ✓ Downloaded: https://www.russellrooftiles.com/wp-content/uploads/2016/10/Double-Roman-AN.jpg
+[86/192] Searching: Russell Roof Tiles - Galloway
+  ✓ Downloaded: https://www.russellrooftiles.com/wp-content/uploads/2016/10/Galloway-SG-626x434.
+[87/192] Searching: Russell Roof Tiles - Grampian
+  ✓ Downloaded: https://www.russellrooftiles.com/wp-content/uploads/2016/11/Gramp-SG-Angled.png
+[88/192] Searching: Russell Roof Tiles - Highland
+  ✓ Downloaded: https://www.russellrooftiles.com/wp-content/uploads/2016/10/Highland-TC.jpg
+[89/192] Searching: Russell Roof Tiles - Lothian
+  ✓ Downloaded: https://www.russellrooftiles.com/wp-content/uploads/2016/10/Lothian-SG-626x431.j
+[90/192] Searching: Russell Roof Tiles - Moray
+  ✓ Downloaded: https://www.russellrooftiles.com/wp-content/uploads/2016/10/Moray-Slate-Grey.jpg
+[91/192] Searching: Russell Roof Tiles - Pennine
+  ✓ Downloaded: https://cdn11.bigcommerce.com/s-l4y5j8tpyi/products/39764/images/75992/russell-p
+[92/192] Searching: Russell Roof Tiles - Victorian Blend
+  ✓ Downloaded: https://www.russellrooftiles.com/wp-content/uploads/2016/10/Victorian-1.jpg
+[93/192] Searching: Spicer Tiles - Appledore Blend Nib Roof Tiles
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2019/06/appledore-blend-handmade-ro
+[94/192] Searching: Spicer Tiles - Appledore Blend Peg Roof Tiles
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2023/08/peg-roof-tiles-appledore.jp
+[95/192] Searching: Spicer Tiles - Bethersden Blend Nib Roof Tiles
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2023/08/nib-roof-tiles-bethersden-b
+[96/192] Searching: Spicer Tiles - Bethersden Blend Peg Roof Tiles
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2023/08/peg-roof-tiles-bethersden-b
+[97/192] Searching: Spicer Tiles - Burmarsh Multi Nib Roof Tiles
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2019/06/burmarsh-blend-handmade-roo
+[98/192] Searching: Spicer Tiles - Burmarsh Multi Peg Roof Tiles
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2023/08/peg-roof-tiles-burmarsh.jpg
+[99/192] Searching: Spicer Tiles - Churchland Blend Nib Roof Tiles
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2019/06/nib-roof-tiles-churchland.j
+[100/192] Searching: Spicer Tiles - Churchland Blend Peg Roof Tiles
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2023/08/peg-roof-tiles-churchland.j
+[101/192] Searching: Spicer Tiles - Dark Antique Nib Roof Tiles
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2023/08/nib-roof-tiles-dark-antique
+[102/192] Searching: Spicer Tiles - Dark Antique Peg Roof Tiles
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/2/l/kent-clay-tile-spicer-dar
+[103/192] Searching: Spicer Tiles - Hanbury Handmade Roof Tile
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/2/l/spicer-tiles-hanbury-hand
+[104/192] Searching: Spicer Tiles - Nib Roof Tile
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2023/08/nib-roof-tiles-medium-antiq
+[105/192] Searching: Spicer Tiles - Peg Roof Tile
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2023/08/pegs-pluckley-blend-roof-ti
+[106/192] Searching: Spicer Tiles - Tenterden Blend Peg Roof Tiles
+  ✓ Downloaded: https://spicertiles.co.uk/wp-content/uploads/2023/08/pegs-tenterden-blend-roof-t
+[107/192] Searching: Traditional Clay Roof Tiles - Developer Range
+  ✓ Downloaded: https://ravenroofingsupplies.co.uk/wp-content/uploads/2020/06/Eave-Tile-2.jpg
+[108/192] Searching: Traditional Clay Roof Tiles - Kent Peg Tile
+  ✓ Downloaded: https://cranbrookroofing.co.uk/wp-content/uploads/2020/08/Kent-Peg-Tiling-Rye-3.
+[109/192] Searching: Traditional Clay Roof Tiles - Manor Range
+  ✓ Downloaded: http://traditionalclayrooftiles.co.uk/wp-content/uploads/2017/10/Harvest-Blend-T
+[110/192] Searching: Tudor Roof Tiles - Handmade Peg Tile
+  ✓ Downloaded: https://2.bp.blogspot.com/-v56QV_N31_M/UhcuMmW_FMI/AAAAAAAAAQc/tZ4xMhLB6Cc/s1600
+[111/192] Searching: Tudor Roof Tiles - Handmade Plain Tile
+  ✓ Downloaded: https://www.roofingsuppliesuk.co.uk/cdn/shop/files/roof_in_tudor_handmade_tiles_
+[112/192] Searching: Wienerberger / Sandtoft - 20/20 (MK3)
+  ✓ Downloaded: https://www.wienerberger.co.uk/products/roof/2020-clay-tiles/jcr:content/root/re
+[113/192] Searching: Wienerberger / Sandtoft - Actua
+  ✓ Downloaded: https://cdn.shopify.com/s/files/1/0811/4601/products/wb_uk_KOR_Actua_Multiblend_
+[114/192] Searching: Wienerberger / Sandtoft - Arcadia
+  ✓ Downloaded: https://cdn11.bigcommerce.com/s-l4y5j8tpyi/products/15901/images/87423/wienerber
+[115/192] Searching: Wienerberger / Sandtoft - Cassius
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/2/l/sandtoft-cassius-antique-
+[116/192] Searching: Wienerberger / Sandtoft - Danum TLE
+  ✓ Downloaded: https://www.roofingoutlet.co.uk/cdn/shop/files/UK_MKT_PHO_PSH_ROF_Danum_TLE_Ligh
+[117/192] Searching: Wienerberger / Sandtoft - Double Pantile
+  ✓ Downloaded: https://www.roofingmegastore.co.uk/media/catalog/product/cache/f59fd4ad04b08023d
+[118/192] Searching: Wienerberger / Sandtoft - Double Roman
+  ✓ Downloaded: https://cdn11.bigcommerce.com/s-l4y5j8tpyi/products/27240/images/87237/sandtoft-
+[119/192] Searching: Wienerberger / Sandtoft - Dual Danum TLE
+  ✓ Downloaded: http://www.roofingoutlet.co.uk/cdn/shop/files/UK_MKT_PHO_PSH_ROF_Dual_Danum_TLE_
+[120/192] Searching: Wienerberger / Sandtoft - Lindum
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/sandtoft-concrete-lindum-
+[121/192] Searching: Wienerberger / Sandtoft - Modula
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/2/l/sandtoft-natural-red-modu
+[122/192] Searching: Wienerberger / Sandtoft - Neo Plus
+  ✓ Downloaded: https://asset.source.thenbs.com/api/15242f67-4d61-4bae-a44c-3147695b361a
+[123/192] Searching: Wienerberger / Sandtoft - Old English Pantile
+  ✓ Downloaded: https://www.roofingoutlet.co.uk/cdn/shop/products/wb_uk_SAN_Old_English_Natural_
+[124/192] Searching: Wienerberger / Sandtoft - Olympus
+  ✓ Downloaded: https://images.esi.info/Images/Sandtoft_Roof_Tiles_Olympus_roof_tiles_3.jpg?tr=w
+[125/192] Searching: Wienerberger / Sandtoft - Rivius
+  ✓ Downloaded: https://static.roofingsuperstore.co.uk/u/prod/l/santoft-antique-slate-rivius-til
+[126/192] Searching: Wienerberger / Sandtoft - Shire Pantile
+  ✓ Downloaded: https://www.wienerberger.co.uk/content/dam/wienerberger/united-kingdom/marketing
+[127/192] Searching: Wienerberger / Sandtoft - Vauban
+  ✓ Downloaded: https://i.ytimg.com/vi/US3Ter8PAxc/maxresdefault.jpg
+[128/192] Searching: William Blyth - Barco Old English Pantiles
+  ✓ Downloaded: https://www.williamblyth.co.uk/wp-content/uploads/2025/05/William-Blyth-Barco-Ol
+[129/192] Searching: William Blyth - Celtic Tiles
+  ✓ Downloaded: https://www.williamblyth.co.uk/wp-content/uploads/2025/05/William-Blyth-Celtic-T
+[130/192] Searching: William Blyth - Classic Range Tiles
+  ✓ Downloaded: https://www.williamblyth.co.uk/wp-content/uploads/2025/07/William-Blyth-Classic-
+[131/192] Searching: William Blyth - Corrugated Tiles
+  ✓ Downloaded: https://www.williamblyth.co.uk/wp-content/uploads/2025/05/William-Blyth-Corrugat
+[132/192] Searching: William Blyth - Hand Made Plain Tiles
+  ✓ Downloaded: https://www.williamblyth.co.uk/wp-content/uploads/2025/08/William-Blyth-Tile-Mas
+[133/192] Searching: William Blyth - Handmade Traditional Sanded Plain Tiles
+  ✓ Downloaded: https://www.williamblyth.co.uk/wp-content/uploads/2025/05/Handmade-Traditional-S
+[134/192] Searching: William Blyth - Lincoln Pantiles
+  ✓ Downloaded: https://www.williamblyth.co.uk/wp-content/uploads/2025/07/William-Blyth-Lincoln-
+[135/192] Searching: Marley - Modern
+  ✓ Downloaded: https://www.marley.co.uk/-/media/images/case-studies/edgemere/ajc-homes-smooth-g
+[136/192] Searching: Marley - Plain Concrete Tile
+  ✓ Downloaded: https://www.onlineinsulation-sales.com/wp-content/uploads/nc/083e2c/images/marle
+[137/192] Searching: Marley - Edgemere
+  ✓ Downloaded: https://www.chilterntimber.co.uk/wp-content/uploads/Marley-Edgemere-Roof-Tiles.p
+[138/192] Searching: Marley - Ludlow Plus
+  ✓ Downloaded: https://files.ekmcdn.com/052954/images/marley-ludlow-plus-roof-tile-231-c.png?w=
+[139/192] Searching: Marley - Double Roman
+  ✓ Downloaded: https://cdn.shopify.com/s/files/1/0811/4601/products/double_roman_old_eng_dark_r
+[140/192] Searching: BMI Redland - Plain Concrete Tile
+  ✓ Downloaded: https://ravenroofingsupplies.co.uk/wp-content/uploads/2020/05/Rustic-Red.jpg
+[141/192] Searching: BMI Redland - Rosemary Clay Classic
+  ✓ Downloaded: https://roofingtilesdirect.co.uk/wp-content/uploads/2020/04/redland-rosemary-cla
+[142/192] Searching: BMI Redland - 49
+  ✓ Downloaded: https://images.ctfassets.net/ortro6udoj2u/IE_7DEqrpXVTbGTIMzmrRMOMt/3c09347a7fad
+[143/192] Searching: Sandtoft - 20/20 Clay
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/sandtoft-2020-clay-verge-
+[144/192] Searching: Sandtoft - Standard Pattern
+  ✓ Downloaded: https://www.roofingoutlet.co.uk/cdn/shop/products/wb_uk_SAN_Standard_Pattern_Ant
+[145/192] Searching: Marley - Wessex
+  ✓ Downloaded: https://cdn.shopify.com/s/files/1/0811/4601/products/wessex_smooth_grey_1024x102
+[146/192] Searching: Marley - Mendip
+  ✓ Downloaded: https://www.roofingoutlet.co.uk/cdn/shop/products/mendip_anthracite_1024x1024_6b
+[147/192] Searching: Marley - Acme Single Camber Clay
+  ✓ Downloaded: https://www.roofingsuppliesuk.co.uk/cdn/shop/files/Marley-Acme-Single-Camber-Pla
+[148/192] Searching: BMI Redland - Regent
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/2/l/redland-regent-concrete-r
+[149/192] Searching: BMI Redland - Grovebury
+  ✓ Downloaded: https://www.jjroofingsupplies.co.uk/media/catalog/product/g/r/grovebury-34-terra
+[150/192] Searching: BMI Redland - Renown
+  ✓ Downloaded: https://northwestroofingsupplies.co.uk/wp-content/uploads/2024/06/Redlands-Renow
+[151/192] Searching: BMI Redland - Mini Stonewold
+  ✓ Downloaded: https://www.jjroofingsupplies.co.uk/media/catalog/product/m/i/ministonewold-34-t
+[152/192] Searching: BMI Redland - Delta
+  ✓ Downloaded: https://www.gardinersreclaims.co.uk/wp-content/uploads/2022/04/redland-delta-roo
+[153/192] Searching: Forticrete - SL8
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/forticrete-sl8-red-single
+[154/192] Searching: Forticrete - Gemini
+  ✓ Downloaded: https://images.ctfassets.net/eta2vegx3yuv/6DeggKGJbYZpYfnPqkqCMn/31645ec9483692e
+[155/192] Searching: Forticrete - Centurion
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/forticrete-centurion-low-
+[156/192] Searching: Forticrete - Plain Concrete Tile
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/forticrete-concrete-plain
+[157/192] Searching: Dreadnought Tiles - Plain Clay Tile
+  ✓ Downloaded: https://cdn.shopify.com/s/files/1/0811/4601/products/Deep_Red_800x.jpg?v=1578495
+[158/192] Searching: Welsh Slate - Penrhyn Welsh Slate 500x300
+  ✓ Downloaded: https://www.roofingoutlet.co.uk/cdn/shop/products/7065f682-0349-42bb-8236-949ccc
+[159/192] Searching: Welsh Slate - Penrhyn Welsh Slate 400x250
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/2/l/penrhyn-natural-welsh-sla
+[160/192] Searching: Welsh Slate - Penrhyn Welsh Slate 300x200
+  ✓ Downloaded: https://theslateroofingcompany.com.au/wp-content/uploads/2015/07/penrhyn-slate_2
+[161/192] Searching: Welsh Slate - Ffestiniog Welsh Slate 500x250
+  ✓ Downloaded: https://www.westerncountiesroofing.co.uk/wp/wp-content/uploads/2016/04/Roofing_P
+[162/192] Searching: Welsh Slate - Ffestiniog Welsh Slate 400x250
+  ✓ Downloaded: https://www.westerncountiesroofing.co.uk/wp/wp-content/uploads/2016/04/Roofing_P
+[163/192] Searching: Sandtoft - Humber Plain Clay Tile
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/sandtoft-humber-plain-cla
+[164/192] Searching: Marley - Anglia Clay Pantile
+  ✓ Downloaded: https://www.roofingmegastore.co.uk/media/catalog/product/cache/0141660d384810989
+[165/192] Searching: Marley - Canterbury Handmade Clay Tile
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/marley-clay-plain-roof-ti
+[166/192] Searching: BMI Redland - Cambrian Slate
+  ✓ Downloaded: https://www.buildershoponline.co.uk/image/data/redland-roof-tiles/slate-grey-pre
+[167/192] Searching: Marley - Ludlow Major
+  ✓ Downloaded: https://www.buildershoponline.co.uk/image/data/marley-roof-tiles/antique-brown-m
+[168/192] Searching: Marley - Bold Roll
+  ✓ Downloaded: https://www.gardinersreclaims.co.uk/wp-content/uploads/2021/10/Marley-Bold-Roll-
+[169/192] Searching: BMI Redland - 50 Double Roman
+  ✓ Downloaded: https://www.jjroofingsupplies.co.uk/media/catalog/product/5/0/50-double-roman-39
+[170/192] Searching: BMI Redland - Fenland Pantile
+  ✓ Downloaded: https://static.roofingsuperstore.co.uk/u/prod/l/redland-fenland-concrete-pantile
+[171/192] Searching: BMI Redland - Stonewold Mk2
+  ✓ Downloaded: https://watlingreclamation.co.uk/wp-content/uploads/2024/12/Stonewold-Concrete-R
+[172/192] Searching: Sandtoft - Shire Pantile
+  ✓ Downloaded: https://www.roofingmegastore.co.uk/media/catalog/product/s/h/shire_pantile_dark_
+[173/192] Searching: Sandtoft - Interlocking Double Pantile
+  ✓ Downloaded: https://www.jjroofingsupplies.co.uk/media/catalog/product/u/k/uk_san_rof_mkt_pho
+[174/192] Searching: Sandtoft - Old English Clay Pantile
+  ✓ Downloaded: https://shop.thereclaimedcompany.co.uk/home/wp-content/uploads/2019/05/IMG_5848.
+[175/192] Searching: Sandtoft - Calderdale Slate
+  ✓ Downloaded: https://cdn11.bigcommerce.com/s-zapuidy0qr/products/14779/images/65856/Sandtoft%
+[176/192] Searching: Various (Spain) - Spanish Natural Slate 500x250
+  ✓ Downloaded: https://buyroofslate.co.uk/wp-content/uploads/2025/01/5.jpeg
+[177/192] Searching: Various (Spain) - Spanish Natural Slate 600x300
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/passaro-ss55-mix-first-qu
+[178/192] Searching: Various (Spain) - Spanish Natural Slate 400x250
+  ✓ Downloaded: http://www.roofingsuppliesuk.co.uk/cdn/shop/collections/spanish-natural-roof-sla
+[179/192] Searching: Various (Spain) - Spanish Natural Slate 400x200
+  ✓ Downloaded: http://www.roofingsuppliesuk.co.uk/cdn/shop/collections/spanish-natural-roof-sla
+[180/192] Searching: Various (Spain) - Spanish Natural Slate 500x300
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/passaro-ss55-mix-first-qu
+[181/192] Searching: Various (China) - Chinese Natural Slate 500x250
+  ✓ Downloaded: https://watlingreclamation.co.uk/wp-content/uploads/2024/06/Chinese-Natural-Slat
+[182/192] Searching: Various (China) - Chinese Natural Slate 400x200
+  ✓ Downloaded: https://img2.tradewheel.com/uploads/images/products/0/0/chinese-natural-stone-bl
+[183/192] Searching: Various (China) - Chinese Natural Slate 600x300
+  ✓ Downloaded: https://image.made-in-china.com/2f0j00fiTUdvYFsRcG/Chinese-Natural-Grey-Black-Cu
+[184/192] Searching: Marley - Double Roman Concrete
+  ✓ Downloaded: https://marleyroofing.co.za/wp-content/uploads/2019/04/DSCN1302.jpg
+[185/192] Searching: BMI Redland - Heathland
+  ✓ Downloaded: https://www.jjroofingsupplies.co.uk/media/catalog/product/2/3/23_autumn_1_3.jpg?
+[186/192] Searching: Welsh Slate - Cwt-y-Bugail Welsh Slate 500x250
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/cwt-y-bugail-county-grade
+[187/192] Searching: Welsh Slate - Cwt-y-Bugail Welsh Slate 400x250
+  ✓ Downloaded: https://www.nealroofing.com/wp-content/uploads/2025/01/IMG_1116-1024x1004.jpeg
+[188/192] Searching: Marley - Riven Edgemere
+  ✓ Downloaded: https://www.marley.co.uk/-/media/images/campaigns/roof-systems/edgemere-roof-sys
+[189/192] Searching: Sandtoft - BritLock
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/sandtoft-britlock-interlo
+[190/192] Searching: Marley - Mendip 12.5
+  ✓ Downloaded: https://static.prod.cmostores.com/uploads/products/1/l/mendip-sm-brown.jpg?auto=
+[191/192] Searching: BMI Redland - Landmark Double Roman
+  ✓ Downloaded: https://www.kavanagh-roofing.co.uk/pdf/Redland-Landmark-double-roman-roof-tiles-
+[192/192] Searching: BMI Redland - Richmond 10 Slate
+  ✓ Downloaded: https://www.roofingoutlet.co.uk/cdn/shop/files/Product-Hero-Small-Desktop-Tablet
+
+═══ Complete ═══
+Downloaded: 192
+Skipped (existed): 0
+Failed: 0
+
+JSON updated: C:\apps\ios apps\profile finder\assets\data\tile_profiles_uk_phase2.json
+Log saved: C:\apps\ios apps\profile finder\tile_image_download_log.txt

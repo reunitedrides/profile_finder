@@ -29,7 +29,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.aldershaw.co.uk/roof_tile_technical_informational",
     "sourceNote": "Official technical page/search result exposes nominal size; heritage handmade producer with project-specific setting out.",
-    "notes": "Official technical page/search result exposes nominal size; heritage handmade producer with project-specific setting out."
+    "notes": "Official technical page/search result exposes nominal size; heritage handmade producer with project-specific setting out.",
+    "image_file": "assets/images/aldershaw-handmade-tiles-kent-peg-tile.png"
   },
   {
     "id": "aldershaw-handmade-tiles-standard-handmade-roof-tile",
@@ -61,7 +62,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.aldershaw.co.uk/roof_tile_technical_informational",
     "sourceNote": "Official technical page/search result exposes nominal size; heritage handmade producer with project-specific setting out.",
-    "notes": "Official technical page/search result exposes nominal size; heritage handmade producer with project-specific setting out."
+    "notes": "Official technical page/search result exposes nominal size; heritage handmade producer with project-specific setting out.",
+    "image_file": "assets/images/aldershaw-handmade-tiles-standard-handmade-roof-tile.png"
   },
   {
     "id": "bmi-redland-50-double-roman",
@@ -93,7 +95,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
     "sourceNote": "Official BMI Redland full range page; classic interlocking concrete double Roman tile.",
-    "notes": "Official BMI Redland full range page; classic interlocking concrete double Roman tile."
+    "notes": "Official BMI Redland full range page; classic interlocking concrete double Roman tile.",
+    "image_file": "assets/images/bmi-redland-50-double-roman.png"
   },
   {
     "id": "bmi-redland-duoplain",
@@ -125,7 +128,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
     "sourceNote": "Official BMI Redland full range page; modern interlocking plain-tile style product.",
-    "notes": "Official BMI Redland full range page; modern interlocking plain-tile style product."
+    "notes": "Official BMI Redland full range page; modern interlocking plain-tile style product.",
+    "image_file": "assets/images/bmi-redland-duoplain.png"
   },
   {
     "id": "bmi-redland-grovebury",
@@ -157,7 +161,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
     "sourceNote": "Official BMI Redland full range page; traditional pantile-shaped profile.",
-    "notes": "Official BMI Redland full range page; traditional pantile-shaped profile."
+    "notes": "Official BMI Redland full range page; traditional pantile-shaped profile.",
+    "image_file": "assets/images/bmi-redland-grovebury.png"
   },
   {
     "id": "bmi-redland-mini-stonewold",
@@ -189,7 +194,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
     "sourceNote": "Official BMI Redland full range page; economical concrete slate listed in current range.",
-    "notes": "Official BMI Redland full range page; economical concrete slate listed in current range."
+    "notes": "Official BMI Redland full range page; economical concrete slate listed in current range.",
+    "image_file": "assets/images/bmi-redland-mini-stonewold.png"
   },
   {
     "id": "bmi-redland-mockbond-mini-stonewold-tile",
@@ -221,7 +227,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://redland.co.uk/products/slate-range/mockbond-mini-stonewold",
     "sourceNote": "Official Redland product page.",
-    "notes": "Official Redland product page."
+    "notes": "Official Redland product page.",
+    "image_file": "assets/images/bmi-redland-mockbond-mini-stonewold-tile.png"
   },
   {
     "id": "bmi-redland-mockbond-richmond-10-slate",
@@ -255,7 +262,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
     "sourceNote": "Official BMI Redland full range page; product listed in current range.",
-    "notes": "Official BMI Redland full range page; product listed in current range."
+    "notes": "Official BMI Redland full range page; product listed in current range.",
+    "image_file": "assets/images/bmi-redland-mockbond-richmond-10-slate.png"
   },
   {
     "id": "bmi-redland-plain-tile",
@@ -287,7 +295,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
     "sourceNote": "Official BMI Redland full range page; concrete plain tile listed in current range.",
-    "notes": "Official BMI Redland full range page; concrete plain tile listed in current range."
+    "notes": "Official BMI Redland full range page; concrete plain tile listed in current range.",
+    "image_file": "assets/images/bmi-redland-plain-tile.png"
   },
   {
     "id": "bmi-redland-redland-49-tile",
@@ -319,7 +328,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.bmigroup.com/uk/p/redland-49-tile-brown-granular-1879346601/",
     "sourceNote": "Official BMI product page; page exposes size, headlap and gauge ranges.",
-    "notes": "Official BMI product page; page exposes size, headlap and gauge ranges."
+    "notes": "Official BMI product page; page exposes size, headlap and gauge ranges.",
+    "image_file": "assets/images/bmi-redland-redland-49-tile.png"
   },
   {
     "id": "bmi-redland-regent-tile",
@@ -351,7 +361,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.bmigroup.com/uk/p/regent-tile-tudor-brown-smooth-216412759/",
     "sourceNote": "Full tile page gives size and weight; half-tile page exposes the matching batten-gauge range for the Regent profile.",
-    "notes": "Full tile page gives size and weight; half-tile page exposes the matching batten-gauge range for the Regent profile."
+    "notes": "Full tile page gives size and weight; half-tile page exposes the matching batten-gauge range for the Regent profile.",
+    "image_file": "assets/images/bmi-redland-regent-tile.png"
   },
   {
     "id": "bmi-redland-renown-tile",
@@ -383,7 +394,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.bmigroup.com/uk/p/renown-tile-slate-grey-smooth-2972847580/",
     "sourceNote": "Gauge range taken from official half-tile listing for the same profile where the full-tile search snippet omitted the numeric max gauge.",
-    "notes": "Gauge range taken from official half-tile listing for the same profile where the full-tile search snippet omitted the numeric max gauge."
+    "notes": "Gauge range taken from official half-tile listing for the same profile where the full-tile search snippet omitted the numeric max gauge.",
+    "image_file": "assets/images/bmi-redland-renown-tile.png"
   },
   {
     "id": "bmi-redland-richmond-10-slate",
@@ -417,7 +429,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
     "sourceNote": "Official BMI Redland full range page; product described as 10 slates/m² with a minimum pitch of 17.5°.",
-    "notes": "Official BMI Redland full range page; product described as 10 slates/m² with a minimum pitch of 17.5°."
+    "notes": "Official BMI Redland full range page; product described as 10 slates/m² with a minimum pitch of 17.5°.",
+    "image_file": "assets/images/bmi-redland-richmond-10-slate.png"
   },
   {
     "id": "bmi-redland-rosemary-clay-classic-tile",
@@ -449,7 +462,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.bmigroup.com/uk/p/rosemary-clay-classic-tile-medium-mixed-brindle-smooth-3477019712/",
     "sourceNote": "Main BMI tile page for dimensions and pitch; same-family ornamental listing exposes the 60 tiles/m² and 78 kg/m² values for the same 265 x 165 plain-tile geometry.",
-    "notes": "Main BMI tile page for dimensions and pitch; same-family ornamental listing exposes the 60 tiles/m² and 78 kg/m² values for the same 265 x 165 plain-tile geometry."
+    "notes": "Main BMI tile page for dimensions and pitch; same-family ornamental listing exposes the 60 tiles/m² and 78 kg/m² values for the same 265 x 165 plain-tile geometry.",
+    "image_file": "assets/images/bmi-redland-rosemary-clay-classic-tile.png"
   },
   {
     "id": "bmi-redland-rosemary-clay-craftsman",
@@ -481,7 +495,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
     "sourceNote": "Official BMI Redland full range page; current Rosemary clay variant.",
-    "notes": "Official BMI Redland full range page; current Rosemary clay variant."
+    "notes": "Official BMI Redland full range page; current Rosemary clay variant.",
+    "image_file": "assets/images/bmi-redland-rosemary-clay-craftsman.png"
   },
   {
     "id": "breedon-roof-tiles-double-roll-tile",
@@ -513,7 +528,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.breedongroup.com/content/dam/breedon/corporate/documents/products-services/gb/brochure/Breedon-Roof-Tile-BrochureGB.pdf.downloadasset.pdf",
     "sourceNote": "Weight as laid derived from official weight per 1000 and covering capacity.",
-    "notes": "Weight as laid derived from official weight per 1000 and covering capacity."
+    "notes": "Weight as laid derived from official weight per 1000 and covering capacity.",
+    "image_file": "assets/images/breedon-roof-tiles-double-roll-tile.png"
   },
   {
     "id": "breedon-roof-tiles-elite-tile",
@@ -545,7 +561,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.breedongroup.com/content/dam/breedon/corporate/documents/products-services/gb/brochure/Breedon-Roof-Tile-BrochureGB.pdf.downloadasset.pdf",
     "sourceNote": "Weight as laid derived from official weight per 1000 and covering capacity.",
-    "notes": "Weight as laid derived from official weight per 1000 and covering capacity."
+    "notes": "Weight as laid derived from official weight per 1000 and covering capacity.",
+    "image_file": "assets/images/breedon-roof-tiles-elite-tile.png"
   },
   {
     "id": "breedon-roof-tiles-flat-tile",
@@ -577,7 +594,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.breedongroup.com/content/dam/breedon/corporate/documents/products-services/gb/brochure/Breedon-Roof-Tile-BrochureGB.pdf.downloadasset.pdf",
     "sourceNote": "Weight as laid derived from official weight per 1000 and covering capacity.",
-    "notes": "Weight as laid derived from official weight per 1000 and covering capacity."
+    "notes": "Weight as laid derived from official weight per 1000 and covering capacity.",
+    "image_file": "assets/images/breedon-roof-tiles-flat-tile.png"
   },
   {
     "id": "breedon-roof-tiles-square-top-tile",
@@ -609,7 +627,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.breedongroup.com/content/dam/breedon/corporate/documents/products-services/gb/brochure/Breedon-Roof-Tile-BrochureGB.pdf.downloadasset.pdf",
     "sourceNote": "Weight as laid derived from official weight per 1000 and covering capacity.",
-    "notes": "Weight as laid derived from official weight per 1000 and covering capacity."
+    "notes": "Weight as laid derived from official weight per 1000 and covering capacity.",
+    "image_file": "assets/images/breedon-roof-tiles-square-top-tile.png"
   },
   {
     "id": "britmet-ecopan",
@@ -641,7 +660,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.britmet.co.uk/ecopan.asp",
     "sourceNote": "Official Britmet Ecopan page/brochure.",
-    "notes": "Official Britmet Ecopan page/brochure."
+    "notes": "Official Britmet Ecopan page/brochure.",
+    "image_file": "assets/images/britmet-ecopan.png"
   },
   {
     "id": "britmet-ecopan-plus",
@@ -673,7 +693,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.britmet.co.uk/ecopanplus.asp",
     "sourceNote": "Official Britmet Ecopan Plus page.",
-    "notes": "Official Britmet Ecopan Plus page."
+    "notes": "Official Britmet Ecopan Plus page.",
+    "image_file": "assets/images/britmet-ecopan-plus.png"
   },
   {
     "id": "britmet-liteslate",
@@ -705,7 +726,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.britmet.co.uk/liteslate.asp",
     "sourceNote": "Official Britmet Liteslate product page.",
-    "notes": "Official Britmet Liteslate product page."
+    "notes": "Official Britmet Liteslate product page.",
+    "image_file": "assets/images/britmet-liteslate.png"
   },
   {
     "id": "britmet-pantile-2000",
@@ -739,7 +761,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.britmet.co.uk/pantile2000.asp",
     "sourceNote": "Official Britmet Pantile 2000 page/specification.",
-    "notes": "Official Britmet Pantile 2000 page/specification."
+    "notes": "Official Britmet Pantile 2000 page/specification.",
+    "image_file": "assets/images/britmet-pantile-2000.png"
   },
   {
     "id": "britmet-plaintile",
@@ -773,7 +796,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.britmet.co.uk/plaintile.asp",
     "sourceNote": "Official Britmet Plaintile page/brochure.",
-    "notes": "Official Britmet Plaintile page/brochure."
+    "notes": "Official Britmet Plaintile page/brochure.",
+    "image_file": "assets/images/britmet-plaintile.png"
   },
   {
     "id": "britmet-profile-49",
@@ -805,7 +829,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.britmet.co.uk/profile49.asp",
     "sourceNote": "Official Britmet technical specification.",
-    "notes": "Official Britmet technical specification."
+    "notes": "Official Britmet technical specification.",
+    "image_file": "assets/images/britmet-profile-49.png"
   },
   {
     "id": "britmet-shingle",
@@ -839,7 +864,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.britmet.co.uk/shingle.asp",
     "sourceNote": "Official Britmet Shingle page/specification.",
-    "notes": "Official Britmet Shingle page/specification."
+    "notes": "Official Britmet Shingle page/specification.",
+    "image_file": "assets/images/britmet-shingle.png"
   },
   {
     "id": "britmet-ultratile",
@@ -871,7 +897,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.britmet.co.uk/ultratile.asp",
     "sourceNote": "Official Britmet technical specification.",
-    "notes": "Official Britmet technical specification."
+    "notes": "Official Britmet technical specification.",
+    "image_file": "assets/images/britmet-ultratile.png"
   },
   {
     "id": "britmet-villatile",
@@ -905,7 +932,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.britmet.co.uk/villatile.asp",
     "sourceNote": "Official Britmet Villatile page/brochure.",
-    "notes": "Official Britmet Villatile page/brochure."
+    "notes": "Official Britmet Villatile page/brochure.",
+    "image_file": "assets/images/britmet-villatile.png"
   },
   {
     "id": "dreadnought-tiles-classic-handmade-range",
@@ -937,7 +965,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.dreadnought-tiles.co.uk/dreadnought-classic-range",
     "sourceNote": "Official Dreadnought Classic Handmade range page.",
-    "notes": "Official Dreadnought Classic Handmade range page."
+    "notes": "Official Dreadnought Classic Handmade range page.",
+    "image_file": "assets/images/dreadnought-tiles-classic-handmade-range.png"
   },
   {
     "id": "dreadnought-tiles-collingwood-blend",
@@ -969,7 +998,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.dreadnought-tiles.co.uk/Collingwood-blend",
     "sourceNote": "Official Dreadnought Collingwood blend page.",
-    "notes": "Official Dreadnought Collingwood blend page."
+    "notes": "Official Dreadnought Collingwood blend page.",
+    "image_file": "assets/images/dreadnought-tiles-collingwood-blend.png"
   },
   {
     "id": "dreadnought-tiles-dreadnought-classic-tile",
@@ -1001,7 +1031,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.dreadnought-tiles.co.uk/tile-technical",
     "sourceNote": "Official technical page; Classic handmade range.",
-    "notes": "Official technical page; Classic handmade range."
+    "notes": "Official technical page; Classic handmade range.",
+    "image_file": "assets/images/dreadnought-tiles-dreadnought-classic-tile.png"
   },
   {
     "id": "dreadnought-tiles-dreadnought-tile",
@@ -1033,7 +1064,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.dreadnought-tiles.co.uk/tile-technical",
     "sourceNote": "Official technical page; machine-made/rustic plain tile data.",
-    "notes": "Official technical page; machine-made/rustic plain tile data."
+    "notes": "Official technical page; machine-made/rustic plain tile data.",
+    "image_file": "assets/images/dreadnought-tiles-dreadnought-tile.png"
   },
   {
     "id": "dreadnought-tiles-red-blue-blend",
@@ -1067,7 +1099,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.dreadnought-tiles.co.uk/Red-blue-blend.html",
     "sourceNote": "Official Dreadnought Red/Blue blend page.",
-    "notes": "Official Dreadnought Red/Blue blend page."
+    "notes": "Official Dreadnought Red/Blue blend page.",
+    "image_file": "assets/images/dreadnought-tiles-red-blue-blend.png"
   },
   {
     "id": "dreadnought-tiles-rustic-tile-range",
@@ -1099,7 +1132,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.dreadnought-tiles.co.uk/Rustic-Tiles.html",
     "sourceNote": "Official Dreadnought Rustic Tiles page.",
-    "notes": "Official Dreadnought Rustic Tiles page."
+    "notes": "Official Dreadnought Rustic Tiles page.",
+    "image_file": "assets/images/dreadnought-tiles-rustic-tile-range.png"
   },
   {
     "id": "dreadnought-tiles-traditional-plain-clay-roof-tiles",
@@ -1131,7 +1165,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.dreadnought-tiles.co.uk/clay-roof-tile-range.html",
     "sourceNote": "Official Dreadnought clay roof tile range page; machine-made range.",
-    "notes": "Official Dreadnought clay roof tile range page; machine-made range."
+    "notes": "Official Dreadnought clay roof tile range page; machine-made range.",
+    "image_file": "assets/images/dreadnought-tiles-traditional-plain-clay-roof-tiles.png"
   },
   {
     "id": "fp-mccann-centurion-low-pitch-concrete-roof-tile",
@@ -1165,7 +1200,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-centurion-low-pitch-concrete-roof-tile.png"
   },
   {
     "id": "fp-mccann-double-roman-concrete-roof-tile",
@@ -1199,7 +1235,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-double-roman-concrete-roof-tile.png"
   },
   {
     "id": "fp-mccann-duo-thin-flat-tile",
@@ -1231,7 +1268,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://fpmccann.co.uk/wp-content/uploads/2023/02/McCann-Roof-Tiles-Product-Range_LR.pdf",
     "sourceNote": "Official FP McCann range brochure; minimum pitch exposed for 75mm headlap.",
-    "notes": "Official FP McCann range brochure; minimum pitch exposed for 75mm headlap."
+    "notes": "Official FP McCann range brochure; minimum pitch exposed for 75mm headlap.",
+    "image_file": "assets/images/fp-mccann-duo-thin-flat-tile.png"
   },
   {
     "id": "fp-mccann-gemini-concrete-roof-tile",
@@ -1265,7 +1303,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-gemini-concrete-roof-tile.png"
   },
   {
     "id": "fp-mccann-mini-slate-concrete-roof-tiles",
@@ -1299,7 +1338,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-mini-slate-concrete-roof-tiles.png"
   },
   {
     "id": "fp-mccann-plain-concrete-roof-tiles",
@@ -1333,7 +1373,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-plain-concrete-roof-tiles.png"
   },
   {
     "id": "fp-mccann-round-top-concrete-roof-tile",
@@ -1367,7 +1408,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-round-top-concrete-roof-tile.png"
   },
   {
     "id": "fp-mccann-sl8-concrete-roof-tiles",
@@ -1401,7 +1443,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-sl8-concrete-roof-tiles.png"
   },
   {
     "id": "fp-mccann-senator-concrete-roof-tiles",
@@ -1435,7 +1478,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-senator-concrete-roof-tiles.png"
   },
   {
     "id": "fp-mccann-solar-roof-tile",
@@ -1469,7 +1513,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-solar-roof-tile.png"
   },
   {
     "id": "fp-mccann-square-top-concrete-roof-tile",
@@ -1503,7 +1548,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-square-top-concrete-roof-tile.png"
   },
   {
     "id": "fp-mccann-thin-flat-tile",
@@ -1535,7 +1581,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://fpmccann.co.uk/wp-content/uploads/2024/06/McCann-Concrete-Roof-Tiles-Thin-Flat.pdf",
     "sourceNote": "Official FP McCann product data sheet.",
-    "notes": "Official FP McCann product data sheet."
+    "notes": "Official FP McCann product data sheet.",
+    "image_file": "assets/images/fp-mccann-thin-flat-tile.png"
   },
   {
     "id": "fp-mccann-v2-concrete-roof-tiles",
@@ -1569,7 +1616,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://fpmccann.co.uk/uk/concrete-roof-tiles/",
     "sourceNote": "Official FP McCann concrete roof tiles range page; product listed in current range.",
-    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range."
+    "notes": "Official FP McCann concrete roof tiles range page; product listed in current range.",
+    "image_file": "assets/images/fp-mccann-v2-concrete-roof-tiles.png"
   },
   {
     "id": "heritage-clay-tiles-bat-tiles",
@@ -1601,7 +1649,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://heritagetiles.co.uk/",
     "sourceNote": "Official Heritage Clay Tiles website product listing.",
-    "notes": "Official Heritage Clay Tiles website product listing."
+    "notes": "Official Heritage Clay Tiles website product listing.",
+    "image_file": "assets/images/heritage-clay-tiles-bat-tiles.png"
   },
   {
     "id": "heritage-clay-tiles-classic-edwardian",
@@ -1633,7 +1682,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://heritagetiles.co.uk/",
     "sourceNote": "Official Heritage Clay Tiles website product listing.",
-    "notes": "Official Heritage Clay Tiles website product listing."
+    "notes": "Official Heritage Clay Tiles website product listing.",
+    "image_file": "assets/images/heritage-clay-tiles-classic-edwardian.png"
   },
   {
     "id": "heritage-clay-tiles-clayhall-range",
@@ -1665,7 +1715,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://heritagetiles.co.uk/",
     "sourceNote": "Official Heritage Clay Tiles website product listing.",
-    "notes": "Official Heritage Clay Tiles website product listing."
+    "notes": "Official Heritage Clay Tiles website product listing.",
+    "image_file": "assets/images/heritage-clay-tiles-clayhall-range.png"
   },
   {
     "id": "heritage-clay-tiles-conservation-peg-tile",
@@ -1697,7 +1748,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://heritagetiles.co.uk/",
     "sourceNote": "Official Heritage Clay Tiles website product listing.",
-    "notes": "Official Heritage Clay Tiles website product listing."
+    "notes": "Official Heritage Clay Tiles website product listing.",
+    "image_file": "assets/images/heritage-clay-tiles-conservation-peg-tile.png"
   },
   {
     "id": "heritage-clay-tiles-conservation-range",
@@ -1729,7 +1781,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://heritagetiles.co.uk/",
     "sourceNote": "Official Heritage Clay Tiles website product listing.",
-    "notes": "Official Heritage Clay Tiles website product listing."
+    "notes": "Official Heritage Clay Tiles website product listing.",
+    "image_file": "assets/images/heritage-clay-tiles-conservation-range.png"
   },
   {
     "id": "keymer-wienerberger-county-peg-weathered",
@@ -1764,7 +1817,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/products/peg/",
     "sourceNote": "Official Keymer Peg product page.",
-    "notes": "Official Keymer Peg product page."
+    "notes": "Official Keymer Peg product page.",
+    "image_file": "assets/images/keymer-wienerberger-county-peg-weathered.png"
   },
   {
     "id": "keymer-wienerberger-goxhill-autumn-brown",
@@ -1796,7 +1850,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/wp-content/uploads/2023/12/product-brochure-Nov23.pdf",
     "sourceNote": "Official Keymer brochure; Goxhill range.",
-    "notes": "Official Keymer brochure; Goxhill range."
+    "notes": "Official Keymer brochure; Goxhill range.",
+    "image_file": "assets/images/keymer-wienerberger-goxhill-autumn-brown.png"
   },
   {
     "id": "keymer-wienerberger-goxhill-dark-chestnut",
@@ -1828,7 +1883,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/wp-content/uploads/2023/12/product-brochure-Nov23.pdf",
     "sourceNote": "Official Keymer brochure; Goxhill range.",
-    "notes": "Official Keymer brochure; Goxhill range."
+    "notes": "Official Keymer brochure; Goxhill range.",
+    "image_file": "assets/images/keymer-wienerberger-goxhill-dark-chestnut.png"
   },
   {
     "id": "keymer-wienerberger-goxhill-dark-red",
@@ -1860,7 +1916,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/wp-content/uploads/2023/12/product-brochure-Nov23.pdf",
     "sourceNote": "Official Keymer brochure; Goxhill range.",
-    "notes": "Official Keymer brochure; Goxhill range."
+    "notes": "Official Keymer brochure; Goxhill range.",
+    "image_file": "assets/images/keymer-wienerberger-goxhill-dark-red.png"
   },
   {
     "id": "keymer-wienerberger-goxhill-restoration-blend",
@@ -1892,7 +1949,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/wp-content/uploads/2023/12/product-brochure-Nov23.pdf",
     "sourceNote": "Official Keymer brochure; Goxhill range.",
-    "notes": "Official Keymer brochure; Goxhill range."
+    "notes": "Official Keymer brochure; Goxhill range.",
+    "image_file": "assets/images/keymer-wienerberger-goxhill-restoration-blend.png"
   },
   {
     "id": "keymer-wienerberger-kent-peg-antique",
@@ -1927,7 +1985,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/products/peg/",
     "sourceNote": "Official Keymer Peg product page.",
-    "notes": "Official Keymer Peg product page."
+    "notes": "Official Keymer Peg product page.",
+    "image_file": "assets/images/keymer-wienerberger-kent-peg-antique.png"
   },
   {
     "id": "keymer-wienerberger-keymer-county-peg-tile",
@@ -1959,7 +2018,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.wienerberger.co.uk/content/dam/wienerberger/united-kingdom/marketing/documents-magazines/product-data-sheets/roof/UK_MKT_DOC_PDS_ROOF_Keymer_County_Peg_Tile.pdf",
     "sourceNote": "Current January 2026 Keymer datasheet.",
-    "notes": "Current January 2026 Keymer datasheet."
+    "notes": "Current January 2026 Keymer datasheet.",
+    "image_file": "assets/images/keymer-wienerberger-keymer-county-peg-tile.png"
   },
   {
     "id": "keymer-wienerberger-keymer-goxhill",
@@ -1991,7 +2051,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.wienerberger.co.uk/content/dam/wienerberger/united-kingdom/marketing/documents-magazines/product-data-sheets/roof/UK_MKT_DOC_PDS_ROOF_Keymer_Goxhill.pdf",
     "sourceNote": "Current January 2026 Keymer datasheet.",
-    "notes": "Current January 2026 Keymer datasheet."
+    "notes": "Current January 2026 Keymer datasheet.",
+    "image_file": "assets/images/keymer-wienerberger-keymer-goxhill.png"
   },
   {
     "id": "keymer-wienerberger-keymer-shire",
@@ -2023,7 +2084,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.wienerberger.co.uk/content/dam/wienerberger/united-kingdom/marketing/documents-magazines/product-data-sheets/roof/UK_MKT_DOC_PDS_ROOF_Keymer_Shire.pdf",
     "sourceNote": "Current January 2026 Keymer datasheet.",
-    "notes": "Current January 2026 Keymer datasheet."
+    "notes": "Current January 2026 Keymer datasheet.",
+    "image_file": "assets/images/keymer-wienerberger-keymer-shire.png"
   },
   {
     "id": "keymer-wienerberger-keymer-traditional",
@@ -2055,7 +2117,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.wienerberger.co.uk/content/dam/wienerberger/united-kingdom/marketing/documents-magazines/product-data-sheets/roof/UK_MKT_DOC_PDS_ROOF_Keymer_Traditional.pdf",
     "sourceNote": "Current January 2026 Keymer datasheet.",
-    "notes": "Current January 2026 Keymer datasheet."
+    "notes": "Current January 2026 Keymer datasheet.",
+    "image_file": "assets/images/keymer-wienerberger-keymer-traditional.png"
   },
   {
     "id": "keymer-wienerberger-shire-downs-red",
@@ -2087,7 +2150,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/products/shire/",
     "sourceNote": "Official Keymer Shire product page / brochure.",
-    "notes": "Official Keymer Shire product page / brochure."
+    "notes": "Official Keymer Shire product page / brochure.",
+    "image_file": "assets/images/keymer-wienerberger-shire-downs-red.png"
   },
   {
     "id": "keymer-wienerberger-shire-heritage",
@@ -2119,7 +2183,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/products/shire/",
     "sourceNote": "Official Keymer Shire product page / brochure.",
-    "notes": "Official Keymer Shire product page / brochure."
+    "notes": "Official Keymer Shire product page / brochure.",
+    "image_file": "assets/images/keymer-wienerberger-shire-heritage.png"
   },
   {
     "id": "keymer-wienerberger-shire-priory",
@@ -2151,7 +2216,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/products/shire/",
     "sourceNote": "Official Keymer Shire product page / brochure.",
-    "notes": "Official Keymer Shire product page / brochure."
+    "notes": "Official Keymer Shire product page / brochure.",
+    "image_file": "assets/images/keymer-wienerberger-shire-priory.png"
   },
   {
     "id": "keymer-wienerberger-traditional-antique",
@@ -2185,7 +2251,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/products/traditional/",
     "sourceNote": "Official Keymer Traditional product page.",
-    "notes": "Official Keymer Traditional product page."
+    "notes": "Official Keymer Traditional product page.",
+    "image_file": "assets/images/keymer-wienerberger-traditional-antique.png"
   },
   {
     "id": "keymer-wienerberger-traditional-elizabethan",
@@ -2219,7 +2286,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/products/traditional/",
     "sourceNote": "Official Keymer Traditional product page.",
-    "notes": "Official Keymer Traditional product page."
+    "notes": "Official Keymer Traditional product page.",
+    "image_file": "assets/images/keymer-wienerberger-traditional-elizabethan.png"
   },
   {
     "id": "keymer-wienerberger-traditional-wealden-red",
@@ -2253,7 +2321,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.keymer.co.uk/products/traditional/",
     "sourceNote": "Official Keymer Traditional product page.",
-    "notes": "Official Keymer Traditional product page."
+    "notes": "Official Keymer Traditional product page.",
+    "image_file": "assets/images/keymer-wienerberger-traditional-wealden-red.png"
   },
   {
     "id": "marley-ashmore-interlocking-double-plain",
@@ -2285,7 +2354,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/ashmore-double-plain-tile",
     "sourceNote": "Official Marley product page.",
-    "notes": "Official Marley product page."
+    "notes": "Official Marley product page.",
+    "image_file": "assets/images/marley-ashmore-interlocking-double-plain.png"
   },
   {
     "id": "marley-canterbury-handmade-clay-plain-roof-tiles",
@@ -2317,7 +2387,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/clay-roof-tiles/canterbury-handmade-plain-tile",
     "sourceNote": "Official Marley product page.",
-    "notes": "Official Marley product page."
+    "notes": "Official Marley product page.",
+    "image_file": "assets/images/marley-canterbury-handmade-clay-plain-roof-tiles.png"
   },
   {
     "id": "marley-concrete-plain-tile",
@@ -2349,7 +2420,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/concrete-plain-tile",
     "sourceNote": "Official Marley product page.",
-    "notes": "Official Marley product page."
+    "notes": "Official Marley product page.",
+    "image_file": "assets/images/marley-concrete-plain-tile.png"
   },
   {
     "id": "marley-edgemere-interlocking-slate-roof-tile",
@@ -2381,7 +2453,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/edgemere",
     "sourceNote": "Official Marley product page.",
-    "notes": "Official Marley product page."
+    "notes": "Official Marley product page.",
+    "image_file": "assets/images/marley-edgemere-interlocking-slate-roof-tile.png"
   },
   {
     "id": "marley-lincoln-clay-interlocking-pantile",
@@ -2413,7 +2486,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.marley.co.uk/-/media/Files/Product-data-sheets/Lincoln_Clay-Interlocking-Pantile.ashx",
     "sourceNote": "Marley PDF datasheet.",
-    "notes": "Marley PDF datasheet."
+    "notes": "Marley PDF datasheet.",
+    "image_file": "assets/images/marley-lincoln-clay-interlocking-pantile.png"
   },
   {
     "id": "marley-mendip-concrete-interlocking-tile",
@@ -2445,7 +2519,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.marley.co.uk/-/media/Files/Product-data-sheets/Mendip_Concrete-Interlocking-Tile.ashx",
     "sourceNote": "Marley PDF datasheet.",
-    "notes": "Marley PDF datasheet."
+    "notes": "Marley PDF datasheet.",
+    "image_file": "assets/images/marley-mendip-concrete-interlocking-tile.png"
   },
   {
     "id": "marley-modern-concrete-interlocking-tile",
@@ -2477,7 +2552,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/modern",
     "sourceNote": "Official Marley product page.",
-    "notes": "Official Marley product page."
+    "notes": "Official Marley product page.",
+    "image_file": "assets/images/marley-modern-concrete-interlocking-tile.png"
   },
   {
     "id": "metrotile-bond",
@@ -2509,7 +2585,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://knowledgebase.metrotile.co.uk/wp-content/uploads/2017/09/Profile-Info-Sheet-Bond.pdf",
     "sourceNote": "Official Metrotile Bond info sheet.",
-    "notes": "Official Metrotile Bond info sheet."
+    "notes": "Official Metrotile Bond info sheet.",
+    "image_file": "assets/images/metrotile-bond.png"
   },
   {
     "id": "metrotile-qube",
@@ -2541,7 +2618,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://knowledgebase.metrotile.co.uk/wp-content/uploads/2024/04/MUK-Brochure-Tile-Profiles.pdf",
     "sourceNote": "Official Metrotile tile profiles brochure / homepage references Qube as a current profile.",
-    "notes": "Official Metrotile tile profiles brochure / homepage references Qube as a current profile."
+    "notes": "Official Metrotile tile profiles brochure / homepage references Qube as a current profile.",
+    "image_file": "assets/images/metrotile-qube.png"
   },
   {
     "id": "metrotile-roman",
@@ -2573,7 +2651,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://knowledgebase.metrotile.co.uk/wp-content/uploads/2017/09/Profile-Info-Sheet-Roman.pdf",
     "sourceNote": "Official Metrotile Roman profile info sheet.",
-    "notes": "Official Metrotile Roman profile info sheet."
+    "notes": "Official Metrotile Roman profile info sheet.",
+    "image_file": "assets/images/metrotile-roman.png"
   },
   {
     "id": "metrotile-shingle",
@@ -2605,7 +2684,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://knowledgebase.metrotile.co.uk/wp-content/uploads/2017/09/Profile-Info-Sheet-Shingle.pdf",
     "sourceNote": "Official Metrotile Shingle profile info sheet.",
-    "notes": "Official Metrotile Shingle profile info sheet."
+    "notes": "Official Metrotile Shingle profile info sheet.",
+    "image_file": "assets/images/metrotile-shingle.png"
   },
   {
     "id": "metrotile-slate",
@@ -2637,7 +2717,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://knowledgebase.metrotile.co.uk/wp-content/uploads/2024/04/MUK-Brochure-Tile-Profiles.pdf",
     "sourceNote": "Official Metrotile tile profiles brochure / Slate product literature.",
-    "notes": "Official Metrotile tile profiles brochure / Slate product literature."
+    "notes": "Official Metrotile tile profiles brochure / Slate product literature.",
+    "image_file": "assets/images/metrotile-slate.png"
   },
   {
     "id": "metrotile-woodshake",
@@ -2669,7 +2750,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://knowledgebase.metrotile.co.uk/wp-content/uploads/2024/04/MUK-Brochure-Tile-Profiles.pdf",
     "sourceNote": "Official Metrotile tile profiles brochure.",
-    "notes": "Official Metrotile tile profiles brochure."
+    "notes": "Official Metrotile tile profiles brochure.",
+    "image_file": "assets/images/metrotile-woodshake.png"
   },
   {
     "id": "russell-roof-tiles-bute3",
@@ -2701,7 +2783,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.russellrooftiles.com/product/natural-range/bute3/",
     "sourceNote": "Official Russell product page and current technical PDF.",
-    "notes": "Official Russell product page and current technical PDF."
+    "notes": "Official Russell product page and current technical PDF.",
+    "image_file": "assets/images/russell-roof-tiles-bute3.png"
   },
   {
     "id": "russell-roof-tiles-cheviot",
@@ -2733,7 +2816,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.russellrooftiles.com/about-us-3/concrete/",
     "sourceNote": "Official Russell concrete range page; profiled tile with trapezoid roll.",
-    "notes": "Official Russell concrete range page; profiled tile with trapezoid roll."
+    "notes": "Official Russell concrete range page; profiled tile with trapezoid roll.",
+    "image_file": "assets/images/russell-roof-tiles-cheviot.png"
   },
   {
     "id": "russell-roof-tiles-double-roman",
@@ -2765,7 +2849,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.russellrooftiles.com/about-us-3/concrete/",
     "sourceNote": "Official Russell commercial range page; standard profiled roof tile with small round roll.",
-    "notes": "Official Russell commercial range page; standard profiled roof tile with small round roll."
+    "notes": "Official Russell commercial range page; standard profiled roof tile with small round roll.",
+    "image_file": "assets/images/russell-roof-tiles-double-roman.png"
   },
   {
     "id": "russell-roof-tiles-galloway",
@@ -2797,7 +2882,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.russellrooftiles.com/about-us-3/concrete/",
     "sourceNote": "Official Russell concrete range page; thin leading edge flat tile with slate/stone appearance.",
-    "notes": "Official Russell concrete range page; thin leading edge flat tile with slate/stone appearance."
+    "notes": "Official Russell concrete range page; thin leading edge flat tile with slate/stone appearance.",
+    "image_file": "assets/images/russell-roof-tiles-galloway.png"
   },
   {
     "id": "russell-roof-tiles-grampian",
@@ -2829,7 +2915,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.russellrooftiles.com/about-us-3/concrete/",
     "sourceNote": "Official Russell concrete range page; flat interlocking roof tile.",
-    "notes": "Official Russell concrete range page; flat interlocking roof tile."
+    "notes": "Official Russell concrete range page; flat interlocking roof tile.",
+    "image_file": "assets/images/russell-roof-tiles-grampian.png"
   },
   {
     "id": "russell-roof-tiles-highland",
@@ -2861,7 +2948,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.russellrooftiles.com/about-us-3/concrete/",
     "sourceNote": "Official Russell concrete range page; traditional flat roof tile with mock joint.",
-    "notes": "Official Russell concrete range page; traditional flat roof tile with mock joint."
+    "notes": "Official Russell concrete range page; traditional flat roof tile with mock joint.",
+    "image_file": "assets/images/russell-roof-tiles-highland.png"
   },
   {
     "id": "russell-roof-tiles-lothian",
@@ -2893,7 +2981,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.russellrooftiles.com/product/natural-range/lothian/",
     "sourceNote": "Product page for current profile data; typical-details PDF used for the 100mm-headlap gauge.",
-    "notes": "Product page for current profile data; typical-details PDF used for the 100mm-headlap gauge."
+    "notes": "Product page for current profile data; typical-details PDF used for the 100mm-headlap gauge.",
+    "image_file": "assets/images/russell-roof-tiles-lothian.png"
   },
   {
     "id": "russell-roof-tiles-moray",
@@ -2925,7 +3014,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.russellrooftiles.com/about-us-3/concrete/",
     "sourceNote": "Official Russell concrete range page; thin leading edge flat tile with riven finish.",
-    "notes": "Official Russell concrete range page; thin leading edge flat tile with riven finish."
+    "notes": "Official Russell concrete range page; thin leading edge flat tile with riven finish.",
+    "image_file": "assets/images/russell-roof-tiles-moray.png"
   },
   {
     "id": "russell-roof-tiles-pennine",
@@ -2957,7 +3047,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.russellrooftiles.com/product/commercial-range/pennine/",
     "sourceNote": "Official Russell product page and typical-details PDF.",
-    "notes": "Official Russell product page and typical-details PDF."
+    "notes": "Official Russell product page and typical-details PDF.",
+    "image_file": "assets/images/russell-roof-tiles-pennine.png"
   },
   {
     "id": "russell-roof-tiles-victorian-blend",
@@ -2989,7 +3080,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.russellrooftiles.com/product/regency-range/blends/victorian-blend/",
     "sourceNote": "Official Russell product page.",
-    "notes": "Official Russell product page."
+    "notes": "Official Russell product page.",
+    "image_file": "assets/images/russell-roof-tiles-victorian-blend.png"
   },
   {
     "id": "spicer-tiles-appledore-blend-nib-roof-tiles",
@@ -3021,7 +3113,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-appledore-blend-nib-roof-tiles.png"
   },
   {
     "id": "spicer-tiles-appledore-blend-peg-roof-tiles",
@@ -3053,7 +3146,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-appledore-blend-peg-roof-tiles.png"
   },
   {
     "id": "spicer-tiles-bethersden-blend-nib-roof-tiles",
@@ -3085,7 +3179,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-bethersden-blend-nib-roof-tiles.png"
   },
   {
     "id": "spicer-tiles-bethersden-blend-peg-roof-tiles",
@@ -3117,7 +3212,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-bethersden-blend-peg-roof-tiles.png"
   },
   {
     "id": "spicer-tiles-burmarsh-multi-nib-roof-tiles",
@@ -3149,7 +3245,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-burmarsh-multi-nib-roof-tiles.png"
   },
   {
     "id": "spicer-tiles-burmarsh-multi-peg-roof-tiles",
@@ -3181,7 +3278,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-burmarsh-multi-peg-roof-tiles.png"
   },
   {
     "id": "spicer-tiles-churchland-blend-nib-roof-tiles",
@@ -3213,7 +3311,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-churchland-blend-nib-roof-tiles.png"
   },
   {
     "id": "spicer-tiles-churchland-blend-peg-roof-tiles",
@@ -3245,7 +3344,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-churchland-blend-peg-roof-tiles.png"
   },
   {
     "id": "spicer-tiles-dark-antique-nib-roof-tiles",
@@ -3277,7 +3377,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-dark-antique-nib-roof-tiles.png"
   },
   {
     "id": "spicer-tiles-dark-antique-peg-roof-tiles",
@@ -3309,7 +3410,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-dark-antique-peg-roof-tiles.png"
   },
   {
     "id": "spicer-tiles-hanbury-handmade-roof-tile",
@@ -3341,7 +3443,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-hanbury-handmade-roof-tile.png"
   },
   {
     "id": "spicer-tiles-nib-roof-tile",
@@ -3373,7 +3476,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://spicertiles.co.uk/handmade-clay-roof-tiles/",
     "sourceNote": "Official Spicer dimensions based on handmade nib roof tile product pages.",
-    "notes": "Official Spicer dimensions based on handmade nib roof tile product pages."
+    "notes": "Official Spicer dimensions based on handmade nib roof tile product pages.",
+    "image_file": "assets/images/spicer-tiles-nib-roof-tile.png"
   },
   {
     "id": "spicer-tiles-peg-roof-tile",
@@ -3405,7 +3509,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://spicertiles.co.uk/product-category/handmade-clay-roof-tiles/handmade-peg-roof-tiles/",
     "sourceNote": "Official Spicer peg tile dimensions based on product pages.",
-    "notes": "Official Spicer peg tile dimensions based on product pages."
+    "notes": "Official Spicer peg tile dimensions based on product pages.",
+    "image_file": "assets/images/spicer-tiles-peg-roof-tile.png"
   },
   {
     "id": "spicer-tiles-tenterden-blend-peg-roof-tiles",
@@ -3437,7 +3542,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://spicertiles.co.uk/shop/",
     "sourceNote": "Official Spicer Tiles shop listing / product listing.",
-    "notes": "Official Spicer Tiles shop listing / product listing."
+    "notes": "Official Spicer Tiles shop listing / product listing.",
+    "image_file": "assets/images/spicer-tiles-tenterden-blend-peg-roof-tiles.png"
   },
   {
     "id": "traditional-clay-roof-tiles-developer-range",
@@ -3469,7 +3575,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://traditionalclayrooftiles.co.uk/products/clay-roof-tile/developer-range/",
     "sourceNote": "Official Traditional Clay Roof Tiles range page; same core dimensions as fixing guide.",
-    "notes": "Official Traditional Clay Roof Tiles range page; same core dimensions as fixing guide."
+    "notes": "Official Traditional Clay Roof Tiles range page; same core dimensions as fixing guide.",
+    "image_file": "assets/images/traditional-clay-roof-tiles-developer-range.png"
   },
   {
     "id": "traditional-clay-roof-tiles-kent-peg-tile",
@@ -3503,7 +3610,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://traditionalclayrooftiles.co.uk/traditional-brand-introduced-new-kent-clay-peg-tile-portfolio/",
     "sourceNote": "Official Traditional Clay Roof Tiles article introducing Kent peg tile.",
-    "notes": "Official Traditional Clay Roof Tiles article introducing Kent peg tile."
+    "notes": "Official Traditional Clay Roof Tiles article introducing Kent peg tile.",
+    "image_file": "assets/images/traditional-clay-roof-tiles-kent-peg-tile.png"
   },
   {
     "id": "traditional-clay-roof-tiles-manor-range",
@@ -3535,7 +3643,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://traditionalclayrooftiles.co.uk/products/clay-roof-tile/traditional-range/",
     "sourceNote": "Official Traditional Clay Roof Tiles range page; same core dimensions as fixing guide.",
-    "notes": "Official Traditional Clay Roof Tiles range page; same core dimensions as fixing guide."
+    "notes": "Official Traditional Clay Roof Tiles range page; same core dimensions as fixing guide.",
+    "image_file": "assets/images/traditional-clay-roof-tiles-manor-range.png"
   },
   {
     "id": "tudor-roof-tiles-handmade-peg-tile",
@@ -3567,7 +3676,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.tudorrooftiles.co.uk/portal/sr_spec.pdf",
     "sourceNote": "Official Tudor technical specification PDF.",
-    "notes": "Official Tudor technical specification PDF."
+    "notes": "Official Tudor technical specification PDF.",
+    "image_file": "assets/images/tudor-roof-tiles-handmade-peg-tile.png"
   },
   {
     "id": "tudor-roof-tiles-handmade-plain-tile",
@@ -3599,7 +3709,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.tudorrooftiles.co.uk/portal/sr_spec.pdf",
     "sourceNote": "Official Tudor technical specification PDF.",
-    "notes": "Official Tudor technical specification PDF."
+    "notes": "Official Tudor technical specification PDF.",
+    "image_file": "assets/images/tudor-roof-tiles-handmade-plain-tile.png"
   },
   {
     "id": "wienerberger-sandtoft-20-20-mk3",
@@ -3631,7 +3742,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.wienerberger.co.uk/content/dam/wienerberger/united-kingdom/marketing/documents-magazines/product-data-sheets/roof/UK_MKT_DOC_PDS_ROOF_Clay_20_20_MK3.pdf",
     "sourceNote": "Latest Wienerberger product technical sheet found (published March 2026).",
-    "notes": "Latest Wienerberger product technical sheet found (published March 2026)."
+    "notes": "Latest Wienerberger product technical sheet found (published March 2026).",
+    "image_file": "assets/images/wienerberger-sandtoft-20-20-mk3.png"
   },
   {
     "id": "wienerberger-sandtoft-actua",
@@ -3663,7 +3775,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-actua.png"
   },
   {
     "id": "wienerberger-sandtoft-arcadia",
@@ -3695,7 +3808,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-arcadia.png"
   },
   {
     "id": "wienerberger-sandtoft-cassius",
@@ -3727,7 +3841,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.wienerberger.co.uk/content/dam/wienerberger/united-kingdom/marketing/documents-magazines/product-data-sheets/roof/UK_MKT_DOC_PDS_ROOF_Cassius.pdf",
     "sourceNote": "Current Wienerberger product technical sheet (published January 2026).",
-    "notes": "Current Wienerberger product technical sheet (published January 2026)."
+    "notes": "Current Wienerberger product technical sheet (published January 2026).",
+    "image_file": "assets/images/wienerberger-sandtoft-cassius.png"
   },
   {
     "id": "wienerberger-sandtoft-danum-tle",
@@ -3761,7 +3876,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-danum-tle.png"
   },
   {
     "id": "wienerberger-sandtoft-double-pantile",
@@ -3793,7 +3909,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.wienerberger.co.uk/content/dam/wienerberger/united-kingdom/marketing/documents-magazines/product-data-sheets/roof/UK_MKT_DOC_PDS_ROOF_Double_Pantile1.pdf",
     "sourceNote": "Current Wienerberger product technical sheet (published February 2026).",
-    "notes": "Current Wienerberger product technical sheet (published February 2026)."
+    "notes": "Current Wienerberger product technical sheet (published February 2026).",
+    "image_file": "assets/images/wienerberger-sandtoft-double-pantile.png"
   },
   {
     "id": "wienerberger-sandtoft-double-roman",
@@ -3825,7 +3942,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-double-roman.png"
   },
   {
     "id": "wienerberger-sandtoft-dual-danum-tle",
@@ -3859,7 +3977,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-dual-danum-tle.png"
   },
   {
     "id": "wienerberger-sandtoft-lindum",
@@ -3891,7 +4010,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-lindum.png"
   },
   {
     "id": "wienerberger-sandtoft-modula",
@@ -3923,7 +4043,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-modula.png"
   },
   {
     "id": "wienerberger-sandtoft-neo-plus",
@@ -3958,7 +4079,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-neo-plus.png"
   },
   {
     "id": "wienerberger-sandtoft-old-english-pantile",
@@ -3990,7 +4112,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-old-english-pantile.png"
   },
   {
     "id": "wienerberger-sandtoft-olympus",
@@ -4022,7 +4145,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.wienerberger.co.uk/content/dam/wienerberger/united-kingdom/marketing/documents-magazines/product-data-sheets/roof/UK_MKT_DOC_PDS_ROOF_Olympus.pdf",
     "sourceNote": "Current Wienerberger product technical sheet (published January 2026).",
-    "notes": "Current Wienerberger product technical sheet (published January 2026)."
+    "notes": "Current Wienerberger product technical sheet (published January 2026).",
+    "image_file": "assets/images/wienerberger-sandtoft-olympus.png"
   },
   {
     "id": "wienerberger-sandtoft-rivius",
@@ -4054,7 +4178,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-rivius.png"
   },
   {
     "id": "wienerberger-sandtoft-shire-pantile",
@@ -4086,7 +4211,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-shire-pantile.png"
   },
   {
     "id": "wienerberger-sandtoft-vauban",
@@ -4118,7 +4244,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.wienerberger.co.uk/products/roof/systems-and-accessories/tile-ventilators.html",
     "sourceNote": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
-    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass."
+    "notes": "Product name surfaced on official Wienerberger/Sandtoft roof accessory compatibility page; dimensions not captured in this pass.",
+    "image_file": "assets/images/wienerberger-sandtoft-vauban.png"
   },
   {
     "id": "william-blyth-barco-old-english-pantiles",
@@ -4150,7 +4277,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.williamblyth.co.uk/tile/william-blyth-barco-pantile/",
     "sourceNote": "Official William Blyth product page.",
-    "notes": "Official William Blyth product page."
+    "notes": "Official William Blyth product page.",
+    "image_file": "assets/images/william-blyth-barco-old-english-pantiles.png"
   },
   {
     "id": "william-blyth-celtic-tiles",
@@ -4182,7 +4310,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.williamblyth.co.uk/tile/celtic-tiles/",
     "sourceNote": "Official William Blyth product page.",
-    "notes": "Official William Blyth product page."
+    "notes": "Official William Blyth product page.",
+    "image_file": "assets/images/william-blyth-celtic-tiles.png"
   },
   {
     "id": "william-blyth-classic-range-tiles",
@@ -4214,7 +4343,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.williamblyth.co.uk/tile/classic-range-tiles/",
     "sourceNote": "Official William Blyth product page.",
-    "notes": "Official William Blyth product page."
+    "notes": "Official William Blyth product page.",
+    "image_file": "assets/images/william-blyth-classic-range-tiles.png"
   },
   {
     "id": "william-blyth-corrugated-tiles",
@@ -4248,7 +4378,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.williamblyth.co.uk/roof-tiles/",
     "sourceNote": "Official William Blyth roof tiles page; rare triple-roll corrugated clay tile.",
-    "notes": "Official William Blyth roof tiles page; rare triple-roll corrugated clay tile."
+    "notes": "Official William Blyth roof tiles page; rare triple-roll corrugated clay tile.",
+    "image_file": "assets/images/william-blyth-corrugated-tiles.png"
   },
   {
     "id": "william-blyth-hand-made-plain-tiles",
@@ -4280,7 +4411,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.williamblyth.co.uk/tile/hand-made-plain-tiles/",
     "sourceNote": "Official William Blyth product page.",
-    "notes": "Official William Blyth product page."
+    "notes": "Official William Blyth product page.",
+    "image_file": "assets/images/william-blyth-hand-made-plain-tiles.png"
   },
   {
     "id": "william-blyth-handmade-traditional-sanded-plain-tiles",
@@ -4314,7 +4446,8 @@
     "specCompleteness": "partial",
     "sourceUrl": "https://www.williamblyth.co.uk/roof-tiles/",
     "sourceNote": "Official William Blyth roof tiles page; range listed in current offering.",
-    "notes": "Official William Blyth roof tiles page; range listed in current offering."
+    "notes": "Official William Blyth roof tiles page; range listed in current offering.",
+    "image_file": "assets/images/william-blyth-handmade-traditional-sanded-plain-tiles.png"
   },
   {
     "id": "william-blyth-lincoln-pantiles",
@@ -4346,7 +4479,8 @@
     "specCompleteness": "full",
     "sourceUrl": "https://www.williamblyth.co.uk/tile/lincoln-pantiles/",
     "sourceNote": "Official William Blyth product page.",
-    "notes": "Official William Blyth product page."
+    "notes": "Official William Blyth product page.",
+    "image_file": "assets/images/william-blyth-lincoln-pantiles.png"
   },
   {
     "id": "marley-modern",
@@ -4379,7 +4513,8 @@
     "coverageText": "9.9 tiles/m² at 75mm headlap, 10.7 tiles/m² at 100mm headlap",
     "weightText": "50 kg/m² at 75mm headlap",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/modern",
-    "notes": "Popular flat interlocking concrete tile with slate-like appearance. Broken bond laying pattern."
+    "notes": "Popular flat interlocking concrete tile with slate-like appearance. Broken bond laying pattern.",
+    "image_file": "assets/images/marley-modern.png"
   },
   {
     "id": "marley-plain-concrete",
@@ -4412,7 +4547,8 @@
     "coverageText": "60 tiles/m²",
     "weightText": null,
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/concrete-plain-tile",
-    "notes": "Classic concrete plain tile, 12mm thick. Available in multiple colours."
+    "notes": "Classic concrete plain tile, 12mm thick. Available in multiple colours.",
+    "image_file": "assets/images/marley-plain-concrete.png"
   },
   {
     "id": "marley-edgemere",
@@ -4446,7 +4582,8 @@
     "coverageText": "9.7 tiles/m² at 75mm headlap, 10.5 tiles/m² at 100mm headlap",
     "weightText": "44 kg/m² at 75mm headlap",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/edgemere",
-    "notes": "Thin 18mm leading edge — 40% thinner than standard interlocking tiles. Slate-like appearance."
+    "notes": "Thin 18mm leading edge — 40% thinner than standard interlocking tiles. Slate-like appearance.",
+    "image_file": "assets/images/marley-edgemere.png"
   },
   {
     "id": "marley-ludlow-plus",
@@ -4479,7 +4616,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/ludlow-plus",
-    "notes": "Small format interlocking tile, popular for re-roofing. Less wastage due to smaller size."
+    "notes": "Small format interlocking tile, popular for re-roofing. Less wastage due to smaller size.",
+    "image_file": "assets/images/marley-ludlow-plus.png"
   },
   {
     "id": "marley-double-roman",
@@ -4512,7 +4650,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/double-roman",
-    "notes": "Classic double Roman profile, iconic on UK roofs. Traditional appearance."
+    "notes": "Classic double Roman profile, iconic on UK roofs. Traditional appearance.",
+    "image_file": "assets/images/marley-double-roman.png"
   },
   {
     "id": "redland-plain-concrete",
@@ -4545,7 +4684,8 @@
     "coverageText": "60 tiles/m²",
     "weightText": "1.25 kg per tile",
     "sourceUrl": "https://www.jjroofingsupplies.co.uk/bmi-redland-concrete-plain-roof-tile/",
-    "notes": "13mm thick cross-cambered concrete plain tile. Available in 11 finishes."
+    "notes": "13mm thick cross-cambered concrete plain tile. Available in 11 finishes.",
+    "image_file": "assets/images/redland-plain-concrete.png"
   },
   {
     "id": "redland-rosemary-clay",
@@ -4579,7 +4719,8 @@
     "coverageText": "60 tiles/m² below 90°, 52 tiles/m² at 90°",
     "weightText": "1.304 kg per tile",
     "sourceUrl": "https://www.jjroofingsupplies.co.uk/bmi-redland-rosemary-clay-classic-plain-roof-tile-6501/",
-    "notes": "Classic clay plain tile in production since 1837. 13mm thick. Available in 8 colours."
+    "notes": "Classic clay plain tile in production since 1837. 13mm thick. Available in 8 colours.",
+    "image_file": "assets/images/redland-rosemary-clay.png"
   },
   {
     "id": "redland-49",
@@ -4612,7 +4753,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.roofingoutlet.co.uk/products/124-redland-49-tiles",
-    "notes": "Economical interlocking concrete tile, used on UK roofs for over 50 years. Similar to Sandtoft Standard Pattern and Marley Ludlow Plus."
+    "notes": "Economical interlocking concrete tile, used on UK roofs for over 50 years. Similar to Sandtoft Standard Pattern and Marley Ludlow Plus.",
+    "image_file": "assets/images/redland-49.png"
   },
   {
     "id": "sandtoft-2020-clay",
@@ -4645,7 +4787,8 @@
     "coverageText": "22.7 tiles/m² at 100mm headlap, 20.5 tiles/m² at 75mm headlap",
     "weightText": "2.0 kg per tile",
     "sourceUrl": "https://www.jjroofingsupplies.co.uk/sandtoft-20-20-clay-interlocking-plain-tile/",
-    "notes": "Humber clay interlocking plain tile. Low pitch performance down to 15°. Broken bond only."
+    "notes": "Humber clay interlocking plain tile. Low pitch performance down to 15°. Broken bond only.",
+    "image_file": "assets/images/sandtoft-2020-clay.png"
   },
   {
     "id": "sandtoft-standard-pattern",
@@ -4679,7 +4822,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.roofingoutlet.co.uk/products/453-sandtoft-standard-pattern-tiles",
-    "notes": "Classic 15\" x 9\" concrete interlocking tile. One of the most widely used tiles in the UK. Similar to Redland 49 and Marley Ludlow Plus."
+    "notes": "Classic 15\" x 9\" concrete interlocking tile. One of the most widely used tiles in the UK. Similar to Redland 49 and Marley Ludlow Plus.",
+    "image_file": "assets/images/sandtoft-standard-pattern.png"
   },
   {
     "id": "marley-wessex",
@@ -4712,7 +4856,8 @@
     "coverageText": "9.7 tiles/m² at 75mm headlap, 10.4 tiles/m² at 100mm headlap",
     "weightText": "50 kg/m² at 75mm headlap",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/wessex",
-    "notes": "Large format low pitch tile with clean minimalist lines. 29mm thick. Ideal for extensions and low pitch roofs."
+    "notes": "Large format low pitch tile with clean minimalist lines. 29mm thick. Ideal for extensions and low pitch roofs.",
+    "image_file": "assets/images/marley-wessex.png"
   },
   {
     "id": "marley-mendip",
@@ -4745,7 +4890,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/mendip-double-pantile",
-    "notes": "Double pantile profile with elegant flowing lines. Mendip 12.5 variant can go as low as 12.5°."
+    "notes": "Double pantile profile with elegant flowing lines. Mendip 12.5 variant can go as low as 12.5°.",
+    "image_file": "assets/images/marley-mendip.png"
   },
   {
     "id": "marley-acme-single-camber-clay",
@@ -4779,7 +4925,8 @@
     "coverageText": "60 tiles/m²",
     "weightText": "1.05 kg per tile",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/clay-roof-tiles/acme-single-camber-plain-tile",
-    "notes": "Machine made natural clay plain tile. 11mm thick. Market leading 30° minimum pitch. Available in 11 colours."
+    "notes": "Machine made natural clay plain tile. 11mm thick. Market leading 30° minimum pitch. Available in 11 colours.",
+    "image_file": "assets/images/marley-acme-single-camber-clay.png"
   },
   {
     "id": "redland-regent",
@@ -4812,7 +4959,8 @@
     "coverageText": "10.5 tiles/m² at 318mm gauge, 9.7 tiles/m² at 343mm gauge",
     "weightText": "49 kg/m² at 318mm gauge",
     "sourceUrl": "https://www.jjroofingsupplies.co.uk/bmi-redland-regent-roof-tile-3401/",
-    "notes": "High bold roll profile — striking wavy effect. Very low minimum pitch of 12.5°, ideal for extensions and lean-to roofs."
+    "notes": "High bold roll profile — striking wavy effect. Very low minimum pitch of 12.5°, ideal for extensions and lean-to roofs.",
+    "image_file": "assets/images/redland-regent.png"
   },
   {
     "id": "redland-grovebury",
@@ -4845,7 +4993,8 @@
     "coverageText": "10.5 tiles/m² at 318mm gauge, 9.7 tiles/m² at 343mm gauge",
     "weightText": "51 kg/m² at 318mm gauge",
     "sourceUrl": "https://www.jjroofingsupplies.co.uk/bmi-redland-grovebury-roof-tile-5741/",
-    "notes": "Double pantile profile with gentle flowing lines. Faster and easier to lay than traditional single pantiles."
+    "notes": "Double pantile profile with gentle flowing lines. Faster and easier to lay than traditional single pantiles.",
+    "image_file": "assets/images/redland-grovebury.png"
   },
   {
     "id": "redland-renown",
@@ -4878,7 +5027,8 @@
     "coverageText": "10.5 tiles/m² at 318mm gauge, 9.7 tiles/m² at 343mm gauge",
     "weightText": "46 kg/m² at 318mm gauge",
     "sourceUrl": "https://ravenroofingsupplies.co.uk/product/bmi-redland-renown/",
-    "notes": "Large format low profile concrete interlocking tile. 26mm thick. Neat square-edged profile. Larger version of the Redland 49."
+    "notes": "Large format low profile concrete interlocking tile. 26mm thick. Neat square-edged profile. Larger version of the Redland 49.",
+    "image_file": "assets/images/redland-renown.png"
   },
   {
     "id": "redland-mini-stonewold",
@@ -4911,7 +5061,8 @@
     "coverageText": "10.7 slates/m² at 318mm gauge, 9.9 slates/m² at 343mm gauge",
     "weightText": "5.18 kg per tile",
     "sourceUrl": "https://www.jjroofingsupplies.co.uk/bmi-redland-mini-stonewold-roof-tile-4261/",
-    "notes": "Economical concrete slate. 31mm thick. Must be laid broken bond. 60 year life expectancy."
+    "notes": "Economical concrete slate. 31mm thick. Must be laid broken bond. 60 year life expectancy.",
+    "image_file": "assets/images/redland-mini-stonewold.png"
   },
   {
     "id": "redland-delta",
@@ -4943,7 +5094,8 @@
     "coverageText": "8.2 tiles/m²",
     "weightText": null,
     "sourceUrl": "https://www.roofingsuperstore.co.uk/product/repco-reclaimed-redland-delta-roof-tiles.html",
-    "notes": "Discontinued tile (made 1960s-1999). Large format concrete interlocking tile. Often seen alongside Stonewold."
+    "notes": "Discontinued tile (made 1960s-1999). Large format concrete interlocking tile. Often seen alongside Stonewold.",
+    "image_file": "assets/images/redland-delta.png"
   },
   {
     "id": "forticrete-sl8",
@@ -4976,7 +5128,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.jjroofingsupplies.co.uk/forticrete-sl8-roof-tile/",
-    "notes": "Concrete slate effect tile with 30% reduction in embodied carbon. Hanging length 396mm."
+    "notes": "Concrete slate effect tile with 30% reduction in embodied carbon. Hanging length 396mm.",
+    "image_file": "assets/images/forticrete-sl8.png"
   },
   {
     "id": "forticrete-gemini",
@@ -5009,7 +5162,8 @@
     "coverageText": "16.6 tiles/m² (80mm headlap), 16.3 tiles/m² (75mm headlap)",
     "weightText": null,
     "sourceUrl": "https://www.roofingsuperstore.co.uk/product/forticrete-gemini-interlocking-concrete-roof-tile.html",
-    "notes": "Double camber interlocking plain tile. 15mm thick. 40% reduction in CO2 vs traditional tiles. Available in 12 colours."
+    "notes": "Double camber interlocking plain tile. 15mm thick. 40% reduction in CO2 vs traditional tiles. Available in 12 colours.",
+    "image_file": "assets/images/forticrete-gemini.png"
   },
   {
     "id": "forticrete-centurion",
@@ -5041,7 +5195,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.jjroofingsupplies.co.uk/pitched-roofing/roof-tiles/forticrete-roof-tiles/",
-    "notes": "Very low pitch tile — down to 12.5°. Popular for garages and extensions. Available in autumn, slate grey, red and brown."
+    "notes": "Very low pitch tile — down to 12.5°. Popular for garages and extensions. Available in autumn, slate grey, red and brown.",
+    "image_file": "assets/images/forticrete-centurion.png"
   },
   {
     "id": "forticrete-plain-concrete",
@@ -5073,7 +5228,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.roofingsuperstore.co.uk/product/forticrete-concrete-plain-tile.html",
-    "notes": "Through-coloured concrete plain tile. Two nail holes. Improved air circulation design."
+    "notes": "Through-coloured concrete plain tile. Two nail holes. Improved air circulation design.",
+    "image_file": "assets/images/forticrete-plain-concrete.png"
   },
   {
     "id": "dreadnought-plain-clay",
@@ -5106,7 +5262,8 @@
     "coverageText": "60 tiles/m² at 100mm gauge, 53 tiles/m² at 115mm gauge",
     "weightText": "1.19 kg per tile, 71 kg/m²",
     "sourceUrl": "https://www.dreadnought-tiles.co.uk/Dreadnought-Technical-Data",
-    "notes": "200-year heritage Etruria Marl clay tile from Staffordshire. Natural colours from kiln atmosphere — no artificial stains. Tested to 400+ freeze-thaw cycles."
+    "notes": "200-year heritage Etruria Marl clay tile from Staffordshire. Natural colours from kiln atmosphere — no artificial stains. Tested to 400+ freeze-thaw cycles.",
+    "image_file": "assets/images/dreadnought-plain-clay.png"
   },
   {
     "id": "penrhyn-welsh-slate-500x300",
@@ -5141,7 +5298,8 @@
     "coverageText": null,
     "weightText": "Capital 5.5mm, County 7mm, Celtic 9mm",
     "sourceUrl": "https://www.welshslate.com/roofing/penrhyn-welsh-slate-roofing/",
-    "notes": "Heather blue/purple natural Welsh slate from Penrhyn Quarry, Snowdonia. 100 year guarantee. Three grades: Capital (5.5mm), County (7mm), Celtic (9mm)."
+    "notes": "Heather blue/purple natural Welsh slate from Penrhyn Quarry, Snowdonia. 100 year guarantee. Three grades: Capital (5.5mm), County (7mm), Celtic (9mm).",
+    "image_file": "assets/images/penrhyn-welsh-slate-500x300.png"
   },
   {
     "id": "penrhyn-welsh-slate-400x250",
@@ -5174,7 +5332,8 @@
     "coverageText": null,
     "weightText": "Capital 5.5mm, County 7mm, Celtic 9mm",
     "sourceUrl": "https://www.welshslate.com/roofing/penrhyn-welsh-slate-roofing/",
-    "notes": "Heather blue/purple natural Welsh slate. Medium format. 100 year guarantee."
+    "notes": "Heather blue/purple natural Welsh slate. Medium format. 100 year guarantee.",
+    "image_file": "assets/images/penrhyn-welsh-slate-400x250.png"
   },
   {
     "id": "penrhyn-welsh-slate-300x200",
@@ -5207,7 +5366,8 @@
     "coverageText": null,
     "weightText": "Capital 5.5mm, County 7mm, Celtic 9mm",
     "sourceUrl": "https://www.welshslate.com/roofing/penrhyn-welsh-slate-roofing/",
-    "notes": "Small format Penrhyn heather blue Welsh slate. Used for intricate details and small roofs."
+    "notes": "Small format Penrhyn heather blue Welsh slate. Used for intricate details and small roofs.",
+    "image_file": "assets/images/penrhyn-welsh-slate-300x200.png"
   },
   {
     "id": "ffestiniog-welsh-slate-500x250",
@@ -5240,7 +5400,8 @@
     "coverageText": null,
     "weightText": "Capital 5.5mm, County 7mm, Celtic 9mm",
     "sourceUrl": "https://www.welshslate.com/roofing/ffestiniog-welsh-slate-roofing/",
-    "notes": "Blue-grey natural Welsh slate with smooth riven texture. From Ffestiniog Quarry, in production since 1818. 100 year guarantee."
+    "notes": "Blue-grey natural Welsh slate with smooth riven texture. From Ffestiniog Quarry, in production since 1818. 100 year guarantee.",
+    "image_file": "assets/images/ffestiniog-welsh-slate-500x250.png"
   },
   {
     "id": "ffestiniog-welsh-slate-400x250",
@@ -5273,7 +5434,8 @@
     "coverageText": null,
     "weightText": "Capital 5.5mm, County 7mm, Celtic 9mm",
     "sourceUrl": "https://www.welshslate.com/roofing/ffestiniog-welsh-slate-roofing/",
-    "notes": "Medium format Ffestiniog blue-grey Welsh slate. Smooth riven texture, elegant appearance."
+    "notes": "Medium format Ffestiniog blue-grey Welsh slate. Smooth riven texture, elegant appearance.",
+    "image_file": "assets/images/ffestiniog-welsh-slate-400x250.png"
   },
   {
     "id": "sandtoft-humber-plain-clay",
@@ -5306,7 +5468,8 @@
     "coverageText": "60 tiles/m²",
     "weightText": null,
     "sourceUrl": "https://www.roofingsuperstore.co.uk/product/sandtoft-humber-plain-clay-roof-tile-flanders.html",
-    "notes": "Humber clay plain tile from Sandtoft. Traditional plain tile profile."
+    "notes": "Humber clay plain tile from Sandtoft. Traditional plain tile profile.",
+    "image_file": "assets/images/sandtoft-humber-plain-clay.png"
   },
   {
     "id": "marley-anglia-clay",
@@ -5339,7 +5502,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/clay-roof-tiles/",
-    "notes": "Traditional clay S-curve pantile. Easy to fit with open gauge design and thin leading edge."
+    "notes": "Traditional clay S-curve pantile. Easy to fit with open gauge design and thin leading edge.",
+    "image_file": "assets/images/marley-anglia-clay.png"
   },
   {
     "id": "marley-canterbury-handmade",
@@ -5372,7 +5536,8 @@
     "coverageText": "60 tiles/m²",
     "weightText": null,
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/clay-roof-tiles/",
-    "notes": "Traditionally handcrafted clay plain tile. Unique mellow appearance and granular texture. Each tile has natural irregularities."
+    "notes": "Traditionally handcrafted clay plain tile. Unique mellow appearance and granular texture. Each tile has natural irregularities.",
+    "image_file": "assets/images/marley-canterbury-handmade.png"
   },
   {
     "id": "redland-cambrian-slate",
@@ -5405,7 +5570,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
-    "notes": "Made from over 60% recycled slate. Minimum pitch 15°. Natural slate appearance with proven durability."
+    "notes": "Made from over 60% recycled slate. Minimum pitch 15°. Natural slate appearance with proven durability.",
+    "image_file": "assets/images/redland-cambrian-slate.png"
   },
   {
     "id": "marley-ludlow-major",
@@ -5438,7 +5604,8 @@
     "coverageText": "9.8 tiles/m² at 75mm headlap, 10.6 tiles/m² at 100mm headlap",
     "weightText": "45 kg/m² at 75mm headlap",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/ludlow-major",
-    "notes": "Large format interlocking tile with classic square profile. 25mm thick. Made from ~50% recycled materials. Popular for refurbishments."
+    "notes": "Large format interlocking tile with classic square profile. 25mm thick. Made from ~50% recycled materials. Popular for refurbishments.",
+    "image_file": "assets/images/marley-ludlow-major.png"
   },
   {
     "id": "marley-bold-roll",
@@ -5471,7 +5638,8 @@
     "coverageText": "10.5 tiles/m² at 75mm headlap",
     "weightText": "5.2 kg per tile",
     "sourceUrl": "https://shop.thereclaimedcompany.co.uk/home/product/marley-bold-roll/",
-    "notes": "Deep rolled interlocking profile with strongly undulating surface. Mediterranean pantile look. Now discontinued — widely seen on UK roofs."
+    "notes": "Deep rolled interlocking profile with strongly undulating surface. Mediterranean pantile look. Now discontinued — widely seen on UK roofs.",
+    "image_file": "assets/images/marley-bold-roll.png"
   },
   {
     "id": "redland-50-double-roman",
@@ -5505,7 +5673,8 @@
     "coverageText": "9.69 tiles/m²",
     "weightText": "4.47 kg per tile",
     "sourceUrl": "https://www.jjroofingsupplies.co.uk/bmi-redland-50-double-roman-roof-tile-2201/",
-    "notes": "Classic double Roman profile — graceful roll and subtle pans. 51mm thick. Available in 9 colours."
+    "notes": "Classic double Roman profile — graceful roll and subtle pans. 51mm thick. Available in 9 colours.",
+    "image_file": "assets/images/redland-50-double-roman.png"
   },
   {
     "id": "redland-fenland-pantile",
@@ -5539,7 +5708,8 @@
     "coverageText": "17.8 tiles/m² at 281mm gauge, 16.3 tiles/m² at 306mm gauge",
     "weightText": "2.91 tonnes per 1000",
     "sourceUrl": "https://www.hgroofingsupplies.co.uk/products/redland-fenland-pantile-concrete-roof-tile-smooth-tudor-brown",
-    "notes": "Replaced the Norfolk Pantile. Classic single pantile shape in modern interlocking concrete. 24mm thick. Characteristic of South East and East Anglia."
+    "notes": "Replaced the Norfolk Pantile. Classic single pantile shape in modern interlocking concrete. 24mm thick. Characteristic of South East and East Anglia.",
+    "image_file": "assets/images/redland-fenland-pantile.png"
   },
   {
     "id": "redland-stonewold-mk2",
@@ -5573,7 +5743,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.sigroofing.co.uk/redland-2/",
-    "notes": "Discontinued large format flat profile concrete interlocking slate. NOT interchangeable with Mk1. Very widely used on UK roofs 1970s-2000s."
+    "notes": "Discontinued large format flat profile concrete interlocking slate. NOT interchangeable with Mk1. Very widely used on UK roofs 1970s-2000s.",
+    "image_file": "assets/images/redland-stonewold-mk2.png"
   },
   {
     "id": "sandtoft-shire-pantile",
@@ -5606,7 +5777,8 @@
     "coverageText": "16.4 tiles/m² at 75mm headlap",
     "weightText": "45.9 kg/m², 2.8 kg per tile",
     "sourceUrl": "https://www.wienerberger.co.uk/product-range/roof/shire-pantile-brown.html",
-    "notes": "Classic pantile proportions in interlocking concrete. Same size as traditional clay pantiles. Available in 5 smooth and 2 sandfaced finishes."
+    "notes": "Classic pantile proportions in interlocking concrete. Same size as traditional clay pantiles. Available in 5 smooth and 2 sandfaced finishes.",
+    "image_file": "assets/images/sandtoft-shire-pantile.png"
   },
   {
     "id": "sandtoft-interlocking-pantile",
@@ -5639,7 +5811,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.jjroofingsupplies.co.uk/sandtoft-interlocking-double-pantile/",
-    "notes": "Large format interlocking concrete pantile. Low minimum pitch of 15° with 100mm headlap."
+    "notes": "Large format interlocking concrete pantile. Low minimum pitch of 15° with 100mm headlap.",
+    "image_file": "assets/images/sandtoft-interlocking-pantile.png"
   },
   {
     "id": "sandtoft-old-english-pantile-clay",
@@ -5672,7 +5845,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.wienerberger.co.uk/product-range/roof/old-english-natural-red.html",
-    "notes": "Traditional clay pantile with S-curve profile. Available in Antique Slate, Flanders, Tuscan and Natural Red."
+    "notes": "Traditional clay pantile with S-curve profile. Available in Antique Slate, Flanders, Tuscan and Natural Red.",
+    "image_file": "assets/images/sandtoft-old-english-pantile-clay.png"
   },
   {
     "id": "sandtoft-calderdale-concrete",
@@ -5705,7 +5879,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.wienerberger.co.uk/",
-    "notes": "Cost-effective concrete slate-appearance tile with interlocking design. Dual Calderdale variant has central groove for small-format slate appearance."
+    "notes": "Cost-effective concrete slate-appearance tile with interlocking design. Dual Calderdale variant has central groove for small-format slate appearance.",
+    "image_file": "assets/images/sandtoft-calderdale-concrete.png"
   },
   {
     "id": "spanish-slate-500x250",
@@ -5740,7 +5915,8 @@
     "coverageText": "approx. 18.8 slates/m² at 75mm lap",
     "weightText": "35 kg/m² at 75mm lap (4-5mm thick)",
     "sourceUrl": "https://www.cupapizarras.com/uk/",
-    "notes": "Most common UK slate size — accounts for ~80% of English/Welsh slate use. Dark grey/blue-black. 4-5mm thick. Quarried in north-west Spain. BS EN 12326 compliant."
+    "notes": "Most common UK slate size — accounts for ~80% of English/Welsh slate use. Dark grey/blue-black. 4-5mm thick. Quarried in north-west Spain. BS EN 12326 compliant.",
+    "image_file": "assets/images/spanish-slate-500x250.png"
   },
   {
     "id": "spanish-slate-600x300",
@@ -5774,7 +5950,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.cupapizarras.com/uk/",
-    "notes": "Larger format — better performance in high exposure areas and shallower pitches. Common in London, Manchester and surrounding areas. Holed at 115mm as standard."
+    "notes": "Larger format — better performance in high exposure areas and shallower pitches. Common in London, Manchester and surrounding areas. Holed at 115mm as standard.",
+    "image_file": "assets/images/spanish-slate-600x300.png"
   },
   {
     "id": "spanish-slate-400x250",
@@ -5807,7 +5984,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.cupapizarras.com/uk/",
-    "notes": "Common in Scotland and northern England. Similar to the 16x10 imperial size previously from Welsh quarries. 4-5mm thick."
+    "notes": "Common in Scotland and northern England. Similar to the 16x10 imperial size previously from Welsh quarries. 4-5mm thick.",
+    "image_file": "assets/images/spanish-slate-400x250.png"
   },
   {
     "id": "spanish-slate-400x200",
@@ -5841,7 +6019,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.cupapizarras.com/uk/",
-    "notes": "Smaller format used in northern regions. Known as 'Lady' in traditional imperial sizing. 4-5mm thick."
+    "notes": "Smaller format used in northern regions. Known as 'Lady' in traditional imperial sizing. 4-5mm thick.",
+    "image_file": "assets/images/spanish-slate-400x200.png"
   },
   {
     "id": "spanish-slate-500x300",
@@ -5874,7 +6053,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.cupapizarras.com/uk/",
-    "notes": "Wider format for better coverage in high rainfall areas. 4-5mm thick Spanish natural slate."
+    "notes": "Wider format for better coverage in high rainfall areas. 4-5mm thick Spanish natural slate.",
+    "image_file": "assets/images/spanish-slate-500x300.png"
   },
   {
     "id": "chinese-slate-500x250",
@@ -5907,7 +6087,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.roofingslatedirect.com/products/chinese-smooth-slate",
-    "notes": "Dark grey/blue-black natural slate. 4-6mm thick. Pre-holed, chamfered edges. Complies with BS EN 12326-1:2014 S1, W1, T1. Cost-effective alternative to Welsh/Spanish slate."
+    "notes": "Dark grey/blue-black natural slate. 4-6mm thick. Pre-holed, chamfered edges. Complies with BS EN 12326-1:2014 S1, W1, T1. Cost-effective alternative to Welsh/Spanish slate.",
+    "image_file": "assets/images/chinese-slate-500x250.png"
   },
   {
     "id": "chinese-slate-400x200",
@@ -5939,7 +6120,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.roofingslatedirect.com/products/chinese-smooth-slate",
-    "notes": "Smaller format Chinese natural slate. 4-6mm thick. Dark grey colour. BS EN 12326 compliant."
+    "notes": "Smaller format Chinese natural slate. 4-6mm thick. Dark grey colour. BS EN 12326 compliant.",
+    "image_file": "assets/images/chinese-slate-400x200.png"
   },
   {
     "id": "chinese-slate-600x300",
@@ -5972,7 +6154,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.roofingslatedirect.com/products/chinese-smooth-slate",
-    "notes": "Large format Chinese natural slate. 4-6mm thick. Good for shallow pitches and high exposure areas."
+    "notes": "Large format Chinese natural slate. 4-6mm thick. Good for shallow pitches and high exposure areas.",
+    "image_file": "assets/images/chinese-slate-600x300.png"
   },
   {
     "id": "marley-double-roman-concrete",
@@ -6005,7 +6188,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/double-roman",
-    "notes": "Iconic double Roman profile — seen on UK roofs for 2000 years. Modern concrete interlocking version. Smooth finish available."
+    "notes": "Iconic double Roman profile — seen on UK roofs for 2000 years. Modern concrete interlocking version. Smooth finish available.",
+    "image_file": "assets/images/marley-double-roman-concrete.png"
   },
   {
     "id": "redland-heathland",
@@ -6038,7 +6222,8 @@
     "coverageText": "60 tiles/m²",
     "weightText": null,
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
-    "notes": "Concrete plain tile with natural weathering appearance combining clay look with machine-made durability."
+    "notes": "Concrete plain tile with natural weathering appearance combining clay look with machine-made durability.",
+    "image_file": "assets/images/redland-heathland.png"
   },
   {
     "id": "cwt-y-bugail-welsh-slate-500x250",
@@ -6072,7 +6257,8 @@
     "coverageText": null,
     "weightText": "Capital 5.5mm, County 7mm, Celtic 9mm",
     "sourceUrl": "https://www.welshslate.com/roofing/",
-    "notes": "Dark blue-grey Welsh slate from Cwt-y-Bugail quarry, Blaenau Ffestiniog. Distinctive banding (relic bedding). Formed from Ordovician slate beds 470 million years ago. 100 year guarantee."
+    "notes": "Dark blue-grey Welsh slate from Cwt-y-Bugail quarry, Blaenau Ffestiniog. Distinctive banding (relic bedding). Formed from Ordovician slate beds 470 million years ago. 100 year guarantee.",
+    "image_file": "assets/images/cwt-y-bugail-welsh-slate-500x250.png"
   },
   {
     "id": "cwt-y-bugail-welsh-slate-400x250",
@@ -6104,7 +6290,8 @@
     "coverageText": null,
     "weightText": "Capital 5.5mm, County 7mm, Celtic 9mm",
     "sourceUrl": "https://www.welshslate.com/roofing/",
-    "notes": "Medium format dark blue-grey Welsh natural slate. Three grades: Capital (5.5mm), County (7mm), Celtic (9mm)."
+    "notes": "Medium format dark blue-grey Welsh natural slate. Three grades: Capital (5.5mm), County (7mm), Celtic (9mm).",
+    "image_file": "assets/images/cwt-y-bugail-welsh-slate-400x250.png"
   },
   {
     "id": "marley-riven-edgemere",
@@ -6137,7 +6324,8 @@
     "coverageText": "9.7 tiles/m² at 75mm headlap",
     "weightText": "44 kg/m²",
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/edgemere",
-    "notes": "Edgemere with randomised riven texture — closely resembles natural slate. 18mm thin leading edge. 40% thinner than standard interlocking tiles."
+    "notes": "Edgemere with randomised riven texture — closely resembles natural slate. 18mm thin leading edge. 40% thinner than standard interlocking tiles.",
+    "image_file": "assets/images/marley-riven-edgemere.png"
   },
   {
     "id": "sandtoft-britlock",
@@ -6170,7 +6358,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.wienerberger.co.uk/",
-    "notes": "Lightweight interlocking slate made from over 80% recycled natural slate waste. Labour efficient."
+    "notes": "Lightweight interlocking slate made from over 80% recycled natural slate waste. Labour efficient.",
+    "image_file": "assets/images/sandtoft-britlock.png"
   },
   {
     "id": "marley-mendip-125",
@@ -6203,7 +6392,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.marley.co.uk/roof-tiles/concrete-roof-tiles/mendip-double-pantile",
-    "notes": "Ultra low pitch variant of Mendip — minimum 12.5°. Ideal for single storey extensions and refurbishments. Same appearance as standard Mendip on the roof."
+    "notes": "Ultra low pitch variant of Mendip — minimum 12.5°. Ideal for single storey extensions and refurbishments. Same appearance as standard Mendip on the roof.",
+    "image_file": "assets/images/marley-mendip-125.png"
   },
   {
     "id": "redland-landmark-double-roman",
@@ -6236,7 +6426,8 @@
     "coverageText": null,
     "weightText": null,
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
-    "notes": "Redland's Landmark range Double Roman profile. Classic interlocking double Roman concrete tile."
+    "notes": "Redland's Landmark range Double Roman profile. Classic interlocking double Roman concrete tile.",
+    "image_file": "assets/images/redland-landmark-double-roman.png"
   },
   {
     "id": "redland-richmond-10",
@@ -6270,6 +6461,7 @@
     "coverageText": "10 slates/m²",
     "weightText": null,
     "sourceUrl": "https://www.bmigroup.com/uk/full-redland-range/",
-    "notes": "10 slates/m² with unique single annular ring-shank fixing. Thin leading edge. MockBond variant has central bond line giving appearance of two smaller slates."
+    "notes": "10 slates/m² with unique single annular ring-shank fixing. Thin leading edge. MockBond variant has central bond line giving appearance of two smaller slates.",
+    "image_file": "assets/images/redland-richmond-10.png"
   }
 ]
