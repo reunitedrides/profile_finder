@@ -39,8 +39,10 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await FCMService.init();
-  // Always try silent sign-in — Firebase Auth restores asynchronously
-  // so currentUser may be null on cold start even if user was signed in
+  // Wait for Firebase Auth to restore cached session before showing UI
+  // This prevents the brief "signed out" flash on cold start
+  await FirebaseAuth.instance.authStateChanges().first;
+  // Silently restore Google Sign-In token alongside Firebase session
   unawaited(GoogleSignIn(
     clientId: Platform.isIOS
       ? '899172571973-b5lc827jfa1fr5r01hiv1v69h9gmm0jv.apps.googleusercontent.com'
