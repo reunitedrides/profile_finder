@@ -2159,7 +2159,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
       final entries = selectedHistory.map((i) => _history[i]).toList();
       final Uint8List pdfBytes = await PdfService.generateHistoryPdf(entries);
       final String filename = 'roof_history_${DateTime.now().millisecondsSinceEpoch}.pdf';
-      await SharePlus.instance.share(ShareParams(files: [XFile.fromData(XFile.fromData(pdfBytes, name: filename, mimeType: 'application/pdf'))], subject: 'Roof Profile History', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
+      await SharePlus.instance.share(ShareParams(
+        files: [XFile.fromData(pdfBytes, name: filename, mimeType: 'application/pdf')],
+        subject: 'Roof Profile History',
+        sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+      ));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: $e'), backgroundColor: Colors.red));
     }
@@ -2438,7 +2442,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               final pdfBytes = await PdfService.generateHistoryPdf([entry]);
                               final safeName = p.displayTitle.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
                               final safeDate = DateTime.now().millisecondsSinceEpoch.toString();
-                              await SharePlus.instance.share(ShareParams(files: [XFile.fromData(XFile.fromData(pdfBytes, name: '${safeName}_$safeDate.pdf', mimeType: 'application/pdf'))], subject: 'Roof Profile — ${p.displayTitle}', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
+                              await SharePlus.instance.share(ShareParams(
+                                files: [XFile.fromData(pdfBytes, name: '${safeName}_$safeDate.pdf', mimeType: 'application/pdf')],
+                                subject: 'Roof Profile — ${p.displayTitle}',
+                                sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+                              ));
                             } catch (e) {
                               if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: \$e'), backgroundColor: Colors.red));
                             }
@@ -4547,7 +4555,11 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
         type: 'Industrial',
         content: sb.toString(),
       );
-      await SharePlus.instance.share(ShareParams(files: [XFile.fromData(XFile.fromData(pdfBytes, name: 'industrial_list_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf'))], subject: 'Industrial Material List', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
+      await SharePlus.instance.share(ShareParams(
+        files: [XFile.fromData(pdfBytes, name: 'industrial_list_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf')],
+        subject: 'Industrial Material List',
+        sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+      ));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: $e'), backgroundColor: Colors.red));
     }
@@ -5188,7 +5200,11 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
         type: 'Domestic',
         content: sb.toString(),
       );
-      await SharePlus.instance.share(ShareParams(files: [XFile.fromData(XFile.fromData(pdfBytes, name: 'domestic_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf'))], subject: 'Domestic Material List', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
+      await SharePlus.instance.share(ShareParams(
+        files: [XFile.fromData(pdfBytes, name: 'domestic_${DateTime.now().millisecondsSinceEpoch}.pdf', mimeType: 'application/pdf')],
+        subject: 'Domestic Material List',
+        sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+      ));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: $e'), backgroundColor: Colors.red));
     }
@@ -6846,7 +6862,10 @@ class _SavedRafterScreenState extends State<SavedRafterScreen> {
           backgroundColor: Colors.green.shade700));
       } else {
         final backup = await RafterSaveService.exportBackup();
-        await SharePlus.instance.share(ShareParams(files: [XFile.fromData(XFile.fromData(utf8.encode(backup), name: 'rafter_backup_${DateTime.now().millisecondsSinceEpoch}.json', mimeType: 'application/json'))], subject: 'Rafter Calculations Backup', sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
+        await SharePlus.instance.share(ShareParams(
+          files: [XFile.fromData(utf8.encode(backup), name: 'rafter_backup_${DateTime.now().millisecondsSinceEpoch}.json', mimeType: 'application/json')],
+          subject: 'Rafter Calculations Backup',
+          sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)));
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Backup failed: $e'), backgroundColor: Colors.red));
@@ -7246,14 +7265,15 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         final flat = _calculateFlatArea()!;
-                        SharePlus.instance.share(ShareParams(text:
-                          '📐 Perimeter Area Calculation\n'
+                        SharePlus.instance.share(ShareParams(
+                          text: '📐 Perimeter Area Calculation\n'
                           '${_walls.length} walls\n'
-                          'Flat Area: ${flat.toStringAsFixed(2, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1)))} m²\n'
+                          'Flat Area: ${flat.toStringAsFixed(2)} m²\n'
                           'Pitched Area: ${(_pitchedArea ?? flat).toStringAsFixed(2)} m²\n'
                           'Total + Wastage: ${(_totalWithWastage ?? flat).toStringAsFixed(2)} m²\n\n'
-                          'Calculated by Roof Profile Finder'
-                        );
+                          'Calculated by Roof Profile Finder',
+                          sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+                        ));
                       },
                       icon: const Icon(Icons.share),
                       label: const Text('Share Result'),
