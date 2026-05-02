@@ -17,6 +17,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -38,6 +39,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await FCMService.init();
+  // Silently restore Google Sign-In session if Firebase still has a user
+  if (FirebaseAuth.instance.currentUser != null) {
+    unawaited(GoogleSignIn(
+      clientId: Platform.isIOS
+        ? '899172571973-b5lc827jfa1fr5r01hiv1v69h9gmm0jv.apps.googleusercontent.com'
+        : null,
+    ).signInSilently());
+  }
   final prefs = await SharedPreferences.getInstance();
   final bool seenWelcome = prefs.getBool('seen_welcome') ?? false;
   runApp(RoofProfileFinderApp(showWelcome: !seenWelcome));
@@ -490,6 +500,36 @@ class AuthService {
       'email': email,
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
+  }
+
+  // Sign in with Apple
+  static Future<UserCredential?> signInWithApple() async {
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+    final oauthCredential = OAuthProvider('apple.com').credential(
+      idToken: appleCredential.identityToken,
+      accessToken: appleCredential.authorizationCode,
+    );
+    final cred = await _auth.signInWithCredential(oauthCredential);
+    // Build display name from Apple credential (only provided on first sign-in)
+    final fullName = [
+      appleCredential.givenName ?? '',
+      appleCredential.familyName ?? '',
+    ].where((s) => s.isNotEmpty).join(' ');
+    if (fullName.isNotEmpty && cred.user?.displayName == null) {
+      await cred.user?.updateDisplayName(fullName);
+    }
+    unawaited(_saveUserProfile(
+      cred.user!,
+      cred.user!.displayName ?? fullName,
+      cred.user!.email ?? appleCredential.email ?? '',
+    ));
+    unawaited(FCMService.onLogin());
+    return cred;
   }
 
   // Sign out
@@ -7937,6 +7977,21 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
     }
   }
 
+  Future<void> _appleSignIn() async {
+    setState(() { _busy = true; _error = null; });
+    try {
+      final result = await AuthService.signInWithApple();
+      if (result != null && mounted) {
+        setState(() { _busy = false; });
+        Navigator.pop(context, true);
+      } else {
+        if (mounted) setState(() { _busy = false; });
+      }
+    } catch (e) {
+      if (mounted) setState(() { _error = 'Apple sign in failed. Please try again.'; _busy = false; });
+    }
+  }
+
   Future<void> _signOut() async {
     await AuthService.signOut();
     if (mounted) Navigator.pop(context, true);
@@ -8098,6 +8153,16 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
               label: const Text('Continue with Google'),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
             )),
+            if (Theme.of(context).platform == TargetPlatform.iOS) ...[
+              const SizedBox(height: 12),
+              SizedBox(width: double.infinity,
+                child: SignInWithAppleButton(
+                  onPressed: _busy ? () {} : _appleSignIn,
+                  style: SignInWithAppleButtonStyle.black,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             Text('Sign in to sync your history across devices.\nCompletely optional — the app works without an account.', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
           ]),
@@ -8131,6 +8196,16 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
               label: const Text('Continue with Google'),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
             )),
+            if (Theme.of(context).platform == TargetPlatform.iOS) ...[
+              const SizedBox(height: 12),
+              SizedBox(width: double.infinity,
+                child: SignInWithAppleButton(
+                  onPressed: _busy ? () {} : _appleSignIn,
+                  style: SignInWithAppleButtonStyle.black,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             Text('Create a free account to sync your history across devices.\nCompletely optional — the app works without an account.', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
           ]),
