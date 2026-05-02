@@ -1456,7 +1456,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
             content: Text('✓ Restored ${cloudHistory.length} entries + material lists!'),
             backgroundColor: Colors.green));
         } catch (e) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cloud restore failed: \$e'), backgroundColor: Colors.red));
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cloud restore failed: $e'), backgroundColor: Colors.red));
         }
         return;
       }
@@ -2451,7 +2451,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
                               );
                             } catch (e) {
-                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: \$e'), backgroundColor: Colors.red));
+                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF failed: $e'), backgroundColor: Colors.red));
                             }
                           },
                         ),
@@ -3048,7 +3048,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       } catch (e) {
                         setSheet(() => submitting = false);
                         if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(
-                          SnackBar(content: Text('Error: \$e'), backgroundColor: Colors.red));
+                          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
                       }
                     },
                     icon: submitting
@@ -3193,7 +3193,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       } catch (e) {
                         setSheet(() => submitting = false);
                         if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(
-                          SnackBar(content: Text('Error: \$e'), backgroundColor: Colors.red));
+                          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
                       }
                     },
                     icon: submitting
