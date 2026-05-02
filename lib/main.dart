@@ -17,7 +17,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -117,6 +116,52 @@ class HistoryEntry {
   String get formattedDate {
     final d = savedAt;
     return '${d.day.toString().padLeft(2,'0')}/${d.month.toString().padLeft(2,'0')}/${d.year}  ${d.hour.toString().padLeft(2,'0')}:${d.minute.toString().padLeft(2,'0')}';
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// FCM Service — push notifications
+// ═══════════════════════════════════════════════════════════════
+
+class FCMService {
+  static Future<void> init() async {
+    final messaging = FirebaseMessaging.instance;
+    final settings = await messaging.requestPermission(
+      alert: true, badge: true, sound: true,
+    );
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      final token = await messaging.getToken();
+      if (token != null) await _saveToken(token);
+      messaging.onTokenRefresh.listen(_saveToken);
+    }
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      final notification = message.notification;
+      if (notification != null) {
+        _pendingMessage = '${notification.title}: ${notification.body}';
+      }
+    });
+  }
+
+  static String? _pendingMessage;
+  static String? consumePendingMessage() {
+    final msg = _pendingMessage;
+    _pendingMessage = null;
+    return msg;
+  }
+
+  static Future<void> _saveToken(String token) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    await FirebaseFirestore.instance
+      .collection('users').doc(user.uid)
+      .set({'fcmToken': token, 'updatedAt': FieldValue.serverTimestamp()},
+           SetOptions(merge: true));
+  }
+
+  static Future<void> onLogin() async {
+    final token = await FirebaseMessaging.instance.getToken();
+    if (token != null) await _saveToken(token);
   }
 }
 
@@ -500,36 +545,6 @@ class AuthService {
       'email': email,
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
-  }
-
-  // Sign in with Apple
-  static Future<UserCredential?> signInWithApple() async {
-    final appleCredential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-    );
-    final oauthCredential = OAuthProvider('apple.com').credential(
-      idToken: appleCredential.identityToken,
-      accessToken: appleCredential.authorizationCode,
-    );
-    final cred = await _auth.signInWithCredential(oauthCredential);
-    // Build display name from Apple credential (only provided on first sign-in)
-    final fullName = [
-      appleCredential.givenName ?? '',
-      appleCredential.familyName ?? '',
-    ].where((s) => s.isNotEmpty).join(' ');
-    if (fullName.isNotEmpty && cred.user?.displayName == null) {
-      await cred.user?.updateDisplayName(fullName);
-    }
-    unawaited(_saveUserProfile(
-      cred.user!,
-      cred.user!.displayName ?? fullName,
-      cred.user!.email ?? appleCredential.email ?? '',
-    ));
-    unawaited(FCMService.onLogin());
-    return cred;
   }
 
   // Sign out
@@ -7917,16 +7932,21 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
   bool _obscure = true;
   String? _error;
   late bool _isLoggedIn;
+  StreamSubscription<dynamic>? _accountAuthSub;
 
   @override
   void initState() {
     super.initState();
     _isLoggedIn = AuthService.isLoggedIn;
     _tabController = TabController(length: 3, vsync: this);
+    _accountAuthSub = AuthService.authStateChanges.listen((user) {
+      if (mounted) setState(() => _isLoggedIn = user != null);
+    });
   }
 
   @override
   void dispose() {
+    _accountAuthSub?.cancel();
     _tabController.dispose();
     _emailController.dispose(); _passwordController.dispose();
     _nameController.dispose(); _confirmController.dispose();
@@ -7974,21 +7994,6 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
       }
     } catch (e) {
       if (mounted) setState(() { _error = 'Google sign in failed. Please try again.'; _busy = false; });
-    }
-  }
-
-  Future<void> _appleSignIn() async {
-    setState(() { _busy = true; _error = null; });
-    try {
-      final result = await AuthService.signInWithApple();
-      if (result != null && mounted) {
-        setState(() { _busy = false; });
-        Navigator.pop(context, true);
-      } else {
-        if (mounted) setState(() { _busy = false; });
-      }
-    } catch (e) {
-      if (mounted) setState(() { _error = 'Apple sign in failed. Please try again.'; _busy = false; });
     }
   }
 
@@ -8153,16 +8158,6 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
               label: const Text('Continue with Google'),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
             )),
-            if (Theme.of(context).platform == TargetPlatform.iOS) ...[
-              const SizedBox(height: 12),
-              SizedBox(width: double.infinity,
-                child: SignInWithAppleButton(
-                  onPressed: _busy ? () {} : _appleSignIn,
-                  style: SignInWithAppleButtonStyle.black,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ],
             const SizedBox(height: 20),
             Text('Sign in to sync your history across devices.\nCompletely optional — the app works without an account.', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
           ]),
@@ -8196,16 +8191,6 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
               label: const Text('Continue with Google'),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
             )),
-            if (Theme.of(context).platform == TargetPlatform.iOS) ...[
-              const SizedBox(height: 12),
-              SizedBox(width: double.infinity,
-                child: SignInWithAppleButton(
-                  onPressed: _busy ? () {} : _appleSignIn,
-                  style: SignInWithAppleButtonStyle.black,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ],
             const SizedBox(height: 20),
             Text('Create a free account to sync your history across devices.\nCompletely optional — the app works without an account.', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
           ]),

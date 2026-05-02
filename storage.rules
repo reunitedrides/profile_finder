@@ -2,22 +2,22 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // Profile spec images — public read
+    // Profile spec images
     match /profiles/{allPaths=**} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    // Real photo submissions from users
+    // Real photo submissions — public read so CachedNetworkImage works
     match /sheet_photos/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if true;
     }
 
-    // Report corrections (with optional photo)
+    // Report corrections
     match /corrections/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if true;
     }
 
     // Admin uploads
