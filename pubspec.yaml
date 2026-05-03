@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  flutter_tts: ^0.10.5
+  flutter_tts: 4.2.5
   url_launcher: ^6.3.0
   shared_preferences: ^2.3.0
   sensors_plus: ^6.0.0

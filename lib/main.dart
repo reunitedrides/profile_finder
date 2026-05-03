@@ -23,6 +23,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'firebase_options.dart';
@@ -39,7 +40,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await FCMService.init();
+  unawaited(FCMService.init()); // don't block startup waiting for APNs token
   // Restore Google Sign-In to Firebase Auth on cold start
   if (FirebaseAuth.instance.currentUser == null) {
     try {
@@ -4169,6 +4170,11 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   bool _showInstructions = true;
   StreamSubscription<AccelerometerEvent>? _sub;
 
+  // TTS
+  final FlutterTts _flutterTts = FlutterTts();
+  bool _ttsEnabled = false;
+  double _lastSpokenAngle = -1;
+
   // Smoothing buffer
   final List<double> _buffer = [];
   static const int _bufferSize = 15;
@@ -4178,9 +4184,8 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
     super.initState();
     _loadCalibration();
     _loadInstructionsPref();
+    _initTts();
     _sub = accelerometerEventStream(samplingPeriod: SensorInterval.normalInterval).listen((event) {
-      // Correct formula: angle of phone's long axis from horizontal
-      // When phone flat: y≈0 → 0°, when tilted 30°: y≈-4.9 → 30°
       final double rawPitch = math.atan2(-event.y, math.sqrt(event.x * event.x + event.z * event.z)) * 180 / math.pi;
       final double calibrated = (rawPitch - _calibrationOffset).abs();
 
@@ -4190,8 +4195,22 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
 
       if (!_locked && mounted) {
         setState(() { _pitch = smoothed.clamp(0.0, 90.0); });
+        if (_ttsEnabled) {
+          final int rounded = smoothed.clamp(0.0, 90.0).round();
+          if (rounded != _lastSpokenAngle.round()) {
+            _lastSpokenAngle = rounded.toDouble();
+            _flutterTts.speak('$rounded degrees');
+          }
+        }
       }
     });
+  }
+
+  Future<void> _initTts() async {
+    await _flutterTts.setLanguage('en-GB');
+    await _flutterTts.setSpeechRate(0.5);
+    await _flutterTts.setVolume(1.0);
+    await _flutterTts.setPitch(1.0);
   }
 
   Future<void> _loadCalibration() async {
@@ -4213,9 +4232,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   }
 
   Future<void> _calibrate() async {
-    // Get raw reading before calibration
     final prefs = await SharedPreferences.getInstance();
-    // Current raw pitch = _pitch + _calibrationOffset (since displayed is already calibrated)
     final double rawNow = _pitch + _calibrationOffset;
     await prefs.setDouble('pitch_calibration', rawNow);
     setState(() { _calibrationOffset = rawNow; _buffer.clear(); _pitch = 0.0; });
@@ -4237,6 +4254,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   @override
   void dispose() {
     _sub?.cancel();
+    _flutterTts.stop();
     super.dispose();
   }
 
@@ -4267,6 +4285,75 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
 
   double get _displayPitch => _locked ? (_lockedPitch ?? _pitch) : _pitch;
 
+  void _showRidgeAngleDialog(double pitchDeg) {
+    final double ridgeAngle = 180 - (pitchDeg * 2);
+    final double hipAngle = 90 + pitchDeg;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(children: [
+          Icon(Icons.roofing, color: Colors.teal.shade700),
+          const SizedBox(width: 8),
+          const Text('Ridge & Hip Angles'),
+        ]),
+        content: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(color: Colors.teal.shade50, borderRadius: BorderRadius.circular(12)),
+              child: CustomPaint(
+                size: const Size(260, 130),
+                painter: _RidgeDiagramPainter(pitchDeg: pitchDeg, ridgeAngle: ridgeAngle),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: Colors.teal.shade700, borderRadius: BorderRadius.circular(10)),
+              child: Column(children: [
+                const Text('Ridge Flashing Angle', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                const SizedBox(height: 4),
+                Text('${ridgeAngle.toStringAsFixed(1)}°',
+                  style: const TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.bold, height: 1.1)),
+                Text('For a ${pitchDeg.toStringAsFixed(1)}° pitch roof',
+                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              ]),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: Colors.orange.shade700, borderRadius: BorderRadius.circular(10)),
+              child: Column(children: [
+                const Text('Hip / Valley Flashing Angle', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                const SizedBox(height: 4),
+                Text('${hipAngle.toStringAsFixed(1)}°',
+                  style: const TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.bold, height: 1.1)),
+                Text('Internal angle each side: ${(pitchDeg + 90).toStringAsFixed(1)}°',
+                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              ]),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(8)),
+              child: const Text(
+                '💡 The ridge angle is the angle you set your sheet metal bender or flashing folder to.\n\nFormula: 180° − (pitch × 2)',
+                style: TextStyle(fontSize: 12, height: 1.5),
+              ),
+            ),
+          ]),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final double deg = _displayPitch;
@@ -4278,6 +4365,16 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
         backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            tooltip: _ttsEnabled ? 'Voice readout ON' : 'Voice readout OFF',
+            icon: Icon(_ttsEnabled ? Icons.volume_up : Icons.volume_off,
+              color: _ttsEnabled ? Colors.greenAccent : Colors.white),
+            onPressed: () {
+              setState(() { _ttsEnabled = !_ttsEnabled; _lastSpokenAngle = -1; });
+              if (_ttsEnabled) _flutterTts.speak('Voice readout on');
+              else _flutterTts.stop();
+            },
+          ),
           TextButton.icon(
             onPressed: _calibrate,
             icon: const Icon(Icons.tune, color: Colors.white, size: 18),
@@ -4395,11 +4492,11 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
                 // Main degrees — big
                 Text(
                   '${deg.toStringAsFixed(1)}°',
-                  style: TextStyle(fontSize: 64, fontWeight: FontWeight.bold, color: pitchColor, height: 1.0),
+                  style: TextStyle(fontSize: 80, fontWeight: FontWeight.bold, color: pitchColor, height: 1.0),
                 ),
                 Text(
                   _pitchDescription(deg),
-                  style: TextStyle(fontSize: 16, color: pitchColor, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 18, color: pitchColor, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 16),
                 const Divider(height: 1),
@@ -4409,17 +4506,33 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
                   Column(children: [
                     const Text('Pitch Ratio', style: TextStyle(fontSize: 11, color: Colors.grey)),
                     const SizedBox(height: 4),
-                    Text(_pitchRatio(deg), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(_pitchRatio(deg), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                   ]),
                   Container(width: 1, height: 40, color: Colors.grey.shade300),
                   Column(children: [
                     const Text('% Slope', style: TextStyle(fontSize: 11, color: Colors.grey)),
                     const SizedBox(height: 4),
                     Text('${(math.tan(deg * math.pi / 180) * 100).toStringAsFixed(1)}%',
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                   ]),
                 ]),
               ]),
+            ),
+            const SizedBox(height: 16),
+
+            // Ridge Angle button
+            SizedBox(width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => _showRidgeAngleDialog(deg),
+                icon: const Icon(Icons.roofing),
+                label: const Text('Ridge / Hip Flashing Angle'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal.shade700,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
 
@@ -4507,6 +4620,83 @@ class _RoofDiagramPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Ridge Flashing Diagram Painter
+// ═══════════════════════════════════════════════════════════════
+
+class _RidgeDiagramPainter extends CustomPainter {
+  final double pitchDeg;
+  final double ridgeAngle;
+
+  const _RidgeDiagramPainter({required this.pitchDeg, required this.ridgeAngle});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..strokeWidth = 2.5..style = PaintingStyle.stroke..strokeCap = StrokeCap.round;
+
+    final double cx = size.width / 2;
+    final double cy = size.height * 0.4;
+    final double slopeLen = size.width * 0.38;
+    final double pitchRad = pitchDeg * math.pi / 180;
+
+    // Left and right eave points
+    final double lx = cx - slopeLen * math.cos(pitchRad);
+    final double ly = cy + slopeLen * math.sin(pitchRad);
+    final double rx = cx + slopeLen * math.cos(pitchRad);
+
+    // Draw roof slopes
+    paint.color = Colors.grey.shade500;
+    paint.strokeWidth = 3;
+    canvas.drawLine(Offset(lx, ly), Offset(cx, cy), paint);
+    canvas.drawLine(Offset(cx, cy), Offset(rx, ly), paint);
+
+    // Draw ridge flashing overlay (teal)
+    paint.color = Colors.teal.shade600;
+    paint.strokeWidth = 6;
+    final double flashW = 20.0;
+    final double flLx = cx - flashW * math.cos(pitchRad);
+    final double flLy = cy + flashW * math.sin(pitchRad);
+    final double flRx = cx + flashW * math.cos(pitchRad);
+    canvas.drawLine(Offset(flLx, flLy), Offset(cx, cy), paint);
+    canvas.drawLine(Offset(cx, cy), Offset(flRx, flLy), paint);
+
+    // Ridge angle arc
+    paint.color = Colors.teal.shade400;
+    paint.strokeWidth = 1.5;
+    final double arcR = 28.0;
+    canvas.drawArc(
+      Rect.fromCenter(center: Offset(cx, cy), width: arcR * 2, height: arcR * 2),
+      math.pi + pitchRad,
+      math.pi - (2 * pitchRad),
+      false,
+      paint,
+    );
+
+    // Labels
+    _drawText(canvas, '${ridgeAngle.toStringAsFixed(0)}°',
+      Offset(cx, cy + arcR + 14), Colors.teal.shade800, 13, FontWeight.bold);
+    _drawText(canvas, '${pitchDeg.toStringAsFixed(1)}°',
+      Offset(lx + 20, ly - 14), Colors.grey.shade700, 11, FontWeight.normal);
+    _drawText(canvas, '${pitchDeg.toStringAsFixed(1)}°',
+      Offset(rx - 20, ly - 14), Colors.grey.shade700, 11, FontWeight.normal);
+    _drawText(canvas, 'Ridge Flashing',
+      Offset(cx, cy - 18), Colors.teal.shade700, 11, FontWeight.w600);
+  }
+
+  void _drawText(Canvas canvas, String text, Offset position, Color color, double fontSize, FontWeight weight) {
+    final tp = TextPainter(
+      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize, fontWeight: weight)),
+      textDirection: TextDirection.ltr,
+    );
+    tp.layout();
+    tp.paint(canvas, Offset(position.dx - tp.width / 2, position.dy - tp.height / 2));
+  }
+
+  @override
+  bool shouldRepaint(covariant _RidgeDiagramPainter old) =>
+    old.pitchDeg != pitchDeg || old.ridgeAngle != ridgeAngle;
 }
 
 // ═══════════════════════════════════════════════════════════════
