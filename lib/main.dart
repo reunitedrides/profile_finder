@@ -22,6 +22,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'firebase_options.dart';
@@ -38,7 +39,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  unawaited(FCMService.init()); // don't block startup waiting for APNs token
+  await FCMService.init();
   // Restore Google Sign-In to Firebase Auth on cold start
   if (FirebaseAuth.instance.currentUser == null) {
     try {
@@ -549,6 +550,35 @@ class AuthService {
     final cred = await _auth.signInWithCredential(credential);
     // Fire and forget - don't block on Firestore write
     unawaited(_saveUserProfile(cred.user!, cred.user!.displayName ?? '', cred.user!.email ?? ''));
+    return cred;
+  }
+
+  // Apple sign in
+  static Future<UserCredential?> signInWithApple() async {
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+    final oauthCredential = OAuthProvider('apple.com').credential(
+      idToken: appleCredential.identityToken,
+      accessToken: appleCredential.authorizationCode,
+    );
+    final cred = await _auth.signInWithCredential(oauthCredential);
+    // Apple only sends name on first sign in — save it if we got it
+    final fullName = [
+      appleCredential.givenName,
+      appleCredential.familyName,
+    ].where((s) => s != null && s.isNotEmpty).join(' ');
+    if (fullName.isNotEmpty) {
+      await cred.user?.updateDisplayName(fullName);
+    }
+    unawaited(_saveUserProfile(
+      cred.user!,
+      cred.user!.displayName ?? fullName,
+      cred.user!.email ?? appleCredential.email ?? '',
+    ));
     return cred;
   }
 
@@ -1307,10 +1337,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     ];
 
     final row = SizedBox(
-      height: 36,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+      height: 42,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: chips,
       ),
     );
@@ -1464,15 +1493,15 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
           onTap();
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
             color: color.withOpacity(0.85),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(icon, size: 13, color: Colors.white),
-            const SizedBox(width: 5),
-            Text(label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+            Icon(icon, size: 16, color: Colors.white),
+            const SizedBox(width: 6),
+            Text(label, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
           ]),
         ),
       ),
@@ -1543,6 +1572,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       case 'tools': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ToolsScreen())); break;
       case 'help': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HowToUseScreen())); break;
       case 'favourites': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FavouritesScreen())); break;
+      case 'history': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HistoryScreen())); break;
+      case 'savedlists': Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const _SavedListsScreen())); break;
       case 'about': _showAboutDialogBox(); break;
       case 'suggest': _showSuggestProfileDialog(); break;
       case 'backup': _backupAllData(); break;
@@ -2106,6 +2137,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
               itemBuilder: (context) => [
                 const PopupMenuItem<String>(value: 'tools', child: Row(children: [Icon(Icons.build, size: 18), SizedBox(width: 10), Text('Tools')])),
                 const PopupMenuItem<String>(value: 'favourites', child: Row(children: [Icon(Icons.star, size: 18, color: Colors.amber), SizedBox(width: 10), Text('Favorites')])),
+                const PopupMenuItem<String>(value: 'history', child: Row(children: [Icon(Icons.history, size: 18, color: Color(0xFF283593)), SizedBox(width: 10), Text('History')])),
+                const PopupMenuItem<String>(value: 'savedlists', child: Row(children: [Icon(Icons.save, size: 18, color: Color(0xFF2E7D32)), SizedBox(width: 10), Text('Saved Lists')])),
                 const PopupMenuItem<String>(value: 'help', child: Row(children: [Icon(Icons.help_outline, size: 18), SizedBox(width: 10), Text('How to measure')])),
                 const PopupMenuItem<String>(value: 'backup', child: Row(children: [Icon(Icons.backup, size: 18), SizedBox(width: 10), Text('Backup All Data')])),
                 const PopupMenuItem<String>(value: 'restore', child: Row(children: [Icon(Icons.restore, size: 18), SizedBox(width: 10), Text('Restore Backup')])),
@@ -2236,6 +2269,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
                               itemBuilder: (context) => [
                                 const PopupMenuItem<String>(value: 'tools', child: Row(children: [Icon(Icons.build, size: 18), SizedBox(width: 10), Text('Tools')])),
                                 const PopupMenuItem<String>(value: 'favourites', child: Row(children: [Icon(Icons.star, size: 18, color: Colors.amber), SizedBox(width: 10), Text('Favorites')])),
+                                const PopupMenuItem<String>(value: 'history', child: Row(children: [Icon(Icons.history, size: 18, color: Color(0xFF283593)), SizedBox(width: 10), Text('History')])),
+                                const PopupMenuItem<String>(value: 'savedlists', child: Row(children: [Icon(Icons.save, size: 18, color: Color(0xFF2E7D32)), SizedBox(width: 10), Text('Saved Lists')])),
                                 const PopupMenuItem<String>(value: 'help', child: Row(children: [Icon(Icons.help_outline, size: 18), SizedBox(width: 10), Text('How to measure')])),
                                 const PopupMenuItem<String>(value: 'backup', child: Row(children: [Icon(Icons.backup, size: 18), SizedBox(width: 10), Text('Backup All Data')])),
                                 const PopupMenuItem<String>(value: 'restore', child: Row(children: [Icon(Icons.restore, size: 18), SizedBox(width: 10), Text('Restore Backup')])),
@@ -8094,6 +8129,21 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
     }
   }
 
+  Future<void> _appleSignIn() async {
+    setState(() { _busy = true; _error = null; });
+    try {
+      final result = await AuthService.signInWithApple();
+      if (result != null && mounted) {
+        setState(() { _busy = false; });
+        Navigator.pop(context, true);
+      } else {
+        if (mounted) setState(() { _busy = false; });
+      }
+    } catch (e) {
+      if (mounted) setState(() { _error = 'Apple sign in failed. Please try again.'; _busy = false; });
+    }
+  }
+
   Future<void> _signOut() async {
     await AuthService.signOut();
     if (mounted) Navigator.pop(context, true);
@@ -8255,6 +8305,13 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
               label: const Text('Continue with Google'),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
             )),
+            const SizedBox(height: 10),
+            SizedBox(width: double.infinity, child: OutlinedButton.icon(
+              onPressed: _busy ? null : _appleSignIn,
+              icon: const Icon(Icons.apple, size: 24),
+              label: const Text('Continue with Apple'),
+              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
+            )),
             const SizedBox(height: 20),
             Text('Sign in to sync your history across devices.\nCompletely optional — the app works without an account.', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
           ]),
@@ -8286,6 +8343,13 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
               onPressed: _busy ? null : _googleSignIn,
               icon: const Icon(Icons.g_mobiledata, size: 24),
               label: const Text('Continue with Google'),
+              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
+            )),
+            const SizedBox(height: 10),
+            SizedBox(width: double.infinity, child: OutlinedButton.icon(
+              onPressed: _busy ? null : _appleSignIn,
+              icon: const Icon(Icons.apple, size: 24),
+              label: const Text('Continue with Apple'),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
             )),
             const SizedBox(height: 20),
