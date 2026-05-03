@@ -4609,6 +4609,9 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
                 ]),
               ),
             ),
+            const SizedBox(height: 16),
+
+            if (_locked) ...[
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(color: Colors.orange.shade50, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.orange.shade300)),
