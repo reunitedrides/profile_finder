@@ -4172,8 +4172,9 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
 
   // TTS
   final FlutterTts _flutterTts = FlutterTts();
-  bool _ttsEnabled = false;
+  bool _ttsEnabled = true; // on by default
   double _lastSpokenAngle = -1;
+  Timer? _speakTimer; // debounce — only speak after angle stable for 1 second
 
   // Smoothing buffer
   final List<double> _buffer = [];
@@ -4184,6 +4185,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
     super.initState();
     _loadCalibration();
     _loadInstructionsPref();
+    _loadTtsPref();
     _initTts();
     _sub = accelerometerEventStream(samplingPeriod: SensorInterval.normalInterval).listen((event) {
       final double rawPitch = math.atan2(-event.y, math.sqrt(event.x * event.x + event.z * event.z)) * 180 / math.pi;
@@ -4199,7 +4201,11 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
           final int rounded = smoothed.clamp(0.0, 90.0).round();
           if (rounded != _lastSpokenAngle.round()) {
             _lastSpokenAngle = rounded.toDouble();
-            _flutterTts.speak('$rounded degrees');
+            // Cancel previous timer — restart 1 second countdown
+            _speakTimer?.cancel();
+            _speakTimer = Timer(const Duration(seconds: 1), () {
+              _flutterTts.speak('$rounded degrees');
+            });
           }
         }
       }
@@ -4211,6 +4217,17 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
     await _flutterTts.setSpeechRate(0.5);
     await _flutterTts.setVolume(1.0);
     await _flutterTts.setPitch(1.0);
+  }
+
+  Future<void> _loadTtsPref() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Default true — only false if user has explicitly turned it off
+    setState(() { _ttsEnabled = prefs.getBool('tts_enabled') ?? true; });
+  }
+
+  Future<void> _saveTtsPref(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('tts_enabled', value);
   }
 
   Future<void> _loadCalibration() async {
@@ -4254,6 +4271,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   @override
   void dispose() {
     _sub?.cancel();
+    _speakTimer?.cancel();
     _flutterTts.stop();
     super.dispose();
   }
@@ -4371,8 +4389,9 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
               color: _ttsEnabled ? Colors.greenAccent : Colors.white),
             onPressed: () {
               setState(() { _ttsEnabled = !_ttsEnabled; _lastSpokenAngle = -1; });
+              _saveTtsPref(_ttsEnabled);
               if (_ttsEnabled) _flutterTts.speak('Voice readout on');
-              else _flutterTts.stop();
+              else { _speakTimer?.cancel(); _flutterTts.stop(); }
             },
           ),
           TextButton.icon(
