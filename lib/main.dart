@@ -4174,8 +4174,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   final FlutterTts _flutterTts = FlutterTts();
   bool _ttsEnabled = true; // on by default
   double _lastSpokenAngle = -1;
-  Timer? _speakTimer; // debounce — only speak after angle is stable
-  double _ttsSensitivity = 1.0; // seconds to wait — 0.3 to 2.0
+  Timer? _speakTimer; // debounce — only speak after angle stable for 1 second
 
   // Smoothing buffer
   final List<double> _buffer = [];
@@ -4187,7 +4186,6 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
     _loadCalibration();
     _loadInstructionsPref();
     _loadTtsPref();
-    _loadSensitivityPref();
     _initTts();
     _sub = accelerometerEventStream(samplingPeriod: SensorInterval.normalInterval).listen((event) {
       final double rawPitch = math.atan2(-event.y, math.sqrt(event.x * event.x + event.z * event.z)) * 180 / math.pi;
@@ -4205,8 +4203,10 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
             _lastSpokenAngle = rounded.toDouble();
             // Cancel previous timer — restart 1 second countdown
             _speakTimer?.cancel();
-            _speakTimer = Timer(Duration(milliseconds: (_ttsSensitivity * 1000).round()), () {
-              _flutterTts.speak('$rounded degrees');
+            _speakTimer = Timer(Duration(milliseconds: (_ttsSensitivity * 1000).round()), () async {
+              final String angleText = smoothed.clamp(0.0, 90.0).toStringAsFixed(1);
+              await _flutterTts.stop(); // clear iOS queue before speaking
+              _flutterTts.speak('$angleText degrees');
             });
           }
         }
@@ -4230,16 +4230,6 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   Future<void> _saveTtsPref(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('tts_enabled', value);
-  }
-
-  Future<void> _loadSensitivityPref() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() { _ttsSensitivity = prefs.getDouble('tts_sensitivity') ?? 1.0; });
-  }
-
-  Future<void> _saveSensitivityPref(double value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('tts_sensitivity', value);
   }
 
   Future<void> _loadCalibration() async {
@@ -4563,50 +4553,6 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Voice sensitivity slider — only shown when TTS enabled
-            if (_ttsEnabled) Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Row(children: [
-                    Icon(Icons.graphic_eq, size: 16, color: Colors.blue.shade700),
-                    const SizedBox(width: 6),
-                    Text('Voice Sensitivity', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.blue.shade700)),
-                    const Spacer(),
-                    Text(
-                      _ttsSensitivity <= 0.4 ? 'Very Fast' :
-                      _ttsSensitivity <= 0.7 ? 'Fast' :
-                      _ttsSensitivity <= 1.1 ? 'Normal' :
-                      _ttsSensitivity <= 1.6 ? 'Slow' : 'Very Slow',
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
-                    ),
-                    const SizedBox(width: 6),
-                    Text('(${_ttsSensitivity.toStringAsFixed(1)}s)',
-                      style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
-                  ]),
-                  Slider(
-                    value: _ttsSensitivity,
-                    min: 0.3,
-                    max: 2.0,
-                    divisions: 17,
-                    activeColor: Colors.blue.shade700,
-                    onChanged: (val) {
-                      setState(() { _ttsSensitivity = val; });
-                    },
-                    onChangeEnd: (val) {
-                      _saveSensitivityPref(val);
-                    },
-                  ),
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Text('Fast', style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
-                    Text('Slow', style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
-                  ]),
-                ]),
               ),
             ),
             const SizedBox(height: 16),
@@ -6798,8 +6744,10 @@ class _RoofAreaCalculatorState extends State<RoofAreaCalculator> {
 
   @override
   void dispose() {
-    _lengthController.dispose(); _widthController.dispose();
-    _pitchController.dispose(); _wastageController.dispose();
+    _lengthController.dispose();
+    _widthController.dispose();
+    _pitchController.dispose();
+    _wastageController.dispose();
     super.dispose();
   }
 
@@ -6815,117 +6763,173 @@ class _RoofAreaCalculatorState extends State<RoofAreaCalculator> {
     final flat = length * width;
     double pitched = flat;
     if (pitch != null && pitch > 0) {
-      final pitchFactor = 1 / math.cos(pitch * math.pi / 180);
-      pitched = flat * pitchFactor;
+      pitched = flat * (1 / math.cos(pitch * math.pi / 180));
     }
     final total = pitched * (1 + wastage / 100);
-    setState(() { _flatArea = flat; _pitchedArea = pitched; _totalWithWastage = total; });
+    setState(() {
+      _flatArea = flat;
+      _pitchedArea = pitched;
+      _totalWithWastage = total;
+    });
   }
 
   void _clear() {
-    _lengthController.clear(); _widthController.clear();
-    _pitchController.clear(); _wastageController.text = '10';
-    setState(() { _flatArea = null; _pitchedArea = null; _totalWithWastage = null; });
+    _lengthController.clear();
+    _widthController.clear();
+    _pitchController.clear();
+    _wastageController.text = '10';
+    setState(() {
+      _flatArea = null;
+      _pitchedArea = null;
+      _totalWithWastage = null;
+    });
   }
 
-  Widget _inputField(String label, TextEditingController controller, {String? suffix, String? hint}) {
+  void _shareAreaCalculation() {
+    if (_flatArea == null || _pitchedArea == null || _totalWithWastage == null) return;
+    final text = '📐 Roof Area Calculation\n'
+      'Length: ${_lengthController.text}m × Width: ${_widthController.text}m\n'
+      '${_pitchController.text.isNotEmpty ? 'Pitch: ${_pitchController.text}°\n' : ''}'
+      'Flat Area: ${_flatArea!.toStringAsFixed(2)} m²\n'
+      'Pitched Area: ${_pitchedArea!.toStringAsFixed(2)} m²\n'
+      'Total + ${_wastageController.text}% wastage: ${_totalWithWastage!.toStringAsFixed(2)} m²\n\n'
+      'Calculated by Roof Profile Finder';
+    Share.share(text, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1));
+  }
+
+  Widget _inputField(String label, TextEditingController controller, {String? suffix, String? hint, IconData? icon}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Row(children: [
-        Expanded(flex: 3, child: Text(label, style: const TextStyle(fontSize: 14))),
-        Expanded(flex: 2, child: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(
-            hintText: hint ?? '0.0',
-            suffixText: suffix,
-            border: const OutlineInputBorder(),
-            isDense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      child: TextField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint ?? '0.0',
+          suffixText: suffix,
+          prefixIcon: icon == null ? null : Icon(icon),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey.shade400),
           ),
-        )),
-      ]),
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F2E8),
       appBar: AppBar(
         title: const Text('Roof Area Calculator'),
         backgroundColor: Colors.teal.shade700,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(tooltip: 'Clear', onPressed: _clear, icon: const Icon(Icons.refresh)),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-
-          Card(color: Colors.teal.shade50, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Row(children: [
-                Icon(Icons.info_outline, color: Colors.teal, size: 18),
-                SizedBox(width: 8),
-                Expanded(child: Text('Enter roof dimensions. Add pitch angle for accurate area calculation.', style: TextStyle(fontSize: 13))),
+          _buildHeroCard(),
+          const SizedBox(height: 16),
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(children: [
+                  Icon(Icons.straighten, color: Colors.teal.shade700),
+                  const SizedBox(width: 8),
+                  const Text('Measurements', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                ]),
+                const SizedBox(height: 14),
+                Row(children: [
+                  Expanded(child: _inputField('Length', _lengthController, suffix: 'm', icon: Icons.swap_horiz)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _inputField('Width', _widthController, suffix: 'm', icon: Icons.swap_vert)),
+                ]),
+                Row(children: [
+                  Expanded(child: _inputField('Roof Pitch', _pitchController, suffix: '°', hint: 'optional', icon: Icons.architecture)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _inputField('Wastage', _wastageController, suffix: '%', icon: Icons.percent)),
+                ]),
+                const SizedBox(height: 4),
+                Row(children: [
+                  Expanded(child: ElevatedButton.icon(
+                    onPressed: _calculate,
+                    icon: const Icon(Icons.calculate),
+                    label: const Text('Calculate'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal.shade700,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  )),
+                  const SizedBox(width: 12),
+                  OutlinedButton.icon(
+                    onPressed: _clear,
+                    icon: const Icon(Icons.clear),
+                    label: const Text('Clear'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ]),
               ]),
-            ])),
+            ),
           ),
-          const SizedBox(height: 20),
-
-          const Text('Measurements', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          _inputField('Length', _lengthController, suffix: 'm'),
-          _inputField('Width', _widthController, suffix: 'm'),
-          _inputField('Roof Pitch', _pitchController, suffix: '°', hint: 'optional'),
-          _inputField('Wastage', _wastageController, suffix: '%'),
-
-          const SizedBox(height: 8),
-          Row(children: [
-            Expanded(child: ElevatedButton.icon(
-              onPressed: _calculate,
-              icon: const Icon(Icons.calculate),
-              label: const Text('Calculate'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal.shade700, foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14)),
-            )),
-            const SizedBox(width: 12),
-            OutlinedButton.icon(
-              onPressed: _clear,
-              icon: const Icon(Icons.clear),
-              label: const Text('Clear'),
-              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16)),
-            ),
-          ]),
-
           if (_flatArea != null) ...[
-            const SizedBox(height: 24),
-            const Text('Results', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
+            const Text('Calculation Results', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
-            Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
-                _resultRow('Flat Area', '${_flatArea!.toStringAsFixed(2)} m²', Colors.grey.shade700),
-                const Divider(),
-                _resultRow('Pitched Area', '${_pitchedArea!.toStringAsFixed(2)} m²', Colors.teal.shade700),
-                const Divider(),
-                _resultRow('Total + Wastage', '${_totalWithWastage!.toStringAsFixed(2)} m²', Colors.blue.shade700, bold: true),
-              ])),
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              childAspectRatio: 1.55,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              children: [
+                _resultTile(Icons.crop_square, 'Flat Area', '${_flatArea!.toStringAsFixed(2)} m²', Colors.grey.shade700),
+                _resultTile(Icons.roofing, 'Pitched Area', '${_pitchedArea!.toStringAsFixed(2)} m²', Colors.teal.shade700),
+                _resultTile(Icons.add_chart, 'With Wastage', '${_totalWithWastage!.toStringAsFixed(2)} m²', Colors.blue.shade700),
+                _resultTile(Icons.percent, 'Wastage', '${_wastageController.text}%', Colors.orange.shade700),
+              ],
             ),
-            const SizedBox(height: 12),
-            SizedBox(width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  final text = '📐 Roof Area Calculation\n'
-                    'Length: ${_lengthController.text}m × Width: ${_widthController.text}m\n'
-                    '${_pitchController.text.isNotEmpty ? 'Pitch: ${_pitchController.text}°\n' : ''}'
-                    'Flat Area: ${_flatArea!.toStringAsFixed(2)} m²\n'
-                    'Pitched Area: ${_pitchedArea!.toStringAsFixed(2)} m²\n'
-                    'Total + ${_wastageController.text}% wastage: ${_totalWithWastage!.toStringAsFixed(2)} m²\n\n'
-                    'Calculated by Roof Profile Finder';
-                  Share.share(text, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1));
-                },
-                icon: const Icon(Icons.share),
-                label: const Text('Share'),
+            const SizedBox(height: 14),
+            Row(children: [
+              Expanded(child: ElevatedButton.icon(
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const MaterialListScreen())),
+                icon: const Icon(Icons.playlist_add),
+                label: const Text('Open Material List'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade700,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
               )),
+              const SizedBox(width: 10),
+              Expanded(child: OutlinedButton.icon(
+                onPressed: _shareAreaCalculation,
+                icon: const Icon(Icons.share),
+                label: const Text('Share Results'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              )),
+            ]),
           ],
           const SizedBox(height: 30),
         ]),
@@ -6933,13 +6937,60 @@ class _RoofAreaCalculatorState extends State<RoofAreaCalculator> {
     );
   }
 
-  Widget _resultRow(String label, String value, Color color, {bool bold = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
-        Text(value, style: TextStyle(fontSize: 16, fontWeight: bold ? FontWeight.bold : FontWeight.w600, color: color)),
+  Widget _buildHeroCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [Colors.teal.shade800, Colors.teal.shade600]),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.18), blurRadius: 12, offset: const Offset(0, 6))],
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.16), borderRadius: BorderRadius.circular(14)),
+            child: const Icon(Icons.area_chart, color: Colors.white, size: 30),
+          ),
+          const SizedBox(width: 12),
+          const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Calculate roof area fast', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+            SizedBox(height: 4),
+            Text('Enter length, width, pitch and wastage for quick estimating on site.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+          ])),
+        ]),
+        const SizedBox(height: 16),
+        Container(
+          height: 120,
+          width: double.infinity,
+          decoration: BoxDecoration(color: Colors.white.withOpacity(0.12), borderRadius: BorderRadius.circular(14)),
+          child: Stack(children: [
+            Positioned(left: 24, right: 24, top: 24, child: Container(height: 68, decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 2), borderRadius: BorderRadius.circular(8)))),
+            Positioned(left: 54, top: 18, child: Transform.rotate(angle: -0.45, child: Container(width: 2, height: 82, color: Colors.white70))),
+            Positioned(right: 54, top: 18, child: Transform.rotate(angle: 0.45, child: Container(width: 2, height: 82, color: Colors.white70))),
+            const Positioned(left: 34, top: 48, child: Text('Length', style: TextStyle(color: Colors.white70, fontSize: 12))),
+            const Positioned(right: 34, top: 48, child: Text('Width', style: TextStyle(color: Colors.white70, fontSize: 12))),
+            Positioned(bottom: 12, left: 0, right: 0, child: Center(child: Text('Area • pitch • wastage', style: TextStyle(color: Colors.teal.shade50, fontWeight: FontWeight.bold)))),
+          ]),
+        ),
       ]),
+    );
+  }
+
+  Widget _resultTile(IconData icon, String label, String value, Color color) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Icon(icon, color: color, size: 24),
+          Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+          FittedBox(child: Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color))),
+        ]),
+      ),
     );
   }
 }
@@ -7036,8 +7087,10 @@ class _RafterCalculatorState extends State<RafterCalculator> {
 
   @override
   void dispose() {
-    _spanController.dispose(); _pitchController.dispose();
-    _eavesController.dispose(); _spacingController.dispose();
+    _spanController.dispose();
+    _pitchController.dispose();
+    _eavesController.dispose();
+    _spacingController.dispose();
     _buildingLengthController.dispose();
     super.dispose();
   }
@@ -7065,7 +7118,6 @@ class _RafterCalculatorState extends State<RafterCalculator> {
       numRafters = ((buildingLength * 1000 / spacing).ceil() + 1) * 2;
     }
 
-    // Hip rafter calculations
     final double hipRun = half * math.sqrt(2) + eaves;
     final double hipPitchRad = math.atan(ridgeHt / (half * math.sqrt(2)));
     final double hipLen = hipRun / math.cos(hipPitchRad);
@@ -7086,159 +7138,188 @@ class _RafterCalculatorState extends State<RafterCalculator> {
   }
 
   void _clear() {
-    _spanController.clear(); _pitchController.clear();
-    _eavesController.text = '0.3'; _spacingController.text = '600';
+    _spanController.clear();
+    _pitchController.clear();
+    _eavesController.text = '0.3';
+    _spacingController.text = '600';
     _buildingLengthController.clear();
     setState(() {
-      _rafterLength = null; _ridgeHeight = null; _halfSpan = null; _numberOfRafters = null;
-      _hipLength = null; _hipPlumbCut = null; _hipSeatCut = null; _hipDihedral = null;
+      _rafterLength = null;
+      _ridgeHeight = null;
+      _halfSpan = null;
+      _numberOfRafters = null;
+      _hipLength = null;
+      _hipPlumbCut = null;
+      _hipSeatCut = null;
+      _hipDihedral = null;
     });
   }
 
-  Widget _inputField(String label, TextEditingController controller, {String? suffix, String? hint}) {
+  void _shareRafterCalculation() {
+    if (_rafterLength == null || _ridgeHeight == null) return;
+    final pitch = double.tryParse(_pitchController.text) ?? 0;
+    final seatCut = 90 - pitch;
+    String text = '📐 Rafter Calculation\n'
+      'Span: ${_spanController.text}m  |  Pitch: ${_pitchController.text}°\n'
+      'Eaves: ${_eavesController.text}m\n\n'
+      'Common Rafter Length: ${_rafterLength!.toStringAsFixed(3)} m\n'
+      'Ridge Height: ${_ridgeHeight!.toStringAsFixed(3)} m\n'
+      'Plumb Cut: ${pitch.toStringAsFixed(1)}°\n'
+      'Seat Cut: ${seatCut.toStringAsFixed(1)}°\n';
+    if (_isHip && _hipLength != null) {
+      text += '\nHip Rafter Length: ${_hipLength!.toStringAsFixed(3)} m\n'
+        'Hip Plumb Cut: ${_hipPlumbCut!.toStringAsFixed(1)}°\n'
+        'Hip Seat Cut: ${_hipSeatCut!.toStringAsFixed(1)}°\n'
+        'Backing Angle: ${_hipDihedral!.toStringAsFixed(1)}°\n';
+    }
+    if (_numberOfRafters != null) text += '\nRafters needed: $_numberOfRafters\n';
+    text += '\nCalculated by Roof Profile Finder';
+    Share.share(text, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1));
+  }
+
+  Widget _inputField(String label, TextEditingController controller, {String? suffix, String? hint, IconData? icon}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Row(children: [
-        Expanded(flex: 3, child: Text(label, style: const TextStyle(fontSize: 14))),
-        Expanded(flex: 2, child: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(
-            hintText: hint ?? '0.0', suffixText: suffix,
-            border: const OutlineInputBorder(), isDense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-          ),
-        )),
-      ]),
+      child: TextField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint ?? '0.0',
+          suffixText: suffix,
+          prefixIcon: icon == null ? null : Icon(icon),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade400)),
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F2E8),
       appBar: AppBar(
         title: const Text('Rafter Calculator'),
         backgroundColor: Colors.brown.shade600,
         foregroundColor: Colors.white,
         actions: [
-          Stack(alignment: Alignment.center, children: [
+          Stack(children: [
             IconButton(
               tooltip: 'Saved calculations',
-              icon: const Icon(Icons.folder_open),
-              onPressed: () async {
-                await Navigator.of(context).push(MaterialPageRoute<void>(
-                  builder: (_) => const SavedRafterScreen()));
-                _loadSavedCount();
-              },
+              icon: const Icon(Icons.folder_outlined),
+              onPressed: _showSavedCalculations,
             ),
             if (_savedCount > 0)
-              Positioned(top: 6, right: 6,
-                child: Container(width: 16, height: 16,
-                  decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
-                  child: Center(child: Text('$_savedCount',
-                    style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.bold))))),
+              Positioned(right: 6, top: 6, child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
+                child: Text('$_savedCount', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+              )),
           ]),
         ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-
-          Card(color: Colors.brown.shade50, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: const Padding(padding: EdgeInsets.all(14), child: Row(children: [
-              Icon(Icons.info_outline, color: Colors.brown, size: 18),
-              SizedBox(width: 8),
-              Expanded(child: Text('Enter the full span (wall to wall), pitch angle and eaves overhang to calculate rafter length and cut angles.', style: TextStyle(fontSize: 13))),
-            ])),
+          _buildRafterHeroCard(),
+          const SizedBox(height: 16),
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(children: [
+                  const Text('Rafter Type:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 12),
+                  ChoiceChip(
+                    label: const Text('Common'),
+                    avatar: !_isHip ? const Icon(Icons.check, size: 18) : null,
+                    selected: !_isHip,
+                    onSelected: (_) => setState(() { _isHip = false; }),
+                  ),
+                  const SizedBox(width: 8),
+                  ChoiceChip(
+                    label: const Text('Hip'),
+                    avatar: _isHip ? const Icon(Icons.check, size: 18) : const Icon(Icons.architecture, size: 18),
+                    selected: _isHip,
+                    onSelected: (_) => setState(() { _isHip = true; }),
+                  ),
+                ]),
+                const SizedBox(height: 18),
+                const Text('Measurements', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                _inputField('Full Span (wall to wall)', _spanController, suffix: 'm', icon: Icons.swap_horiz),
+                Row(children: [
+                  Expanded(child: _inputField('Pitch Angle', _pitchController, suffix: '°', icon: Icons.architecture)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _inputField('Eaves Overhang', _eavesController, suffix: 'm', icon: Icons.keyboard_double_arrow_right)),
+                ]),
+                Row(children: [
+                  Expanded(child: _inputField('Rafter Spacing', _spacingController, suffix: 'mm', icon: Icons.format_line_spacing)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _inputField('Building Length', _buildingLengthController, suffix: 'm', hint: 'optional', icon: Icons.home_work)),
+                ]),
+                const SizedBox(height: 4),
+                Row(children: [
+                  Expanded(child: ElevatedButton.icon(
+                    onPressed: _calculate,
+                    icon: const Icon(Icons.calculate),
+                    label: const Text('Calculate'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown.shade600,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  )),
+                  const SizedBox(width: 12),
+                  OutlinedButton.icon(
+                    onPressed: _clear,
+                    icon: const Icon(Icons.clear),
+                    label: const Text('Clear'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ]),
+              ]),
+            ),
           ),
-          const SizedBox(height: 16),
-
-          // Rafter type toggle
-          Row(children: [
-            const Text('Rafter Type:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-            const SizedBox(width: 12),
-            ChoiceChip(
-              label: const Text('Common'),
-              selected: !_isHip,
-              onSelected: (_) => setState(() { _isHip = false; }),
-              selectedColor: Colors.brown.shade200,
-            ),
-            const SizedBox(width: 8),
-            ChoiceChip(
-              label: const Text('Hip'),
-              selected: _isHip,
-              onSelected: (_) => setState(() { _isHip = true; }),
-              selectedColor: Colors.orange.shade200,
-            ),
-          ]),
-          const SizedBox(height: 16),
-
-          const Text('Measurements', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          _inputField('Full Span (wall to wall)', _spanController, suffix: 'm'),
-          _inputField('Pitch Angle', _pitchController, suffix: '°'),
-          _inputField('Eaves Overhang', _eavesController, suffix: 'm', hint: '0.3'),
-          _inputField('Rafter Spacing', _spacingController, suffix: 'mm', hint: '600'),
-          _inputField('Building Length (optional)', _buildingLengthController, suffix: 'm', hint: 'for rafter count'),
-
-          const SizedBox(height: 8),
-          Row(children: [
-            Expanded(child: ElevatedButton.icon(
-              onPressed: _calculate,
-              icon: const Icon(Icons.calculate),
-              label: const Text('Calculate'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.brown.shade600, foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14)),
-            )),
-            const SizedBox(width: 12),
-            OutlinedButton.icon(
-              onPressed: _clear,
-              icon: const Icon(Icons.clear),
-              label: const Text('Clear'),
-              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16)),
-            ),
-          ]),
-
-          if (_rafterLength != null) ...[
-            const SizedBox(height: 24),
-
-            const Text('Results', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
-                _resultRow('Half Span', '${_halfSpan!.toStringAsFixed(3)} m', Colors.grey.shade700),
-                const Divider(),
-                _resultRow('Common Rafter Length', '${_rafterLength!.toStringAsFixed(3)} m', Colors.brown.shade700, bold: true),
-                const Divider(),
-                _resultRow('Ridge Height', '${_ridgeHeight!.toStringAsFixed(3)} m', Colors.brown.shade700, bold: true),
-                if (_numberOfRafters != null) ...[
-                  const Divider(),
-                  _resultRow('Number of Rafters', '$_numberOfRafters rafters', Colors.blue.shade700, bold: true),
-                  Padding(padding: const EdgeInsets.only(top: 4),
-                    child: Text('(both sides, inc. ends)', style: TextStyle(fontSize: 11, color: Colors.grey.shade500))),
-                ],
-                if (_isHip && _hipLength != null) ...[
-                  const Divider(),
-                  _resultRow('Hip Rafter Length', '${_hipLength!.toStringAsFixed(3)} m', Colors.orange.shade700, bold: true),
-                ],
-              ])),
-            ),
-
-            const SizedBox(height: 16),
-
-            Text(_isHip ? 'Hip Rafter Cut Sheet' : 'Common Rafter Cut Sheet',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            _buildCutSheet(),
-
+          if (_rafterLength != null && _ridgeHeight != null && _halfSpan != null) ...[
             const SizedBox(height: 20),
-
-            Text(_isHip ? 'Hip Rafter Diagram' : 'Common Rafter Diagram',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            const Text('Results', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              childAspectRatio: 1.55,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              children: [
+                _resultTile(Icons.straighten, 'Half Span', '${_halfSpan!.toStringAsFixed(3)} m', Colors.grey.shade700),
+                _resultTile(Icons.architecture, _isHip ? 'Hip Rafter' : 'Common Rafter', '${(_isHip ? _hipLength! : _rafterLength!).toStringAsFixed(3)} m', Colors.brown.shade700),
+                _resultTile(Icons.height, 'Ridge Height', '${_ridgeHeight!.toStringAsFixed(3)} m', Colors.brown.shade700),
+                _resultTile(Icons.view_week, 'Rafters', _numberOfRafters == null ? 'Optional' : '$_numberOfRafters', Colors.blue.shade700),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Text(_isHip ? 'Hip Rafter Cut Sheet' : 'Common Rafter Cut Sheet', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            _buildCutSheet(),
+            const SizedBox(height: 18),
+            Text(_isHip ? 'Hip Rafter Diagram' : 'Common Rafter Diagram', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: RafterDiagram(
@@ -7251,45 +7332,90 @@ class _RafterCalculatorState extends State<RafterCalculator> {
                 ),
               ),
             ),
-
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Row(children: [
               Expanded(child: ElevatedButton.icon(
                 onPressed: _saveCalculation,
                 icon: const Icon(Icons.save),
-                label: const Text('Save'),
+                label: const Text('Save Result'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.brown.shade600, foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12)),
+                  backgroundColor: Colors.brown.shade600,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
               )),
               const SizedBox(width: 10),
               Expanded(child: OutlinedButton.icon(
-                onPressed: () {
-                  final pitch = double.tryParse(_pitchController.text) ?? 0;
-                  final seatCut = 90 - pitch;
-                  String text = '📐 Rafter Calculation\n'
-                    'Span: ${_spanController.text}m  |  Pitch: ${_pitchController.text}°\n'
-                    'Eaves: ${_eavesController.text}m\n\n'
-                    'Common Rafter Length: ${_rafterLength!.toStringAsFixed(3)} m\n'
-                    'Ridge Height: ${_ridgeHeight!.toStringAsFixed(3)} m\n'
-                    'Plumb Cut: ${pitch.toStringAsFixed(1)}°\n'
-                    'Seat Cut: ${seatCut.toStringAsFixed(1)}°\n';
-                  if (_isHip && _hipLength != null) {
-                    text += '\nHip Rafter Length: ${_hipLength!.toStringAsFixed(3)} m\n'
-                      'Hip Plumb Cut: ${_hipPlumbCut!.toStringAsFixed(1)}°\n'
-                      'Hip Seat Cut: ${_hipSeatCut!.toStringAsFixed(1)}°\n'
-                      'Backing Angle: ${_hipDihedral!.toStringAsFixed(1)}°\n';
-                  }
-                  if (_numberOfRafters != null) text += '\nRafters needed: $_numberOfRafters\n';
-                  text += '\nCalculated by Roof Profile Finder';
-                  Share.share(text, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1));
-                },
+                onPressed: _shareRafterCalculation,
                 icon: const Icon(Icons.share),
                 label: const Text('Share'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
               )),
             ]),
           ],
           const SizedBox(height: 30),
+        ]),
+      ),
+    );
+  }
+
+  Widget _buildRafterHeroCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [Colors.brown.shade800, Colors.brown.shade600]),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.18), blurRadius: 12, offset: const Offset(0, 6))],
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.16), borderRadius: BorderRadius.circular(14)),
+            child: const Icon(Icons.carpenter, color: Colors.white, size: 30),
+          ),
+          const SizedBox(width: 12),
+          const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Calculate rafter lengths', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+            SizedBox(height: 4),
+            Text('Enter span, pitch and eaves to get lengths, ridge height and cut angles.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+          ])),
+        ]),
+        const SizedBox(height: 16),
+        Container(
+          height: 128,
+          width: double.infinity,
+          decoration: BoxDecoration(color: Colors.white.withOpacity(0.12), borderRadius: BorderRadius.circular(14)),
+          child: Stack(children: [
+            Positioned(left: 28, right: 28, bottom: 28, child: Container(height: 5, color: Colors.white70)),
+            Positioned(left: 54, top: 62, child: Transform.rotate(angle: -0.45, child: Container(width: 130, height: 8, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))))),
+            Positioned(right: 54, top: 62, child: Transform.rotate(angle: 0.45, child: Container(width: 130, height: 8, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))))),
+            Positioned(left: 0, right: 0, top: 18, child: Center(child: Icon(Icons.home_work, color: Colors.orange.shade200, size: 28))),
+            const Positioned(left: 34, bottom: 10, child: Text('Span', style: TextStyle(color: Colors.white70, fontSize: 12))),
+            const Positioned(right: 34, bottom: 10, child: Text('Pitch', style: TextStyle(color: Colors.white70, fontSize: 12))),
+            Positioned(top: 58, left: 0, right: 0, child: Center(child: Text('Rafter length', style: TextStyle(color: Colors.orange.shade100, fontWeight: FontWeight.bold)))),
+          ]),
+        ),
+      ]),
+    );
+  }
+
+  Widget _resultTile(IconData icon, String label, String value, Color color) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Icon(icon, color: color, size: 24),
+          Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+          FittedBox(child: Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color))),
         ]),
       ),
     );
@@ -7303,33 +7429,33 @@ class _RafterCalculatorState extends State<RafterCalculator> {
 
     if (_isHip && _hipLength != null) {
       return Card(
+        elevation: 2,
         color: Colors.orange.shade50,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [Icon(Icons.content_cut, color: Colors.orange.shade700, size: 18), const SizedBox(width: 8),
-            Text('Hip Rafter Cuts', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange.shade800))]),
+          Row(children: [Icon(Icons.content_cut, color: Colors.orange.shade700, size: 20), const SizedBox(width: 8),
+            Text('Hip Rafter Cuts', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.orange.shade800))]),
           const SizedBox(height: 12),
           _cutRow('🔝 Ridge Plumb Cut', '${_hipPlumbCut!.toStringAsFixed(1)}°', 'Set bevel to ${_hipPlumbCut!.toStringAsFixed(1)}° from vertical'),
-          _cutRow('📐 Cheek Cut (Side)', '45°', 'Cut both sides at 45° in plan (double cheek cut)'),
+          _cutRow('📐 Cheek Cut (Side)', '45°', 'Cut both sides at 45° in plan'),
           _cutRow('🪚 Seat Cut', '${_hipSeatCut!.toStringAsFixed(1)}°', 'Horizontal cut at wall plate'),
           _cutRow('📏 Seat Depth', '50mm', 'Standard seat depth'),
           _cutRow('🔄 Backing Angle', '${_hipDihedral!.toStringAsFixed(1)}°', 'Bevel top of hip for jack rafters'),
           _cutRow('⬇️ Tail Plumb Cut', '${_hipPlumbCut!.toStringAsFixed(1)}°', 'Same angle as ridge plumb cut'),
           const SizedBox(height: 8),
-          Container(padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: Colors.orange.shade100, borderRadius: BorderRadius.circular(6)),
-            child: Text('Set compound mitre saw to ${_hipPlumbCut!.toStringAsFixed(1)}° bevel and 45° mitre for cheek cuts.',
-              style: TextStyle(fontSize: 11, color: Colors.orange.shade900))),
+          Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: Colors.orange.shade100, borderRadius: BorderRadius.circular(10)),
+            child: Text('Set compound mitre saw to ${_hipPlumbCut!.toStringAsFixed(1)}° bevel and 45° mitre for cheek cuts.', style: TextStyle(fontSize: 12, color: Colors.orange.shade900))),
         ])),
       );
     }
 
     return Card(
+      elevation: 2,
       color: Colors.brown.shade50,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [Icon(Icons.content_cut, color: Colors.brown.shade700, size: 18), const SizedBox(width: 8),
-          Text('Common Rafter Cuts', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.brown.shade800))]),
+        Row(children: [Icon(Icons.content_cut, color: Colors.brown.shade700, size: 20), const SizedBox(width: 8),
+          Text('Common Rafter Cuts', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.brown.shade800))]),
         const SizedBox(height: 12),
         _cutRow('🔝 Ridge Plumb Cut', '${pitch.toStringAsFixed(1)}°', 'Set bevel to ${pitch.toStringAsFixed(1)}° from vertical'),
         _cutRow('🪚 Seat Cut (Bird\'s Mouth)', '${seatCut.toStringAsFixed(1)}°', 'Set square to ${seatCut.toStringAsFixed(1)}°'),
@@ -7338,35 +7464,61 @@ class _RafterCalculatorState extends State<RafterCalculator> {
         _cutRow('⬇️ Tail Plumb Cut', '${pitch.toStringAsFixed(1)}°', 'Same angle as ridge plumb cut'),
         _cutRow('📏 Rafter Length', '${_rafterLength!.toStringAsFixed(3)}m', 'Ridge centre to tail cut'),
         const SizedBox(height: 8),
-        Container(padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: Colors.brown.shade100, borderRadius: BorderRadius.circular(6)),
-          child: Text('Set circular saw bevel to ${pitch.toStringAsFixed(1)}° for plumb cuts. Bird\'s mouth seat cut is ${seatCut.toStringAsFixed(1)}°.',
-            style: TextStyle(fontSize: 11, color: Colors.brown.shade900))),
+        Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: Colors.brown.shade100, borderRadius: BorderRadius.circular(10)),
+          child: Text('Set circular saw bevel to ${pitch.toStringAsFixed(1)}° for plumb cuts. Bird\'s mouth seat cut is ${seatCut.toStringAsFixed(1)}°.', style: TextStyle(fontSize: 12, color: Colors.brown.shade900))),
       ])),
     );
   }
 
   Widget _cutRow(String label, String value, String note) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SizedBox(width: 180, child: Text(label, style: const TextStyle(fontSize: 13))),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.brown.shade800)),
-          Text(note, style: TextStyle(fontSize: 10, color: Colors.grey.shade600)),
+        Expanded(flex: 3, child: Text(label, style: const TextStyle(fontSize: 13))),
+        const SizedBox(width: 8),
+        Expanded(flex: 2, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.brown.shade800)),
+          Text(note, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
         ])),
       ]),
     );
   }
 
-  Widget _resultRow(String label, String value, Color color, {bool bold = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
-        Text(value, style: TextStyle(fontSize: 16, fontWeight: bold ? FontWeight.bold : FontWeight.w600, color: color)),
-      ]),
-    );
+  Future<void> _showSavedCalculations() async {
+    final all = await RafterSaveService.loadAll();
+    if (!mounted) return;
+    if (all.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No saved rafter calculations yet.')));
+      return;
+    }
+    await showModalBottomSheet<void>(context: context, showDragHandle: true, builder: (ctx) => ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: all.length,
+      separatorBuilder: (_, __) => const Divider(),
+      itemBuilder: (_, index) {
+        final item = all[index];
+        final name = (item['name'] ?? 'Saved calculation').toString();
+        final span = (item['span'] ?? '').toString();
+        final pitch = (item['pitch'] ?? '').toString();
+        return ListTile(
+          leading: CircleAvatar(backgroundColor: Colors.brown.shade100, child: Icon(Icons.architecture, color: Colors.brown.shade700)),
+          title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text('Span ${span.isEmpty ? '-' : span}m • Pitch ${pitch.isEmpty ? '-' : pitch}°'),
+          onTap: () {
+            Navigator.pop(ctx);
+            setState(() {
+              _spanController.text = span;
+              _pitchController.text = pitch;
+              _eavesController.text = (item['eaves'] ?? '0.3').toString();
+              _spacingController.text = (item['spacing'] ?? '600').toString();
+              _buildingLengthController.text = (item['buildingLength'] ?? '').toString();
+              _isHip = item['isHip'] == true;
+            });
+            _calculate();
+          },
+        );
+      },
+    ));
   }
 }
 
@@ -8019,6 +8171,7 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
     setState(() {
       _points.add(point);
       if (_points.length > 1) _walls.add(_Wall());
+      _showResults = false;
     });
   }
 
@@ -8027,12 +8180,34 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Add at least 3 corners first')));
       return;
     }
-    setState(() { _isClosed = true; });
+    setState(() { _isClosed = true; _showResults = false; });
+  }
+
+  void _undoLastPoint() {
+    if (_isClosed || _points.isEmpty) return;
+    setState(() {
+      _points.removeLast();
+      if (_walls.isNotEmpty) {
+        _walls.removeLast().dispose();
+      }
+      _showResults = false;
+    });
   }
 
   void _reset() {
     for (final w in _walls) { w.dispose(); }
     setState(() { _points.clear(); _walls.clear(); _isClosed = false; _showResults = false; });
+  }
+
+  double? get _enteredPerimeter {
+    if (_walls.isEmpty) return null;
+    double total = 0;
+    for (final w in _walls) {
+      final v = double.tryParse(w.lengthController.text);
+      if (v == null || v <= 0) return null;
+      total += v;
+    }
+    return total;
   }
 
   double? _calculateFlatArea() {
@@ -8043,7 +8218,7 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
       if (v == null || v <= 0) return null;
       realLengths.add(v);
     }
-    // Use shoelace on screen coords, then scale using ratio of real perimeter to screen perimeter
+
     double screenArea = 0;
     double screenPerimeter = 0;
     for (int i = 0; i < _points.length; i++) {
@@ -8055,11 +8230,10 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
       screenPerimeter += math.sqrt(dx * dx + dy * dy);
     }
     screenArea = screenArea.abs() / 2;
-    // Estimate closing wall from screen coords
+
     final closingDx = _points[0].dx - _points[_points.length - 1].dx;
     final closingDy = _points[0].dy - _points[_points.length - 1].dy;
     final closingScreenLen = math.sqrt(closingDx * closingDx + closingDy * closingDy);
-    // Scale factor from entered walls to screen (excluding closing wall)
     final enteredScreenLen = screenPerimeter - closingScreenLen;
     final realEntered = realLengths.reduce((a, b) => a + b);
     final scale = enteredScreenLen > 0 ? realEntered / enteredScreenLen : 1.0;
@@ -8092,171 +8266,227 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
 
   @override
   Widget build(BuildContext context) {
+    final flat = _showResults ? _calculateFlatArea() : null;
+    final pitched = _showResults ? (_pitchedArea ?? flat) : null;
+    final total = _showResults ? (_totalWithWastage ?? flat) : null;
+    final perimeter = _showResults ? _enteredPerimeter : null;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Perimeter Area Tool'),
         backgroundColor: Colors.indigo.shade700,
         foregroundColor: Colors.white,
         actions: [
+          if (!_isClosed && _points.isNotEmpty)
+            IconButton(tooltip: 'Undo point', icon: const Icon(Icons.undo), onPressed: _undoLastPoint),
           if (_points.isNotEmpty)
             IconButton(tooltip: 'Reset', icon: const Icon(Icons.refresh), onPressed: _reset),
         ],
       ),
       body: Column(children: [
-        // Instructions banner
         Container(
           color: Colors.indigo.shade50,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(children: [
-            Icon(Icons.info_outline, color: Colors.indigo.shade700, size: 18),
+            Icon(Icons.info_outline, color: Colors.indigo.shade700, size: 20),
             const SizedBox(width: 8),
             Expanded(child: Text(
               _isClosed
-                ? 'Shape complete! Enter wall lengths below then tap Calculate.'
+                ? 'Shape complete. Enter each wall length, pitch and wastage, then calculate.'
                 : _points.isEmpty
-                  ? 'Tap on the canvas to place the corners of your building.'
-                  : '${_points.length} corners placed. ${_points.length < 3 ? 'Need at least 3.' : 'Tap "Close Shape" when done.'}',
-              style: const TextStyle(fontSize: 12),
+                  ? 'Tap the drawing area to add each corner of the roof shape.'
+                  : '${_points.length} corners added. ${_points.length < 3 ? 'Add at least 3 corners.' : 'Tap Close Shape when finished.'}',
+              style: const TextStyle(fontSize: 12, height: 1.25),
             )),
             if (!_isClosed && _points.length >= 3)
               TextButton(
                 onPressed: _closeShape,
-                child: Text('Close Shape', style: TextStyle(color: Colors.indigo.shade700, fontWeight: FontWeight.bold, fontSize: 12)),
+                child: Text('Close Shape', style: TextStyle(color: Colors.indigo.shade700, fontWeight: FontWeight.bold)),
               ),
           ]),
         ),
 
-        // Drawing canvas
         Expanded(
           flex: 2,
-          child: GestureDetector(
-            onTapUp: (details) => _addPoint(details.localPosition),
-            child: Container(
-              color: Colors.grey.shade100,
-              child: CustomPaint(
-                painter: _PerimeterPainter(points: _points, isClosed: _isClosed),
-                child: _points.isEmpty
-                  ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(Icons.touch_app, size: 48, color: Colors.grey.shade300),
-                      const SizedBox(height: 8),
-                      Text('Tap to place corners', style: TextStyle(color: Colors.grey.shade400, fontSize: 14)),
-                    ]))
-                  : Stack(children: [
-                      // Corner labels
-                      ..._points.asMap().entries.map((e) => Positioned(
-                        left: e.value.dx + 6,
-                        top: e.value.dy - 16,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                          decoration: BoxDecoration(color: Colors.indigo.shade700, borderRadius: BorderRadius.circular(4)),
-                          child: Text('${e.key + 1}', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: _isClosed
+                ? InteractiveViewer(
+                    boundaryMargin: const EdgeInsets.all(120),
+                    minScale: 0.65,
+                    maxScale: 3.0,
+                    panEnabled: true,
+                    scaleEnabled: true,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: SizedBox(
+                          width: 650,
+                          height: 650,
+                          child: _perimeterCanvasContent(),
                         ),
-                      )),
-                    ]),
-              ),
+                      ),
+                    ),
+                  )
+                : GestureDetector(
+                    onTapUp: (details) => _addPoint(details.localPosition),
+                    child: _perimeterCanvasContent(),
+                  ),
             ),
           ),
         ),
 
-        // Wall lengths input
         if (_isClosed)
           Expanded(
             flex: 3,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.fromLTRB(16, 10, 16, 56 + MediaQuery.of(context).viewPadding.bottom),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text('Wall Lengths', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
+                Row(children: [
+                  Icon(Icons.straighten, color: Colors.indigo.shade700),
+                  const SizedBox(width: 8),
+                  const Text('Wall Lengths', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ]),
+                const SizedBox(height: 6),
+                Text('Enter the real measured length for each wall section shown above.', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                const SizedBox(height: 12),
+
                 ..._walls.asMap().entries.map((entry) {
                   final i = entry.key;
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: 10),
                     child: Row(children: [
-                      Container(
-                        width: 28, height: 28,
-                        decoration: BoxDecoration(color: Colors.indigo.shade700, shape: BoxShape.circle),
-                        child: Center(child: Text('${i+1}', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold))),
+                      _wallNumber(i + 1),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Icon(Icons.arrow_forward, size: 16, color: Colors.grey.shade400),
                       ),
-                      const SizedBox(width: 6),
-                      Icon(Icons.arrow_forward, size: 14, color: Colors.grey.shade400),
-                      const SizedBox(width: 6),
-                      Container(
-                        width: 28, height: 28,
-                        decoration: BoxDecoration(color: Colors.indigo.shade700, shape: BoxShape.circle),
-                        child: Center(child: Text('${i+2 > _points.length ? 1 : i+2}', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold))),
-                      ),
+                      _wallNumber(i + 2 > _points.length ? 1 : i + 2),
                       const SizedBox(width: 12),
                       Expanded(child: TextField(
                         controller: entry.value.lengthController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        onChanged: (_) { if (_showResults) setState(() { _showResults = false; }); },
                         decoration: InputDecoration(
-                          hintText: 'Wall ${i+1} length',
+                          labelText: 'Wall ${i + 1}',
+                          hintText: 'Length',
                           suffixText: 'm',
-                          border: const OutlineInputBorder(),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                           isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
                         ),
                       )),
                     ]),
                   );
                 }),
+
                 const SizedBox(height: 8),
                 Row(children: [
                   Expanded(child: TextField(
                     controller: _pitchController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(labelText: 'Roof Pitch (optional)', suffixText: '°', border: OutlineInputBorder(), isDense: true),
+                    onChanged: (_) { if (_showResults) setState(() { _showResults = false; }); },
+                    decoration: InputDecoration(
+                      labelText: 'Roof Pitch',
+                      suffixText: '°',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      helperText: 'Optional',
+                      isDense: true,
+                    ),
                   )),
                   const SizedBox(width: 12),
                   Expanded(child: TextField(
                     controller: _wastageController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(labelText: 'Wastage %', border: OutlineInputBorder(), isDense: true),
+                    onChanged: (_) { if (_showResults) setState(() { _showResults = false; }); },
+                    decoration: InputDecoration(
+                      labelText: 'Wastage',
+                      suffixText: '%',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      helperText: 'Allowance',
+                      isDense: true,
+                    ),
                   )),
                 ]),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 SizedBox(width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _calculate,
                     icon: const Icon(Icons.calculate),
-                    label: const Text('Calculate Area'),
+                    label: const Text('Calculate Area & Perimeter'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.indigo.shade700, foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14)),
+                      backgroundColor: Colors.indigo.shade700,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
                   ),
                 ),
-                if (_showResults && _calculateFlatArea() != null) ...[
-                  const SizedBox(height: 16),
-                  Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
-                      _resultRow('Flat Area', '${_calculateFlatArea()!.toStringAsFixed(2)} m²', Colors.grey.shade700),
-                      const Divider(),
-                      _resultRow('Pitched Area', '${(_pitchedArea ?? _calculateFlatArea()!).toStringAsFixed(2)} m²', Colors.indigo.shade700, bold: true),
-                      const Divider(),
-                      _resultRow('Total + Wastage', '${(_totalWithWastage ?? _calculateFlatArea()!).toStringAsFixed(2)} m²', Colors.blue.shade700, bold: true),
-                    ])),
+
+                if (_showResults && flat != null) ...[
+                  const SizedBox(height: 20),
+                  Row(children: [
+                    Icon(Icons.analytics_outlined, color: Colors.indigo.shade700),
+                    const SizedBox(width: 8),
+                    const Text('Calculation Results', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  ]),
+                  const SizedBox(height: 12),
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 1.35,
+                    children: [
+                      _resultCard('Flat Area', '${flat.toStringAsFixed(2)} m²', Icons.crop_square, Colors.grey.shade700),
+                      _resultCard('Pitched Area', '${(pitched ?? flat).toStringAsFixed(2)} m²', Icons.roofing, Colors.indigo.shade700),
+                      _resultCard('Total + Waste', '${(total ?? flat).toStringAsFixed(2)} m²', Icons.add_chart, Colors.blue.shade700),
+                      _resultCard('Perimeter', '${(perimeter ?? 0).toStringAsFixed(2)} m', Icons.timeline, Colors.green.shade700),
+                    ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 14),
+                  SizedBox(width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Area ready to use with your material list workflow')),
+                        );
+                      },
+                      icon: const Icon(Icons.list_alt),
+                      label: const Text('Use Area For Material List'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green.shade700,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   SizedBox(width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: () {
-                        final flat = _calculateFlatArea()!;
                         Share.share(
-                          '📐 Perimeter Area Calculation\n'
-                          '${_walls.length} walls\n'
+                          '📐 Perimeter Area Calculation\n\n'
+                          'Walls measured: ${_walls.length}\n'
+                          'Perimeter: ${(perimeter ?? 0).toStringAsFixed(2)} m\n'
                           'Flat Area: ${flat.toStringAsFixed(2)} m²\n'
-                          'Pitched Area: ${(_pitchedArea ?? flat).toStringAsFixed(2)} m²\n'
-                          'Total + Wastage: ${(_totalWithWastage ?? flat).toStringAsFixed(2)} m²\n\n'
+                          'Pitched Area: ${(pitched ?? flat).toStringAsFixed(2)} m²\n'
+                          'Total + ${_wastageController.text}% wastage: ${(total ?? flat).toStringAsFixed(2)} m²\n\n'
                           'Calculated by Roof Profile Finder',
                           sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
                         );
                       },
                       icon: const Icon(Icons.share),
-                      label: const Text('Share Result'),
+                      label: const Text('Share Results'),
+                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
                     ),
                   ),
                 ],
-                const SizedBox(height: 30),
               ]),
             ),
           ),
@@ -8264,13 +8494,95 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
     );
   }
 
-  Widget _resultRow(String label, String value, Color color, {bool bold = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
-        Text(value, style: TextStyle(fontSize: 16, fontWeight: bold ? FontWeight.bold : FontWeight.w600, color: color)),
-      ]),
+  Widget _perimeterCanvasContent() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.indigo.shade100),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, 3))],
+      ),
+      child: CustomPaint(
+        painter: _PerimeterPainter(points: _points, isClosed: _isClosed),
+        child: _points.isEmpty
+          ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.touch_app, size: 46, color: Colors.indigo.shade200),
+              const SizedBox(height: 8),
+              Text('Tap to draw roof outline', style: TextStyle(color: Colors.indigo.shade400, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 4),
+              Text('Add corners around the building shape', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+            ]))
+          : Stack(children: [
+              ..._points.asMap().entries.map((e) => Positioned(
+                left: e.value.dx + 8,
+                top: e.value.dy - 22,
+                child: Container(
+                  width: 26,
+                  height: 26,
+                  decoration: BoxDecoration(
+                    color: Colors.indigo.shade700,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4)],
+                  ),
+                  child: Center(child: Text('${e.key + 1}', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold))),
+                ),
+              )),
+              if (_isClosed)
+                Positioned(
+                  right: 12,
+                  bottom: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.92),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.indigo.shade100),
+                    ),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.open_with, size: 15, color: Colors.indigo.shade700),
+                      const SizedBox(width: 5),
+                      Text('Pan / pinch to view large shapes', style: TextStyle(fontSize: 11, color: Colors.indigo.shade700, fontWeight: FontWeight.w600)),
+                    ]),
+                  ),
+                ),
+            ]),
+      ),
+    );
+  }
+
+  Widget _wallNumber(int number) {
+    return Container(
+      width: 34,
+      height: 34,
+      decoration: BoxDecoration(
+        color: Colors.indigo.shade700,
+        shape: BoxShape.circle,
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 4, offset: const Offset(0, 2))],
+      ),
+      child: Center(child: Text('$number', style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))),
+    );
+  }
+
+  Widget _resultCard(String title, String value, IconData icon, Color color) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 8),
+            Text(title, textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+            const SizedBox(height: 5),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -8282,32 +8594,53 @@ class _PerimeterPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final gridPaint = Paint()
+      ..color = Colors.indigo.withOpacity(0.05)
+      ..strokeWidth = 1;
+    const double grid = 28;
+    for (double x = 0; x <= size.width; x += grid) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+    }
+    for (double y = 0; y <= size.height; y += grid) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+    }
+
     if (points.isEmpty) return;
+
     final linePaint = Paint()
       ..color = Colors.indigo.shade700
-      ..strokeWidth = 2.5
-      ..style = PaintingStyle.stroke;
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    final fillPaint = Paint()
+      ..color = Colors.indigo.withOpacity(0.08)
+      ..style = PaintingStyle.fill;
     final dotPaint = Paint()
       ..color = Colors.indigo.shade700
       ..style = PaintingStyle.fill;
 
-    // Draw lines
-    for (int i = 0; i < points.length - 1; i++) {
-      canvas.drawLine(points[i], points[i + 1], linePaint);
+    final path = Path()..moveTo(points.first.dx, points.first.dy);
+    for (int i = 1; i < points.length; i++) {
+      path.lineTo(points[i].dx, points[i].dy);
     }
     if (isClosed && points.length > 2) {
-      canvas.drawLine(points.last, points.first, linePaint..color = Colors.indigo.shade400);
+      path.close();
+      canvas.drawPath(path, fillPaint);
     }
-    // Draw dots
+    canvas.drawPath(path, linePaint);
+
     for (final p in points) {
-      canvas.drawCircle(p, 7, dotPaint);
-      canvas.drawCircle(p, 7, Paint()..color = Colors.white..style = PaintingStyle.stroke..strokeWidth = 2);
+      canvas.drawCircle(p, 10, Paint()..color = Colors.white..style = PaintingStyle.fill);
+      canvas.drawCircle(p, 8, dotPaint);
+      canvas.drawCircle(p, 10, Paint()..color = Colors.white..style = PaintingStyle.stroke..strokeWidth = 2);
     }
   }
 
   @override
   bool shouldRepaint(covariant _PerimeterPainter old) => old.points != points || old.isClosed != isClosed;
 }
+
 
 // ═══════════════════════════════════════════════════════════════
 // Account Screen
