@@ -4174,7 +4174,8 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   final FlutterTts _flutterTts = FlutterTts();
   bool _ttsEnabled = true; // on by default
   double _lastSpokenAngle = -1;
-  Timer? _speakTimer; // debounce — only speak after angle stable for 1 second
+  Timer? _speakTimer; // debounce — only speak after angle is stable
+  double _ttsSensitivity = 1.0; // seconds to wait — 0.3 to 2.0
 
   // Smoothing buffer
   final List<double> _buffer = [];
@@ -4186,6 +4187,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
     _loadCalibration();
     _loadInstructionsPref();
     _loadTtsPref();
+    _loadSensitivityPref();
     _initTts();
     _sub = accelerometerEventStream(samplingPeriod: SensorInterval.normalInterval).listen((event) {
       final double rawPitch = math.atan2(-event.y, math.sqrt(event.x * event.x + event.z * event.z)) * 180 / math.pi;
@@ -4203,7 +4205,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
             _lastSpokenAngle = rounded.toDouble();
             // Cancel previous timer — restart 1 second countdown
             _speakTimer?.cancel();
-            _speakTimer = Timer(const Duration(seconds: 1), () {
+            _speakTimer = Timer(Duration(milliseconds: (_ttsSensitivity * 1000).round()), () {
               _flutterTts.speak('$rounded degrees');
             });
           }
@@ -4228,6 +4230,16 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
   Future<void> _saveTtsPref(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('tts_enabled', value);
+  }
+
+  Future<void> _loadSensitivityPref() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() { _ttsSensitivity = prefs.getDouble('tts_sensitivity') ?? 1.0; });
+  }
+
+  Future<void> _saveSensitivityPref(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('tts_sensitivity', value);
   }
 
   Future<void> _loadCalibration() async {
@@ -4555,7 +4567,48 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
             ),
             const SizedBox(height: 16),
 
-            if (_locked) ...[
+            // Voice sensitivity slider — only shown when TTS enabled
+            if (_ttsEnabled) Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Row(children: [
+                    Icon(Icons.graphic_eq, size: 16, color: Colors.blue.shade700),
+                    const SizedBox(width: 6),
+                    Text('Voice Sensitivity', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.blue.shade700)),
+                    const Spacer(),
+                    Text(
+                      _ttsSensitivity <= 0.4 ? 'Very Fast' :
+                      _ttsSensitivity <= 0.7 ? 'Fast' :
+                      _ttsSensitivity <= 1.1 ? 'Normal' :
+                      _ttsSensitivity <= 1.6 ? 'Slow' : 'Very Slow',
+                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(width: 6),
+                    Text('(${_ttsSensitivity.toStringAsFixed(1)}s)',
+                      style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                  ]),
+                  Slider(
+                    value: _ttsSensitivity,
+                    min: 0.3,
+                    max: 2.0,
+                    divisions: 17,
+                    activeColor: Colors.blue.shade700,
+                    onChanged: (val) {
+                      setState(() { _ttsSensitivity = val; });
+                    },
+                    onChangeEnd: (val) {
+                      _saveSensitivityPref(val);
+                    },
+                  ),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text('Fast', style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
+                    Text('Slow', style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
+                  ]),
+                ]),
+              ),
+            ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(color: Colors.orange.shade50, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.orange.shade300)),
