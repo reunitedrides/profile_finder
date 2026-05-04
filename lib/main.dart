@@ -1258,9 +1258,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   String _categoryLabelFor(String category) {
     switch (category) {
-      case 'steel':         return 'Steel Sheets';
-      case 'cement':        return 'Cement Sheets';
-      case 'composite':     return 'Composite / Liner';
+      case 'steel':         return 'Steel';
+      case 'cement':        return 'Cement';
+      case 'composite':     return 'Composite';
       case 'standing_seam': return 'Standing Seam';
       case 'tile':          return 'Tiles / Slates';
       default:              return 'Profiles';
@@ -1292,13 +1292,11 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   PopupMenuItem<String> _categoryMenuItem(String category) {
     return PopupMenuItem<String>(
       value: category,
-      child: Row(
-        children: [
-          Icon(_categoryIconFor(category), color: _categoryColorFor(category), size: 20),
-          const SizedBox(width: 10),
-          Text(_categoryLabelFor(category)),
-        ],
-      ),
+      child: Row(children: [
+        Icon(_categoryIconFor(category), color: _categoryColorFor(category), size: 20),
+        const SizedBox(width: 10),
+        Text(_categoryLabelFor(category)),
+      ]),
     );
   }
 
@@ -1317,51 +1315,60 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       ]);
     }
 
-    // Sheet screens: show toggle filter buttons
     final sheetCats = categories.where((c) => c != 'tile').toList();
     if (sheetCats.isEmpty) return const SizedBox.shrink();
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('Material type:', style: TextStyle(fontSize: 13, color: Colors.black54)),
-      const SizedBox(height: 6),
-      Wrap(spacing: 8, runSpacing: 6, children: sheetCats.map((cat) {
-        final active = _activeSheetFilters.contains(cat);
-        final color = _categoryColorFor(cat);
-        return GestureDetector(
+    // Build a 2×2 grid of toggle buttons
+    Widget _chip(String cat) {
+      final active = _activeSheetFilters.contains(cat);
+      final color = _categoryColorFor(cat);
+      return Expanded(
+        child: GestureDetector(
           onTap: () {
             setState(() {
-              if (active && _activeSheetFilters.length == 1) return; // keep at least one
-              if (active) {
-                _activeSheetFilters.remove(cat);
-              } else {
-                _activeSheetFilters.add(cat);
-              }
+              if (active && _activeSheetFilters.length == 1) return;
+              if (active) { _activeSheetFilters.remove(cat); } else { _activeSheetFilters.add(cat); }
             });
             _reloadSheetProfiles();
           },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: 9),
             decoration: BoxDecoration(
               color: active ? color : Colors.transparent,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: color, width: 1.5),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: active ? color : Colors.grey.shade300, width: 1.5),
             ),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Icon(_categoryIconFor(cat), color: active ? Colors.white : color, size: 16),
-              const SizedBox(width: 6),
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text(_categoryLabelFor(cat),
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: active ? Colors.white : color,
-                  fontSize: 13, fontWeight: FontWeight.w600)),
+                  color: active ? Colors.white : Colors.grey.shade700,
+                  fontSize: 12,
+                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                )),
               if (active) ...[
                 const SizedBox(width: 4),
-                Icon(Icons.check, color: Colors.white, size: 14),
+                Icon(Icons.check, color: Colors.white, size: 12),
               ],
             ]),
           ),
-        );
-      }).toList()),
+        ),
+      );
+    }
+
+    // Split into rows of 2
+    final row1 = sheetCats.take(2).toList();
+    final row2 = sheetCats.skip(2).toList();
+
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text('Material type:', style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontWeight: FontWeight.w500)),
+      const SizedBox(height: 8),
+      Row(children: [...row1.map(_chip).expand((w) => [w, const SizedBox(width: 8)]).toList()..removeLast()]),
+      if (row2.isNotEmpty) ...[
+        const SizedBox(height: 8),
+        Row(children: [...row2.map(_chip).expand((w) => [w, const SizedBox(width: 8)]).toList()..removeLast()]),
+      ],
     ]);
   }
 
