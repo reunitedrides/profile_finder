@@ -214,12 +214,35 @@ class HistoryService {
   static Future<void> clearHistory() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
+    // Also delete from Firestore cloud if logged in
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final snap = await FirebaseFirestore.instance
+          .collection('users').doc(user.uid).collection('history').get();
+        for (final doc in snap.docs) { await doc.reference.delete(); }
+      }
+    } catch (_) {}
   }
 
   static Future<void> deleteEntry(int index) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> history = prefs.getStringList(_key) ?? [];
     if (index >= 0 && index < history.length) {
+      // Also delete from Firestore if we can identify it
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final entry = jsonDecode(history[index]) as Map<String, dynamic>;
+          final savedAt = entry['savedAt']?.toString() ?? '';
+          if (savedAt.isNotEmpty) {
+            final snap = await FirebaseFirestore.instance
+              .collection('users').doc(user.uid).collection('history')
+              .where('savedAt', isEqualTo: savedAt).get();
+            for (final doc in snap.docs) { await doc.reference.delete(); }
+          }
+        }
+      } catch (_) {}
       history.removeAt(index);
       await prefs.setStringList(_key, history);
     }
@@ -1698,8 +1721,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         final allBackups = await FirebaseFirestore.instance
           .collection('users').doc(uid).collection('backups')
           .orderBy('backupAt', descending: true).get();
-        if (allBackups.docs.length > 10) {
-          for (final doc in allBackups.docs.skip(10)) { await doc.reference.delete(); }
+        if (allBackups.docs.length > 3) {
+          for (final doc in allBackups.docs.skip(3)) { await doc.reference.delete(); }
         }
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('✓ ${history.length} history entries + material lists backed up!'),
@@ -1798,7 +1821,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       final uid = AuthService.currentUser!.uid;
       final snap = await FirebaseFirestore.instance
         .collection('users').doc(uid).collection('backups')
-        .orderBy('backupAt', descending: true).limit(10).get();
+        .orderBy('backupAt', descending: true).limit(3).get();
       if (mounted) Navigator.of(context).pop();
 
       if (snap.docs.isEmpty) {
@@ -2834,16 +2857,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     Text('No saved profiles yet.\n\nTap "Save to History" on any result to save it here.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
                   ])))
               : Column(children: [
-                  Container(
-                    width: double.infinity,
-                    color: Colors.grey.shade100,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(children: [
-                      Icon(Icons.swipe_left, size: 16, color: Colors.grey.shade500),
-                      const SizedBox(width: 6),
-                      Text('Swipe left on an entry to delete it', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
-                    ]),
-                  ),
                   Expanded(child: ListView.separated(
                   padding: const EdgeInsets.all(12),
                   itemCount: _history.length,
@@ -2851,37 +2864,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   itemBuilder: (context, index) {
                     final HistoryEntry entry = _history[index];
                     final ProfileRecord p = entry.profile;
-                    return Dismissible(
-                      key: Key('${entry.savedAt.millisecondsSinceEpoch}_$index'),
-                      direction: DismissDirection.endToStart,
-                      background: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
-                        color: Colors.red.shade400,
-                        child: const Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          Icon(Icons.delete, color: Colors.white, size: 28),
-                          Text('Delete', style: TextStyle(color: Colors.white, fontSize: 12)),
-                        ]),
-                      ),
-                      confirmDismiss: (direction) async {
-                        return await showDialog<bool>(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: const Text('Delete Entry'),
-                            content: Text('Remove ${p.displayTitle} from history?'),
-                            actions: [
-                              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
-                            ],
-                          ),
-                        );
-                      },
-                      onDismissed: (direction) async {
-                        await HistoryService.deleteEntry(index);
-                        setState(() { _history.removeAt(index); });
-                        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry deleted'), duration: Duration(seconds: 1)));
-                      },
-                      child: ListTile(
+                    return ListTile(
                       leading: p.imageFile != null
                           ? ClipRRect(borderRadius: BorderRadius.circular(6),
                               child: Image.asset(p.imageFile!, width: 48, height: 48, fit: BoxFit.contain,
@@ -2983,12 +2966,37 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             }
                           },
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 4),
+                        IconButton(
+                          tooltip: 'Delete entry',
+                          icon: Icon(Icons.delete_outline, color: Colors.red.shade400, size: 22),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('Delete Entry'),
+                                content: Text('Permanently remove ${p.displayTitle} from history?'),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                  TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+                                ],
+                              ),
+                            );
+                            if (confirm == true && context.mounted) {
+                              await HistoryService.deleteEntry(index);
+                              setState(() { _history.removeAt(index); });
+                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Entry deleted permanently'), duration: Duration(seconds: 2)));
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 4),
                         const Icon(Icons.arrow_forward_ios, size: 16),
                       ]),
                       onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
                         builder: (_) => ResultsScreen(title: 'Profile', results: [SearchResult(profile: p, score: 0)]))),
-                    ),
                     );
                   }),
                 ),
@@ -7479,8 +7487,8 @@ class _SiteStopsScreenState extends State<SiteStopsScreen> {
                   Slider(
                     value: _radiusMiles,
                     min: 1,
-                    max: 8,
-                    divisions: 7,
+                    max: 15,
+                    divisions: 14,
                     label: '${_radiusMiles.round()} miles',
                     activeColor: Colors.brown.shade700,
                     onChanged: (v) => setState(() => _radiusMiles = v),
