@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart' show rootBundle, SystemChrome, DeviceOrientation, MethodChannel, SystemUiMode, HapticFeedback, SystemSound, SystemSoundType;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:vibration/vibration.dart';
@@ -642,6 +644,7 @@ class ToolUsageService {
     'area':      {'label': 'Area Calc',     'icon': Icons.calculate,      'color': 0xFF00695C},
     'rafter':    {'label': 'Rafter Calc',   'icon': Icons.straighten,     'color': 0xFF4E342E},
     'perimeter': {'label': 'Perimeter',     'icon': Icons.crop_free,      'color': 0xFF283593},
+    'siteStops': {'label': 'Site Stops',    'icon': Icons.storefront,     'color': 0xFF6D4C41},
     'torch':     {'label': 'Torch',         'icon': Icons.flashlight_on,  'color': 0xFFF57F17},
   };
 
@@ -1053,6 +1056,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       case 'area':      screen = const RoofAreaCalculator(); break;
       case 'rafter':    screen = const RafterCalculator(); break;
       case 'perimeter': screen = const PerimeterAreaTool(); break;
+      case 'siteStops': screen = const SiteStopsScreen(); break;
       case 'torch':     screen = const TorchScreen(); break;
       default: return;
     }
@@ -1115,6 +1119,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
           '📏  Roof Area Calculator\n'
           '📐  Rafter Calculator\n'
           '🏗️  Perimeter Area Tool\n'
+          '☕  Site Stops nearby finder\n'
           '🔦  Torch\n'
           '📍  GPS location saving with map view\n'
           '📄  PDF export\n'
@@ -1449,9 +1454,20 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         },
       ),
       _HomeHubEntry(
+        icon: Icons.storefront,
+        color: Colors.brown.shade600,
+        title: '8. Site Stops',
+        subtitle: 'Find nearby cafés, food stops and trade counters, then open directions.',
+        onTap: () async {
+          await _playTapClick();
+          if (!mounted) return;
+          await _openTool('siteStops');
+        },
+      ),
+      _HomeHubEntry(
         icon: Icons.flashlight_on,
         color: Colors.amber.shade700,
-        title: '8. Torch',
+        title: '9. Torch',
         subtitle: 'Use your phone torch in dark roof spaces.',
         onTap: () async {
           await _playTapClick();
@@ -3857,6 +3873,22 @@ class _ToolsScreenState extends State<ToolsScreen> {
                 contentPadding: const EdgeInsets.all(16),
                 leading: Container(
                   width: 52, height: 52,
+                  decoration: BoxDecoration(color: Colors.brown.shade600, borderRadius: BorderRadius.circular(10)),
+                  child: const Icon(Icons.storefront, color: Colors.white, size: 28),
+                ),
+                title: const Text('Site Stops', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                subtitle: const Text('Find nearby coffee, food and trade counters, then open directions'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () { ToolUsageService.recordUsage('siteStops'); Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const SiteStopsScreen())); },
+              ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                leading: Container(
+                  width: 52, height: 52,
                   decoration: BoxDecoration(color: Colors.amber.shade700, borderRadius: BorderRadius.circular(10)),
                   child: const Icon(Icons.flashlight_on, color: Colors.white, size: 28),
                 ),
@@ -4317,70 +4349,123 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
 
   double get _displayPitch => _locked ? (_lockedPitch ?? _pitch) : _pitch;
 
+  Future<void> _shareRidgeHipDiagram(GlobalKey diagramKey, double pitchDeg, double ridgeAngle, double hipAngle) async {
+    try {
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+      final boundary = diagramKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      if (boundary == null) {
+        Share.share(
+          'Ridge & Hip Angles\nPitch: ${pitchDeg.toStringAsFixed(1)}°\nRidge flashing angle: ${ridgeAngle.toStringAsFixed(1)}°\nHip / valley flashing angle: ${hipAngle.toStringAsFixed(1)}°\n\nCalculated by Roof Profile Finder',
+          sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+        );
+        return;
+      }
+      final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData == null) throw Exception('Could not create image');
+      final file = File('${Directory.systemTemp.path}/ridge_hip_angles_${DateTime.now().millisecondsSinceEpoch}.png');
+      await file.writeAsBytes(byteData.buffer.asUint8List());
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: 'Ridge & Hip Angles - pitch ${pitchDeg.toStringAsFixed(1)}°',
+        sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+      );
+    } catch (_) {
+      Share.share(
+        'Ridge & Hip Angles\nPitch: ${pitchDeg.toStringAsFixed(1)}°\nRidge flashing angle: ${ridgeAngle.toStringAsFixed(1)}°\nHip / valley flashing angle: ${hipAngle.toStringAsFixed(1)}°\n\nCalculated by Roof Profile Finder',
+        sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+      );
+    }
+  }
+
   void _showRidgeAngleDialog(double pitchDeg) {
     final double ridgeAngle = 180 - (pitchDeg * 2);
     final double hipAngle = 90 + pitchDeg;
+    final diagramKey = GlobalKey();
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        contentPadding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+        actionsPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(children: [
           Icon(Icons.roofing, color: Colors.teal.shade700),
           const SizedBox(width: 8),
-          const Text('Ridge & Hip Angles'),
+          const Expanded(child: Text('Ridge & Hip Angles', overflow: TextOverflow.ellipsis)),
         ]),
-        content: SingleChildScrollView(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(color: Colors.teal.shade50, borderRadius: BorderRadius.circular(12)),
-              child: CustomPaint(
-                size: const Size(260, 130),
-                painter: _RidgeDiagramPainter(pitchDeg: pitchDeg, ridgeAngle: ridgeAngle),
+        content: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: math.min(MediaQuery.of(ctx).size.width - 64, 420)),
+          child: SingleChildScrollView(
+            child: RepaintBoundary(
+              key: diagramKey,
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(4),
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(color: Colors.teal.shade50, borderRadius: BorderRadius.circular(12)),
+                    child: CustomPaint(
+                      size: const Size(260, 130),
+                      painter: _RidgeDiagramPainter(pitchDeg: pitchDeg, ridgeAngle: ridgeAngle),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(color: Colors.teal.shade700, borderRadius: BorderRadius.circular(10)),
+                    child: Column(children: [
+                      const Text('Ridge Flashing Angle', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                      const SizedBox(height: 4),
+                      FittedBox(child: Text('${ridgeAngle.toStringAsFixed(1)}°',
+                        style: const TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.bold, height: 1.1))),
+                      Text('For a ${pitchDeg.toStringAsFixed(1)}° pitch roof',
+                        style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                    ]),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(color: Colors.orange.shade700, borderRadius: BorderRadius.circular(10)),
+                    child: Column(children: [
+                      const Text('Hip / Valley Flashing Angle', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                      const SizedBox(height: 4),
+                      FittedBox(child: Text('${hipAngle.toStringAsFixed(1)}°',
+                        style: const TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.bold, height: 1.1))),
+                      Text('Internal angle each side: ${(pitchDeg + 90).toStringAsFixed(1)}°',
+                        style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                    ]),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(8)),
+                    child: const Text(
+                      '💡 The ridge angle is the angle you set your sheet metal bender or flashing folder to.\n\nFormula: 180° − (pitch × 2)',
+                      style: TextStyle(fontSize: 12, height: 1.5),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text('Calculated by Roof Profile Finder', style: TextStyle(color: Colors.grey.shade500, fontSize: 10)),
+                ]),
               ),
             ),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Colors.teal.shade700, borderRadius: BorderRadius.circular(10)),
-              child: Column(children: [
-                const Text('Ridge Flashing Angle', style: TextStyle(color: Colors.white70, fontSize: 13)),
-                const SizedBox(height: 4),
-                Text('${ridgeAngle.toStringAsFixed(1)}°',
-                  style: const TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.bold, height: 1.1)),
-                Text('For a ${pitchDeg.toStringAsFixed(1)}° pitch roof',
-                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
-              ]),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Colors.orange.shade700, borderRadius: BorderRadius.circular(10)),
-              child: Column(children: [
-                const Text('Hip / Valley Flashing Angle', style: TextStyle(color: Colors.white70, fontSize: 13)),
-                const SizedBox(height: 4),
-                Text('${hipAngle.toStringAsFixed(1)}°',
-                  style: const TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.bold, height: 1.1)),
-                Text('Internal angle each side: ${(pitchDeg + 90).toStringAsFixed(1)}°',
-                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
-              ]),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(8)),
-              child: const Text(
-                '💡 The ridge angle is the angle you set your sheet metal bender or flashing folder to.\n\nFormula: 180° − (pitch × 2)',
-                style: TextStyle(fontSize: 12, height: 1.5),
-              ),
-            ),
-          ]),
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+          Wrap(spacing: 8, runSpacing: 8, alignment: WrapAlignment.end, children: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+            ElevatedButton.icon(
+              onPressed: () => _shareRidgeHipDiagram(diagramKey, pitchDeg, ridgeAngle, hipAngle),
+              icon: const Icon(Icons.share, size: 18),
+              label: const Text('Share diagram'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.teal.shade700, foregroundColor: Colors.white),
+            ),
+          ]),
         ],
       ),
     );
@@ -6520,6 +6605,287 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// Site Stops Screen — nearby coffee, food and trade counter launcher
+// ═══════════════════════════════════════════════════════════════
+
+class SiteStopOption {
+  final String label;
+  final String query;
+  final IconData icon;
+  final Color color;
+  final String subtitle;
+  const SiteStopOption(this.label, this.query, this.icon, this.color, this.subtitle);
+}
+
+class SiteStopsScreen extends StatefulWidget {
+  const SiteStopsScreen({super.key});
+
+  @override
+  State<SiteStopsScreen> createState() => _SiteStopsScreenState();
+}
+
+class _SiteStopsScreenState extends State<SiteStopsScreen> {
+  double _radiusMiles = 3;
+  bool _opening = false;
+
+  static final List<SiteStopOption> _options = [
+    SiteStopOption('Cafes', 'cafe', Icons.local_cafe, Colors.brown.shade600, 'Independent cafes nearby'),
+    SiteStopOption('Coffee shops', 'coffee shop', Icons.coffee, Colors.brown.shade700, 'Coffee chains and independents'),
+    SiteStopOption('Greggs', 'Greggs', Icons.bakery_dining, Colors.indigo.shade700, 'Breakfast, lunch and snacks'),
+    SiteStopOption('McDonald\'s', 'McDonald\'s', Icons.fastfood, Colors.red.shade700, 'Fast food nearby'),
+    SiteStopOption('KFC', 'KFC', Icons.restaurant, Colors.deepOrange.shade700, 'Chicken restaurants'),
+    SiteStopOption('Costa', 'Costa Coffee', Icons.coffee_maker, Colors.red.shade900, 'Costa Coffee stores'),
+    SiteStopOption('Burger King', 'Burger King', Icons.lunch_dining, Colors.orange.shade800, 'Burger King restaurants'),
+    SiteStopOption('Screwfix', 'Screwfix', Icons.handyman, Colors.blue.shade800, 'Trade counter and supplies'),
+    SiteStopOption('Toolstation', 'Toolstation', Icons.construction, Colors.green.shade700, 'Trade counter and supplies'),
+  ];
+
+  Future<Position?> _getPosition() async {
+    try {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permission is needed to search near your current site.')),
+          );
+        }
+        return null;
+      }
+      return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not get your current location.')),
+        );
+      }
+      return null;
+    }
+  }
+
+  Future<void> _openInMaps(SiteStopOption option, {required bool directions}) async {
+    if (_opening) return;
+    setState(() => _opening = true);
+    try {
+      final pos = await _getPosition();
+      if (pos == null) return;
+      final query = '${option.query} within ${_radiusMiles.round()} miles';
+      late final Uri uri;
+      if (directions) {
+        if (Platform.isIOS) {
+          uri = Uri.parse('https://maps.apple.com/?saddr=${pos.latitude},${pos.longitude}&daddr=${Uri.encodeComponent(query)}&dirflg=d');
+        } else {
+          uri = Uri.parse('https://www.google.com/maps/dir/?api=1&origin=${pos.latitude},${pos.longitude}&destination=${Uri.encodeComponent(query)}&travelmode=driving');
+        }
+      } else {
+        if (Platform.isIOS) {
+          uri = Uri.parse('https://maps.apple.com/?ll=${pos.latitude},${pos.longitude}&q=${Uri.encodeComponent(query)}');
+        } else {
+          uri = Uri.parse('geo:${pos.latitude},${pos.longitude}?q=${Uri.encodeComponent(query)}');
+        }
+      }
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open maps for ${option.label}.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _opening = false);
+    }
+  }
+
+  void _showOptionSheet(SiteStopOption option) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: option.color.withOpacity(0.12),
+                      child: Icon(option.icon, color: option.color),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(option.label, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                          Text('Search within ${_radiusMiles.round()} miles', style: TextStyle(color: Colors.grey.shade700)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.map),
+                  label: const Text('Show on map'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.brown.shade700,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _openInMaps(option, directions: false);
+                  },
+                ),
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.directions),
+                  label: const Text('Open directions'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _openInMaps(option, directions: true);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Site Stops'),
+        backgroundColor: Colors.brown.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [Colors.brown.shade700, Colors.brown.shade500]),
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 16, offset: const Offset(0, 8))],
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.storefront, color: Colors.white, size: 34),
+                SizedBox(height: 12),
+                Text('Find a quick stop near site', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900)),
+                SizedBox(height: 6),
+                Text('Coffee, food and trade counters. Opens in the maps app installed on this device.', style: TextStyle(color: Colors.white70, height: 1.35)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Expanded(child: Text('Search distance', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800))),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(color: Colors.brown.shade50, borderRadius: BorderRadius.circular(999)),
+                        child: Text('${_radiusMiles.round()} miles', style: TextStyle(color: Colors.brown.shade800, fontWeight: FontWeight.w800)),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    value: _radiusMiles,
+                    min: 1,
+                    max: 8,
+                    divisions: 7,
+                    label: '${_radiusMiles.round()} miles',
+                    activeColor: Colors.brown.shade700,
+                    onChanged: (v) => setState(() => _radiusMiles = v),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _options.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.22,
+            ),
+            itemBuilder: (context, index) {
+              final option = _options[index];
+              return InkWell(
+                borderRadius: BorderRadius.circular(18),
+                onTap: _opening ? null : () => _showOptionSheet(option),
+                child: Ink(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(color: option.color.withOpacity(0.12), borderRadius: BorderRadius.circular(12)),
+                        child: Icon(option.icon, color: option.color),
+                      ),
+                      const Spacer(),
+                      Text(option.label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
+                      const SizedBox(height: 3),
+                      Text(option.subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: Colors.grey.shade700, height: 1.15)),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          if (_opening) ...[
+            const SizedBox(height: 18),
+            const Center(child: CircularProgressIndicator()),
+          ],
+          const SizedBox(height: 20),
+          Text(
+            'Tip: choose Show on map first if you want to compare nearby options. Choose Open directions when you already know which stop you want.',
+            style: TextStyle(color: Colors.grey.shade700, fontSize: 12, height: 1.35),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════
 // Torch Screen
 // ═══════════════════════════════════════════════════════════════
@@ -7251,6 +7617,106 @@ class _RafterCalculatorState extends State<RafterCalculator> {
     );
   }
 
+
+  void _setPitchPreset(String value) {
+    setState(() {
+      _pitchController.text = value;
+    });
+  }
+
+  Widget _buildPitchPresetChips() {
+    const presets = <String>['15', '22.5', '30', '35', '40', '45'];
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text('Quick pitch presets', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.brown.shade800)),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: presets.map((p) {
+          final selected = _pitchController.text.trim() == p;
+          return ChoiceChip(
+            label: Text('$p°'),
+            selected: selected,
+            visualDensity: VisualDensity.compact,
+            selectedColor: Colors.brown.shade100,
+            onSelected: (_) => _setPitchPreset(p),
+          );
+        }).toList(),
+      ),
+      const SizedBox(height: 14),
+    ]);
+  }
+
+  Widget _responsivePair(Widget left, Widget right) {
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth < 430) {
+        return Column(children: [left, right]);
+      }
+      return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(child: left),
+        const SizedBox(width: 12),
+        Expanded(child: right),
+      ]);
+    });
+  }
+
+  Widget _buildCalculateButtons() {
+    return LayoutBuilder(builder: (context, constraints) {
+      final calculateButton = ElevatedButton.icon(
+        onPressed: _calculate,
+        icon: const Icon(Icons.calculate),
+        label: const Text('Calculate'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.brown.shade600,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+      final clearButton = OutlinedButton.icon(
+        onPressed: _clear,
+        icon: const Icon(Icons.clear),
+        label: const Text('Clear'),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+      if (constraints.maxWidth < 360) {
+        return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          calculateButton,
+          const SizedBox(height: 10),
+          clearButton,
+        ]);
+      }
+      return Row(children: [
+        Expanded(child: calculateButton),
+        const SizedBox(width: 12),
+        clearButton,
+      ]);
+    });
+  }
+
+  Widget _buildHowToUseCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.brown.shade50,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.brown.shade100),
+      ),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Icon(Icons.tips_and_updates_outlined, color: Colors.brown.shade700, size: 22),
+        const SizedBox(width: 10),
+        Expanded(child: Text(
+          'Enter the full wall-to-wall span and roof pitch. Add building length only if you want the app to estimate rafter quantity.',
+          style: TextStyle(fontSize: 12.5, height: 1.35, color: Colors.brown.shade900),
+        )),
+      ]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -7286,61 +7752,46 @@ class _RafterCalculatorState extends State<RafterCalculator> {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [
-                  const Text('Rafter Type:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(width: 12),
-                  ChoiceChip(
-                    label: const Text('Common'),
-                    avatar: !_isHip ? const Icon(Icons.check, size: 18) : null,
-                    selected: !_isHip,
-                    onSelected: (_) => setState(() { _isHip = false; }),
-                  ),
-                  const SizedBox(width: 8),
-                  ChoiceChip(
-                    label: const Text('Hip'),
-                    avatar: _isHip ? const Icon(Icons.check, size: 18) : const Icon(Icons.architecture, size: 18),
-                    selected: _isHip,
-                    onSelected: (_) => setState(() { _isHip = true; }),
-                  ),
-                ]),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text('Rafter Type:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ),
+                    ChoiceChip(
+                      label: const Text('Common'),
+                      avatar: !_isHip ? const Icon(Icons.check, size: 18) : null,
+                      selected: !_isHip,
+                      onSelected: (_) => setState(() { _isHip = false; }),
+                    ),
+                    ChoiceChip(
+                      label: const Text('Hip'),
+                      avatar: _isHip ? const Icon(Icons.check, size: 18) : const Icon(Icons.architecture, size: 18),
+                      selected: _isHip,
+                      onSelected: (_) => setState(() { _isHip = true; }),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 18),
                 const Text('Measurements', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
+                _buildHowToUseCard(),
+                const SizedBox(height: 14),
+                _buildPitchPresetChips(),
                 _inputField('Full Span (wall to wall)', _spanController, suffix: 'm', icon: Icons.swap_horiz),
-                Row(children: [
-                  Expanded(child: _inputField('Pitch Angle', _pitchController, suffix: '°', icon: Icons.architecture)),
-                  const SizedBox(width: 12),
-                  Expanded(child: _inputField('Eaves Overhang', _eavesController, suffix: 'm', icon: Icons.keyboard_double_arrow_right)),
-                ]),
-                Row(children: [
-                  Expanded(child: _inputField('Rafter Spacing', _spacingController, suffix: 'mm', icon: Icons.format_line_spacing)),
-                  const SizedBox(width: 12),
-                  Expanded(child: _inputField('Building Length', _buildingLengthController, suffix: 'm', hint: 'optional', icon: Icons.home_work)),
-                ]),
+                _responsivePair(
+                  _inputField('Pitch Angle', _pitchController, suffix: '°', icon: Icons.architecture),
+                  _inputField('Eaves Overhang', _eavesController, suffix: 'm', icon: Icons.keyboard_double_arrow_right),
+                ),
+                _responsivePair(
+                  _inputField('Rafter Spacing', _spacingController, suffix: 'mm', icon: Icons.format_line_spacing),
+                  _inputField('Building Length', _buildingLengthController, suffix: 'm', hint: 'optional', icon: Icons.home_work),
+                ),
                 const SizedBox(height: 4),
-                Row(children: [
-                  Expanded(child: ElevatedButton.icon(
-                    onPressed: _calculate,
-                    icon: const Icon(Icons.calculate),
-                    label: const Text('Calculate'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.brown.shade600,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  )),
-                  const SizedBox(width: 12),
-                  OutlinedButton.icon(
-                    onPressed: _clear,
-                    icon: const Icon(Icons.clear),
-                    label: const Text('Clear'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                ]),
+                _buildCalculateButtons(),
               ]),
             ),
           ),
@@ -7434,25 +7885,18 @@ class _RafterCalculatorState extends State<RafterCalculator> {
           ),
           const SizedBox(width: 12),
           const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Calculate rafter lengths', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+            Text('Rafter calculator', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
             SizedBox(height: 4),
-            Text('Enter span, pitch and eaves to get lengths, ridge height and cut angles.', style: TextStyle(color: Colors.white70, fontSize: 13)),
+            Text('Common and hip rafters with span, rise, pitch, eaves and cut angles.', style: TextStyle(color: Colors.white70, fontSize: 13)),
           ])),
         ]),
         const SizedBox(height: 16),
         Container(
-          height: 128,
+          height: 150,
           width: double.infinity,
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(color: Colors.white.withOpacity(0.12), borderRadius: BorderRadius.circular(14)),
-          child: Stack(children: [
-            Positioned(left: 28, right: 28, bottom: 28, child: Container(height: 5, color: Colors.white70)),
-            Positioned(left: 54, top: 62, child: Transform.rotate(angle: -0.45, child: Container(width: 130, height: 8, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))))),
-            Positioned(right: 54, top: 62, child: Transform.rotate(angle: 0.45, child: Container(width: 130, height: 8, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))))),
-            Positioned(left: 0, right: 0, top: 18, child: Center(child: Icon(Icons.home_work, color: Colors.orange.shade200, size: 28))),
-            const Positioned(left: 34, bottom: 10, child: Text('Span', style: TextStyle(color: Colors.white70, fontSize: 12))),
-            const Positioned(right: 34, bottom: 10, child: Text('Pitch', style: TextStyle(color: Colors.white70, fontSize: 12))),
-            Positioned(top: 58, left: 0, right: 0, child: Center(child: Text('Rafter length', style: TextStyle(color: Colors.orange.shade100, fontWeight: FontWeight.bold)))),
-          ]),
+          child: CustomPaint(painter: _RafterHeroTrussPainter()),
         ),
       ]),
     );
@@ -7762,6 +8206,71 @@ class _RafterDiagramState extends State<RafterDiagram> {
       Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
     ]);
   }
+}
+
+
+class _RafterHeroTrussPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final dimPaint = Paint()
+      ..color = Colors.orange.shade100
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final fillPaint = Paint()
+      ..color = Colors.white.withOpacity(0.14)
+      ..style = PaintingStyle.fill;
+
+    final w = size.width;
+    final h = size.height;
+    final left = Offset(w * 0.13, h * 0.76);
+    final right = Offset(w * 0.87, h * 0.76);
+    final ridge = Offset(w * 0.50, h * 0.22);
+    final tieLeft = Offset(w * 0.25, h * 0.76);
+    final tieRight = Offset(w * 0.75, h * 0.76);
+
+    final roofPath = Path()
+      ..moveTo(left.dx, left.dy)
+      ..lineTo(ridge.dx, ridge.dy)
+      ..lineTo(right.dx, right.dy)
+      ..lineTo(left.dx, left.dy);
+    canvas.drawPath(roofPath, fillPaint);
+
+    canvas.drawLine(left, ridge, paint);
+    canvas.drawLine(ridge, right, paint);
+    canvas.drawLine(left, right, paint..strokeWidth = 4);
+    canvas.drawLine(ridge, Offset(w * 0.50, h * 0.76), paint..strokeWidth = 3);
+    canvas.drawLine(tieLeft, ridge, paint..strokeWidth = 3);
+    canvas.drawLine(tieRight, ridge, paint..strokeWidth = 3);
+
+    final baseY = h * 0.90;
+    canvas.drawLine(Offset(left.dx, baseY), Offset(right.dx, baseY), dimPaint);
+    canvas.drawLine(Offset(left.dx, baseY - 5), Offset(left.dx, baseY + 5), dimPaint);
+    canvas.drawLine(Offset(right.dx, baseY - 5), Offset(right.dx, baseY + 5), dimPaint);
+
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+    void label(String text, Offset pos, {double size = 12, FontWeight weight = FontWeight.w600}) {
+      textPainter.text = TextSpan(
+        text: text,
+        style: TextStyle(color: Colors.orange.shade100, fontSize: size, fontWeight: weight),
+      );
+      textPainter.layout();
+      textPainter.paint(canvas, pos);
+    }
+
+    label('span', Offset(w * 0.45, baseY - 22));
+    label('pitch', Offset(w * 0.66, h * 0.38));
+    label('rafter length', Offset(w * 0.18, h * 0.34));
+    label('rise', Offset(w * 0.52, h * 0.48));
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _RafterPainter extends CustomPainter {
