@@ -136,15 +136,13 @@ exports.approveCorrection = onCall(
       reviewedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // For sheet photo submissions, persist the photoUrl to profile_photos
-    // so the Flutter app can overlay it onto the matching ProfileRecord at runtime.
-    if (data.type === 'sheet_photo' && data.photoUrl) {
+    // For photo submissions (sheet or tile), persist photoUrl to profile_photos
+    const isPhotoSubmission = data.type === 'sheet_photo' || data.type === 'tile_photo';
+    if (isPhotoSubmission && data.photoUrl) {
       const profileName = (data.profileName ?? data.originalName ?? '').trim();
       const manufacturer = (data.manufacturer ?? data.originalMfr ?? '').trim();
 
       if (profileName) {
-        // Key must match the keyFor() function in ProfilePhotoService (main.dart):
-        // lowercase, non-alphanumeric runs → '_', trim leading/trailing '_'
         const key = `${profileName}_${manufacturer}`
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '_')
@@ -154,9 +152,10 @@ exports.approveCorrection = onCall(
           profileName,
           manufacturer,
           photoUrl: data.photoUrl,
+          category: data.type === 'tile_photo' ? 'tile' : 'sheet',
           approvedAt: admin.firestore.FieldValue.serverTimestamp(),
           correctionId,
-        }, { merge: true }); // merge so a repeat approval doesn't wipe metadata
+        }, { merge: true });
       }
     }
 

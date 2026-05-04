@@ -920,7 +920,7 @@ class ProfileSearchScreen extends StatefulWidget {
     super.key,
     this.homeHubMode = false,
     this.initialCategory = 'steel',
-    this.allowedCategories = const ['steel', 'cement', 'composite', 'tile'],
+    this.allowedCategories = const ['steel', 'cement', 'composite', 'standing_seam', 'tile'],
     this.screenTitle = 'Profile Finder',
   });
 
@@ -949,7 +949,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   List<ProfileRecord> _nameSuggestions = [];
   bool _loading = true;
   String _selectedCategory = 'steel';
-  final Set<String> _activeSheetFilters = {'steel', 'cement', 'composite'};
+  final Set<String> _activeSheetFilters = {'steel', 'cement', 'composite', 'standing_seam'};
   double _toleranceMultiplier = 1.0;
   String? _selectedTileMaterial;
   String? _selectedTileType;
@@ -959,10 +959,11 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   List<String> _tileProfileFamilies = [];
 
   static const Map<String, String> _fileMap = {
-    'steel':     'assets/data/steel_profiles.json',
-    'cement':    'assets/data/cement_profiles.json',
-    'composite': 'assets/data/steel_profiles.json',
-    'tile':      'assets/data/tile_profiles_uk_phase2.json',
+    'steel':          'assets/data/steel_profiles.json',
+    'cement':         'assets/data/cement_profiles.json',
+    'composite':      'assets/data/steel_profiles.json',
+    'standing_seam':  'assets/data/steel_profiles.json',
+    'tile':           'assets/data/tile_profiles_uk_phase2.json',
   };
 
   static const double _basePitchTolerance = 5;
@@ -1185,44 +1186,34 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   String _categoryLabelFor(String category) {
     switch (category) {
-      case 'steel':
-        return 'Steel Sheets';
-      case 'cement':
-        return 'Cement Sheets';
-      case 'composite':
-        return 'Composite / Liner';
-      case 'tile':
-        return 'Tiles / Slates';
-      default:
-        return 'Profiles';
+      case 'steel':         return 'Steel Sheets';
+      case 'cement':        return 'Cement Sheets';
+      case 'composite':     return 'Composite / Liner';
+      case 'standing_seam': return 'Standing Seam';
+      case 'tile':          return 'Tiles / Slates';
+      default:              return 'Profiles';
     }
   }
 
   IconData _categoryIconFor(String category) {
     switch (category) {
-      case 'cement':
-        return Icons.layers;
-      case 'tile':
-        return Icons.home;
-      case 'composite':
-        return Icons.layers_outlined;
+      case 'cement':        return Icons.layers;
+      case 'tile':          return Icons.home;
+      case 'composite':     return Icons.layers_outlined;
+      case 'standing_seam': return Icons.vertical_split;
       case 'steel':
-      default:
-        return Icons.factory_outlined;
+      default:              return Icons.factory_outlined;
     }
   }
 
   Color _categoryColorFor(String category) {
     switch (category) {
-      case 'cement':
-        return Colors.grey.shade700;
-      case 'tile':
-        return Colors.orange.shade700;
-      case 'composite':
-        return Colors.purple.shade700;
+      case 'cement':        return Colors.grey.shade700;
+      case 'tile':          return Colors.orange.shade700;
+      case 'composite':     return Colors.purple.shade700;
+      case 'standing_seam': return Colors.teal.shade700;
       case 'steel':
-      default:
-        return Colors.blue.shade700;
+      default:              return Colors.blue.shade700;
     }
   }
 
@@ -1314,8 +1305,10 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         final List<ProfileRecord> loaded = decoded
           .map((e) => ProfileRecord.fromJson(e as Map<String, dynamic>))
           .where((p) {
-            if (cat == 'steel') return (p.materialGroup ?? '').toLowerCase() != 'composite';
+            if (cat == 'steel') return (p.materialGroup ?? '').toLowerCase() != 'composite'
+              && (p.materialGroup ?? '').toLowerCase() != 'standing_seam';
             if (cat == 'composite') return (p.materialGroup ?? '').toLowerCase() == 'composite';
+            if (cat == 'standing_seam') return (p.materialGroup ?? '').toLowerCase() == 'standing_seam';
             return true; // cement - load all
           }).toList();
         all.addAll(loaded);
@@ -1372,7 +1365,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
             MaterialPageRoute<void>(
               builder: (_) => const ProfileSearchScreen(
                 initialCategory: 'steel',
-                allowedCategories: ['steel', 'cement', 'composite'],
+                allowedCategories: ['steel', 'cement', 'composite', 'standing_seam'],
                 screenTitle: 'Profile Finder',
               ),
             ),
@@ -1736,9 +1729,12 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       List<ProfileRecord> loaded = decoded.map((e) => ProfileRecord.fromJson(e as Map<String, dynamic>)).toList();
       // Filter composite vs steel from same JSON
       if (category == 'steel') {
-        loaded = loaded.where((p) => (p.materialGroup ?? '').toLowerCase() != 'composite').toList();
+        loaded = loaded.where((p) => (p.materialGroup ?? '').toLowerCase() != 'composite'
+          && (p.materialGroup ?? '').toLowerCase() != 'standing_seam').toList();
       } else if (category == 'composite') {
         loaded = loaded.where((p) => (p.materialGroup ?? '').toLowerCase() == 'composite').toList();
+      } else if (category == 'standing_seam') {
+        loaded = loaded.where((p) => (p.materialGroup ?? '').toLowerCase() == 'standing_seam').toList();
       }
       // Overlay any Firestore-approved community photos
       loaded = await ProfilePhotoService.applyTo(loaded);
@@ -3268,12 +3264,15 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     onPressed: (submitting || pickedImage == null) ? null : () async {
                       setSheet(() => submitting = true);
                       try {
+                        final bool isTile = p.isTileCategory;
+                        final String folder = isTile ? 'tile_photos' : 'sheet_photos';
                         final ref = FirebaseStorage.instance
-                          .ref('sheet_photos/${p.code}_${DateTime.now().millisecondsSinceEpoch}.jpg');
+                          .ref('$folder/${p.code}_${DateTime.now().millisecondsSinceEpoch}.jpg');
                         await ref.putFile(File(pickedImage!.path));
                         final uploadedUrl = await ref.getDownloadURL();
                         await FirebaseFirestore.instance.collection('image_corrections').add({
-                          'type': 'sheet_photo', 'profileId': p.code,
+                          'type': isTile ? 'tile_photo' : 'sheet_photo',
+                          'profileId': p.code,
                           'profileName': p.profileName, 'manufacturer': p.manufacturer,
                           'photoUrl': uploadedUrl, 'notes': notesController.text.trim(),
                           'submittedBy': FirebaseAuth.instance.currentUser?.email ?? 'anonymous',
@@ -3451,23 +3450,45 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
   Widget _sheetResultCard(BuildContext context, SearchResult result) {
     final ProfileRecord p = result.profile;
+    final bool isSeam = (p.materialGroup ?? '').toLowerCase() == 'standing_seam';
     return Card(margin: const EdgeInsets.only(top: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(padding: const EdgeInsets.all(14),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (isSeam) Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(color: Colors.teal.shade700, borderRadius: BorderRadius.circular(20)),
+            child: const Row(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.vertical_split, color: Colors.white, size: 14),
+              SizedBox(width: 4),
+              Text('Standing Seam — Secret Fix', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+            ]),
+          ),
           Text(p.displayTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           _profileImage(context, p),
           const SizedBox(height: 6),
           Text('Manufacturer: ${p.manufacturer}'),
-          Text('Shape: ${p.shape}'),
-          Text('Pitch: ${_formatNumber(p.pitch)} mm'),
-          Text('Depth: ${_formatNumber(p.depth)} mm'),
-          Text('Crown: ${_formatNumber(p.crown)} mm'),
-          Text('Trough: ${_formatNumber(p.trough)} mm'),
-          Text('Cover Width: ${_formatNumber(p.coverWidth)} mm'),
-          Text('Overall Width: ${_formatNumber(p.overallWidth)} mm'),
+          if (isSeam) ...[
+            Text('Module Width: ${_formatNumber(p.coverWidth)} mm'),
+            Text('Seam Height: ${_formatNumber(p.depth)} mm'),
+            Text('Overall Width: ${_formatNumber(p.overallWidth)} mm'),
+            if ((p.fixingType ?? '').isNotEmpty) Text('Fixing: ${p.fixingType}'),
+          ] else ...[
+            Text('Shape: ${p.shape}'),
+            Text('Pitch: ${_formatNumber(p.pitch)} mm'),
+            Text('Depth: ${_formatNumber(p.depth)} mm'),
+            Text('Crown: ${_formatNumber(p.crown)} mm'),
+            Text('Trough: ${_formatNumber(p.trough)} mm'),
+            Text('Cover Width: ${_formatNumber(p.coverWidth)} mm'),
+            Text('Overall Width: ${_formatNumber(p.overallWidth)} mm'),
+          ],
           Text('Match Score: ${result.score.toStringAsFixed(1)}'),
+          if ((p.notes ?? '').isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(p.notes!, style: TextStyle(fontSize: 12, color: Colors.grey.shade700)),
+          ],
           _realPhotoSection(context, p),
           _saveButton(context, p),
           _shareButton(p),
@@ -3507,6 +3528,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
             const SizedBox(height: 10),
             TextButton.icon(onPressed: () => _openSourceUrl(context, p.sourceUrl!), icon: const Icon(Icons.open_in_new), label: const Text('Open manufacturer source')),
           ],
+          _realPhotoSection(context, p),
           _saveButton(context, p),
           _shareButton(p),
           _favouriteButton(p),
