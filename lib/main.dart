@@ -2090,10 +2090,19 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   }
 
   Widget _measurementField(String label, TextEditingController controller) {
-    return Padding(padding: const EdgeInsets.only(bottom: 12),
-      child: TextField(controller: controller,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), filled: true, fillColor: Colors.white)));
+    return TextField(
+      controller: controller,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        filled: true,
+        fillColor: Colors.white,
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      ),
+    );
   }
 
   Widget _categoryButton(String label, String value) {
@@ -2108,13 +2117,19 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   }
 
   Widget _tileDropdownField({required String label, required String? value, required List<String> items, required ValueChanged<String?> onChanged}) {
-    return Padding(padding: const EdgeInsets.only(bottom: 12),
-      child: DropdownButtonFormField<String>(
-        initialValue: value, isExpanded: true,
-        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), filled: true, fillColor: Colors.white),
-        items: [const DropdownMenuItem<String>(value: null, child: Text('Any')),
-                ...items.map((item) => DropdownMenuItem<String>(value: item, child: Text(item)))],
-        onChanged: onChanged));
+    return DropdownButtonFormField<String>(
+      initialValue: value, isExpanded: true,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        filled: true, fillColor: Colors.white,
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      ),
+      items: [const DropdownMenuItem<String>(value: null, child: Text('Any')),
+              ...items.map((item) => DropdownMenuItem<String>(value: item, child: Text(item)))],
+      onChanged: onChanged);
   }
 
   String _formatNumber(double? value) => value == null ? '-' : (value == value.roundToDouble() ? value.toInt().toString() : value.toStringAsFixed(1));
@@ -2145,40 +2160,88 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   String _searchFieldHint() => _isTileCategory ? 'Start typing tile name or manufacturer...' : 'Start typing profile name...';
 
   Widget _buildToleranceCard() {
-    return Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(padding: const EdgeInsets.all(14),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Tolerance: ${_sliderLabel()} (${_toleranceMultiplier.toStringAsFixed(1)}x)', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          Slider(value: _toleranceMultiplier, min: 0.5, max: 3.0, divisions: 10, label: _toleranceMultiplier.toStringAsFixed(1), onChanged: (v) { setState(() { _toleranceMultiplier = v; }); }),
-          Text(_isTileCategory
-              ? 'Length ±${_tileLengthTolerance.toInt()} | Width ±${_tileWidthTolerance.toInt()} | Cover ±${_coverWidthTolerance.toInt()} | Gauge ±${_tileGaugeTolerance.toInt()} | Min pitch ±${_tilePitchTolerance.toStringAsFixed(1)}° | Coverage ±${_tileCoverageTolerance.toStringAsFixed(1)}'
-              : 'Pitch ±${_pitchTolerance.toInt()} | Depth ±${_depthTolerance.toInt()} | Crown ±${_crownTolerance.toInt()} | Trough ±${_troughTolerance.toInt()} | Cover ±${_coverWidthTolerance.toInt()} | Overall ±${_overallWidthTolerance.toInt()}',
-            style: const TextStyle(fontSize: 12)),
-        ])));
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.shade100),
+      ),
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 8),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Icon(Icons.tune, size: 15, color: Colors.blue.shade700),
+          const SizedBox(width: 6),
+          Text('Match Tolerance', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.blue.shade700)),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(color: Colors.blue.shade700, borderRadius: BorderRadius.circular(20)),
+            child: Text(_sliderLabel(), style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+          ),
+        ]),
+        Slider(
+          value: _toleranceMultiplier, min: 0.5, max: 3.0, divisions: 10,
+          activeColor: Colors.blue.shade700,
+          label: _toleranceMultiplier.toStringAsFixed(1),
+          onChanged: (v) => setState(() { _toleranceMultiplier = v; }),
+        ),
+        Text(
+          _isTileCategory
+            ? 'Length ±${_tileLengthTolerance.toInt()} | Width ±${_tileWidthTolerance.toInt()} | Cover ±${_coverWidthTolerance.toInt()}'
+            : 'Pitch ±${_pitchTolerance.toInt()} | Depth ±${_depthTolerance.toInt()} | Crown ±${_crownTolerance.toInt()} | Trough ±${_troughTolerance.toInt()}',
+          style: TextStyle(fontSize: 11, color: Colors.blue.shade600),
+        ),
+      ]),
+    );
   }
 
   Widget _buildTileFields() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       _tileDropdownField(label: 'Material', value: _selectedTileMaterial, items: _tileMaterials, onChanged: (v) { setState(() { _selectedTileMaterial = v; }); }),
+      const SizedBox(height: 10),
       _tileDropdownField(label: 'Type', value: _selectedTileType, items: _tileTypes, onChanged: (v) { setState(() { _selectedTileType = v; }); }),
+      const SizedBox(height: 10),
       _tileDropdownField(label: 'Profile family', value: _selectedTileProfileFamily, items: _tileProfileFamilies, onChanged: (v) { setState(() { _selectedTileProfileFamily = v; }); }),
-      _measurementField('Nominal Length (mm)', _tileLengthController),
-      _measurementField('Nominal Width (mm)', _tileWidthController),
-      _measurementField('Cover Width (mm)', _coverWidthController),
-      _measurementField('Gauge / Batten Spacing (mm)', _tileGaugeController),
-      _measurementField('Minimum Roof Pitch (°)', _tileMinPitchController),
-      _measurementField('Coverage per m²', _tileCoverageController),
+      const SizedBox(height: 10),
+      Row(children: [
+        Expanded(child: _measurementField('Length (mm)', _tileLengthController)),
+        const SizedBox(width: 10),
+        Expanded(child: _measurementField('Width (mm)', _tileWidthController)),
+      ]),
+      const SizedBox(height: 10),
+      Row(children: [
+        Expanded(child: _measurementField('Cover Width (mm)', _coverWidthController)),
+        const SizedBox(width: 10),
+        Expanded(child: _measurementField('Gauge / Batten (mm)', _tileGaugeController)),
+      ]),
+      const SizedBox(height: 10),
+      Row(children: [
+        Expanded(child: _measurementField('Min Pitch (°)', _tileMinPitchController)),
+        const SizedBox(width: 10),
+        Expanded(child: _measurementField('Coverage /m²', _tileCoverageController)),
+      ]),
     ]);
   }
 
   Widget _buildSheetFields() {
     return Column(children: [
-      _measurementField('Pitch (mm)', _pitchController),
-      _measurementField('Depth (mm)', _depthController),
-      _measurementField('Crown (mm)', _crownController),
-      _measurementField('Trough (mm)', _troughController),
-      _measurementField('Cover Width (mm)', _coverWidthController),
-      _measurementField('Overall Width (mm)', _overallWidthController),
+      Row(children: [
+        Expanded(child: _measurementField('Pitch (mm)', _pitchController)),
+        const SizedBox(width: 10),
+        Expanded(child: _measurementField('Depth (mm)', _depthController)),
+      ]),
+      const SizedBox(height: 10),
+      Row(children: [
+        Expanded(child: _measurementField('Crown (mm)', _crownController)),
+        const SizedBox(width: 10),
+        Expanded(child: _measurementField('Trough (mm)', _troughController)),
+      ]),
+      const SizedBox(height: 10),
+      Row(children: [
+        Expanded(child: _measurementField('Cover Width (mm)', _coverWidthController)),
+        const SizedBox(width: 10),
+        Expanded(child: _measurementField('Overall Width (mm)', _overallWidthController)),
+      ]),
     ]);
   }
 
@@ -2203,53 +2266,102 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   Widget _buildFinderFormBody() {
     return _loading
         ? const Center(child: CircularProgressIndicator())
-        : Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                  children: [
-                    const SizedBox(height: 8),
-                    _buildCategorySelector(),
-                    const SizedBox(height: 18),
-                    Text(_categoryTitle(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _profileSearchController,
-                      decoration: InputDecoration(
-                        labelText: _searchFieldLabel(), hintText: _searchFieldHint(),
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: _profileSearchController.text.isNotEmpty
-                            ? IconButton(icon: const Icon(Icons.clear), onPressed: () { _profileSearchController.clear(); setState(() { _nameSuggestions = []; }); })
-                            : null,
-                        border: const OutlineInputBorder(), filled: true, fillColor: Colors.white),
-                    ),
-                    if (_nameSuggestions.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), child: Column(children: _nameSuggestions.map(_suggestionCard).toList())),
-                    ],
-                    const SizedBox(height: 16),
-                    _buildToleranceCard(),
-                    const SizedBox(height: 12),
-                    _isTileCategory ? _buildTileFields() : _buildSheetFields(),
-                    const SizedBox(height: 12),
-                    Row(children: [
-                      Expanded(child: ElevatedButton.icon(onPressed: _searchProfiles, icon: const Icon(Icons.search), label: const Text('Show Results'),
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16)))),
-                      const SizedBox(width: 12),
-                      Expanded(child: OutlinedButton.icon(onPressed: _clearSearch, icon: const Icon(Icons.clear), label: const Text('Clear'),
-                        style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)))),
-                    ]),
-                    const SizedBox(height: 20),
-                    Text('Loaded Profiles: ${_profiles.length}', style: const TextStyle(fontSize: 14)),
-                    const SizedBox(height: 10),
-                    Text(_isTileCategory ? 'Enter a name, apply filters, or add measurements to view results on a separate screen.' : 'Enter a name or measurements to view results on a separate screen.'),
-                    const SizedBox(height: 80),
-                  ],
+        : Column(children: [
+            Expanded(child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+              children: [
+                // Category selector
+                _buildCategorySelector(),
+                const SizedBox(height: 16),
+
+                // Search bar
+                TextField(
+                  controller: _profileSearchController,
+                  decoration: InputDecoration(
+                    labelText: _searchFieldLabel(),
+                    hintText: _searchFieldHint(),
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _profileSearchController.text.isNotEmpty
+                      ? IconButton(icon: const Icon(Icons.clear), onPressed: () { _profileSearchController.clear(); setState(() { _nameSuggestions = []; }); })
+                      : null,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    filled: true, fillColor: Colors.white),
                 ),
-              ),
-            ],
-          );
+                if (_nameSuggestions.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: Column(children: _nameSuggestions.map(_suggestionCard).toList())),
+                ],
+                const SizedBox(height: 14),
+
+                // Measurements section
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    // Section header
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 4),
+                      child: Row(children: [
+                        Icon(Icons.straighten, size: 16, color: Colors.blue.shade700),
+                        const SizedBox(width: 6),
+                        Text('Measurements (mm)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.blue.shade700)),
+                        const Spacer(),
+                        Text('${_profiles.length} profiles loaded', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                      ]),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 6, 14, 14),
+                      child: _isTileCategory ? _buildTileFields() : _buildSheetFields(),
+                    ),
+                  ]),
+                ),
+                const SizedBox(height: 14),
+
+                // Tolerance card — compact
+                _buildToleranceCard(),
+                const SizedBox(height: 16),
+
+                // Action buttons
+                Row(children: [
+                  Expanded(child: ElevatedButton.icon(
+                    onPressed: _searchProfiles,
+                    icon: const Icon(Icons.search),
+                    label: const Text('Find Matches'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade700,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  )),
+                  const SizedBox(width: 10),
+                  OutlinedButton(
+                    onPressed: _clearSearch,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Icon(Icons.refresh),
+                  ),
+                ]),
+                const SizedBox(height: 12),
+
+                // Hint text
+                Center(child: Text(
+                  _isTileCategory
+                    ? 'Enter a name, choose filters, or add measurements'
+                    : 'Enter a name or add measurements above',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  textAlign: TextAlign.center,
+                )),
+                const SizedBox(height: 80),
+              ],
+            )),
+          ]);
   }
 
   Widget _hubCard({
