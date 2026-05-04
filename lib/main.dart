@@ -5309,11 +5309,18 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
   final _buildingController = TextEditingController();
   final _notesController = TextEditingController();
 
+  // System type
+  String _systemType = 'single'; // 'single' or 'double'
+
   // Roofing — dynamic sheet items
   final List<_SheetItem> _sheetItems = [_SheetItem()];
 
+  // Liner sheets (double skin only)
+  final List<_SheetItem> _linerItems = [_SheetItem()];
+
   // Roofing other
   final _insulationController = TextEditingController();
+  final _insulationQuilController = TextEditingController();
   final _feltController = TextEditingController();
   final _battensController = TextEditingController();
   final _spacingBarsController = TextEditingController();
@@ -5325,12 +5332,25 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
   // Flashings — dynamic
   final List<_FlashingItem> _flashingItems = [_FlashingItem()];
 
+  // Rooflights
+  final _rooflightsController = TextEditingController();
+  final _rooflightsSizeController = TextEditingController();
+
   // Extras
   final _sealantsController = TextEditingController();
   final _fillerBlocksController = TextEditingController();
   final _ventsController = TextEditingController();
   final _gutteringController = TextEditingController();
   final _downpipesController = TextEditingController();
+
+  static const List<String> _flashingTypes = [
+    'Ridge', 'Eaves (Standard)', 'Eaves (Curved)', 'Barge / Verge',
+    'Corner (Internal)', 'Corner (External)', 'Door Jamb', 'Drip',
+    'Cill / Sill', 'Soffit', 'Mono-pitch Cap', 'Valley', 'Other',
+  ];
+
+  static const List<String> _gaugeOptions = ['0.7mm', '0.5mm', '0.6mm', '0.9mm', '1.0mm'];
+  static const List<String> _finishOptions = ['Leather Grain', 'Painted (Polyester)', 'HPS200', 'Plastisol', 'PVF2', 'Galvanised', 'Merlin Grey', 'Goosewing Grey', 'Juniper Green', 'Moorland Green'];
 
   static InputDecoration _hintDec(String hint, {String? suffix}) => InputDecoration(
     hintText: hint,
@@ -5353,11 +5373,13 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
   @override
   void dispose() {
     for (final item in _sheetItems) { item.dispose(); }
+    for (final item in _linerItems) { item.dispose(); }
     for (final item in _fixingItems) { item.dispose(); }
     for (final item in _flashingItems) { item.dispose(); }
     for (final c in [_buildingController, _notesController,
-      _insulationController, _feltController, _battensController, _spacingBarsController,
-      _rafterFixingsController,
+      _insulationController, _insulationQuilController, _feltController,
+      _battensController, _spacingBarsController,
+      _rafterFixingsController, _rooflightsController, _rooflightsSizeController,
       _sealantsController, _fillerBlocksController, _ventsController,
       _gutteringController, _downpipesController]) { c.dispose(); }
     super.dispose();
@@ -5374,20 +5396,20 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
     )).then((confirm) {
       if (confirm == true) {
         for (final item in _sheetItems) { item.dispose(); }
-        _sheetItems.clear();
-        _sheetItems.add(_SheetItem());
+        _sheetItems.clear(); _sheetItems.add(_SheetItem());
+        for (final item in _linerItems) { item.dispose(); }
+        _linerItems.clear(); _linerItems.add(_SheetItem());
         for (final item in _fixingItems) { item.dispose(); }
-        _fixingItems.clear();
-        _fixingItems.add(_FixingItem());
+        _fixingItems.clear(); _fixingItems.add(_FixingItem());
         for (final item in _flashingItems) { item.dispose(); }
-        _flashingItems.clear();
-        _flashingItems.add(_FlashingItem());
+        _flashingItems.clear(); _flashingItems.add(_FlashingItem());
         for (final c in [_buildingController, _notesController,
-          _insulationController, _feltController, _battensController, _spacingBarsController,
-          _rafterFixingsController,
+          _insulationController, _insulationQuilController, _feltController,
+          _battensController, _spacingBarsController, _rafterFixingsController,
+          _rooflightsController, _rooflightsSizeController,
           _sealantsController, _fillerBlocksController, _ventsController,
           _gutteringController, _downpipesController]) { c.clear(); }
-        setState(() {});
+        setState(() { _systemType = 'single'; });
       }
     });
   }
@@ -5402,17 +5424,22 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
       'savedAt': DateTime.now().toIso8601String(),
       'buildingName': _buildingController.text,
       'notes': _notesController.text,
+      'systemType': _systemType,
       'insulation': _insulationController.text,
+      'insulationQuilt': _insulationQuilController.text,
       'felt': _feltController.text,
       'battens': _battensController.text,
       'spacingBars': _spacingBarsController.text,
       'rafterFixings': _rafterFixingsController.text,
+      'rooflights': _rooflightsController.text,
+      'rooflightsSize': _rooflightsSizeController.text,
       'sealants': _sealantsController.text,
       'fillerBlocks': _fillerBlocksController.text,
       'vents': _ventsController.text,
       'guttering': _gutteringController.text,
       'downpipes': _downpipesController.text,
       'sheets': _sheetItems.map((i) => {'qty': i.qtyController.text, 'length': i.lengthController.text, 'material': i.materialController.text}).toList(),
+      'liners': _linerItems.map((i) => {'qty': i.qtyController.text, 'length': i.lengthController.text, 'material': i.materialController.text}).toList(),
       'fixings': _fixingItems.map((i) => {'head': i.headController.text, 'length': i.lengthController.text, 'washer': i.washerController.text, 'qty': i.qtyController.text}).toList(),
       'flashings': _flashingItems.map((i) => {'type': i.typeController.text, 'qty': i.qtyController.text, 'colour': i.colourController.text, 'material': i.materialController.text}).toList(),
     };
@@ -5422,21 +5449,31 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
     _buildingController.text = data['buildingName'] ?? '';
     _notesController.text = data['notes'] ?? '';
     _insulationController.text = data['insulation'] ?? '';
+    _insulationQuilController.text = data['insulationQuilt'] ?? '';
     _feltController.text = data['felt'] ?? '';
     _battensController.text = data['battens'] ?? '';
     _spacingBarsController.text = data['spacingBars'] ?? '';
     _rafterFixingsController.text = data['rafterFixings'] ?? '';
+    _rooflightsController.text = data['rooflights'] ?? '';
+    _rooflightsSizeController.text = data['rooflightsSize'] ?? '';
     _sealantsController.text = data['sealants'] ?? '';
     _fillerBlocksController.text = data['fillerBlocks'] ?? '';
     _ventsController.text = data['vents'] ?? '';
     _gutteringController.text = data['guttering'] ?? '';
     _downpipesController.text = data['downpipes'] ?? '';
+    _systemType = data['systemType'] ?? 'single';
     // Sheets
     for (final item in _sheetItems) { item.dispose(); }
     _sheetItems.clear();
     final sheets = data['sheets'] as List<dynamic>? ?? [];
     if (sheets.isEmpty) { _sheetItems.add(_SheetItem()); }
     else { for (final s in sheets) { final i = _SheetItem(); i.qtyController.text = s['qty'] ?? ''; i.lengthController.text = s['length'] ?? ''; i.materialController.text = s['material'] ?? ''; _sheetItems.add(i); } }
+    // Liners
+    for (final item in _linerItems) { item.dispose(); }
+    _linerItems.clear();
+    final liners = data['liners'] as List<dynamic>? ?? [];
+    if (liners.isEmpty) { _linerItems.add(_SheetItem()); }
+    else { for (final s in liners) { final i = _SheetItem(); i.qtyController.text = s['qty'] ?? ''; i.lengthController.text = s['length'] ?? ''; i.materialController.text = s['material'] ?? ''; _linerItems.add(i); } }
     // Fixings
     for (final item in _fixingItems) { item.dispose(); }
     _fixingItems.clear();
@@ -5784,8 +5821,57 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
             ])),
           ),
 
+          // System Type Selector
+          _sectionHeader('System Type', Icons.layers, Colors.indigo.shade700),
+          Card(
+            color: Colors.indigo.shade50,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(children: [
+                Expanded(child: GestureDetector(
+                  onTap: () => setState(() => _systemType = 'single'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: _systemType == 'single' ? Colors.indigo.shade700 : Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.indigo.shade300),
+                    ),
+                    child: Column(children: [
+                      Icon(Icons.crop_square, color: _systemType == 'single' ? Colors.white : Colors.indigo.shade700, size: 20),
+                      const SizedBox(height: 4),
+                      Text('Single Skin', textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold,
+                          color: _systemType == 'single' ? Colors.white : Colors.indigo.shade700)),
+                    ]),
+                  ),
+                )),
+                const SizedBox(width: 10),
+                Expanded(child: GestureDetector(
+                  onTap: () => setState(() => _systemType = 'double'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: _systemType == 'double' ? Colors.indigo.shade700 : Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.indigo.shade300),
+                    ),
+                    child: Column(children: [
+                      Icon(Icons.layers, color: _systemType == 'double' ? Colors.white : Colors.indigo.shade700, size: 20),
+                      const SizedBox(height: 4),
+                      Text('Double Skin\n(Liner System)', textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold,
+                          color: _systemType == 'double' ? Colors.white : Colors.indigo.shade700)),
+                    ]),
+                  ),
+                )),
+              ]),
+            ),
+          ),
+
           // Roofing Materials
-          _sectionHeader('Roofing Materials', Icons.roofing, Colors.blue.shade700),
+          _sectionHeader('Top Sheet', Icons.roofing, Colors.blue.shade700),
           // Column headers
           Padding(
             padding: const EdgeInsets.only(bottom: 6),
@@ -5794,7 +5880,7 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
               const SizedBox(width: 6),
               const Expanded(flex: 2, child: Text('Length (m)', style: TextStyle(fontSize: 12, color: Colors.grey))),
               const SizedBox(width: 6),
-              const Expanded(flex: 3, child: Text('Material', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              const Expanded(flex: 4, child: Text('Profile / Description', style: TextStyle(fontSize: 12, color: Colors.grey))),
               const SizedBox(width: 32),
             ]),
           ),
@@ -5817,10 +5903,10 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
                   decoration: _hintDec('0.0'),
                 )),
                 const SizedBox(width: 6),
-                Expanded(flex: 3, child: TextField(
+                Expanded(flex: 4, child: TextField(
                   controller: item.materialController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: _hintDec('Steel'),
+                  decoration: _hintDec('e.g. Trisomet 0.7mm HPS200'),
                 )),
                 const SizedBox(width: 4),
                 IconButton(
@@ -5831,18 +5917,121 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
               ]),
             );
           }),
+          // Gauge & Finish helper
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(children: [
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Gauge', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)),
+                  child: DropdownButtonHideUnderline(child: DropdownButton<String>(
+                    value: null,
+                    hint: const Text('Select', style: TextStyle(fontSize: 12)),
+                    isExpanded: true,
+                    isDense: true,
+                    items: _gaugeOptions.map((g) => DropdownMenuItem(value: g, child: Text(g, style: const TextStyle(fontSize: 12)))).toList(),
+                    onChanged: (val) {
+                      if (val != null && _sheetItems.isNotEmpty) {
+                        setState(() {
+                          final cur = _sheetItems.last.materialController.text;
+                          if (!cur.contains('mm')) _sheetItems.last.materialController.text = '${cur.trim()} $val'.trim();
+                        });
+                      }
+                    },
+                  )),
+                ),
+              ])),
+              const SizedBox(width: 10),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Finish', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)),
+                  child: DropdownButtonHideUnderline(child: DropdownButton<String>(
+                    value: null,
+                    hint: const Text('Select', style: TextStyle(fontSize: 12)),
+                    isExpanded: true,
+                    isDense: true,
+                    items: _finishOptions.map((f) => DropdownMenuItem(value: f, child: Text(f, style: const TextStyle(fontSize: 12)))).toList(),
+                    onChanged: (val) {
+                      if (val != null && _sheetItems.isNotEmpty) {
+                        setState(() {
+                          final cur = _sheetItems.last.materialController.text;
+                          _sheetItems.last.materialController.text = '${cur.trim()} $val'.trim();
+                        });
+                      }
+                    },
+                  )),
+                ),
+              ])),
+            ]),
+          ),
           // Add row button
           TextButton.icon(
             onPressed: () => setState(() { _sheetItems.add(_SheetItem()); }),
             icon: const Icon(Icons.add_circle_outline, size: 18),
-            label: const Text('Add row'),
+            label: const Text('Add sheet row'),
             style: TextButton.styleFrom(foregroundColor: Colors.blue.shade700),
           ),
+
+          // Liner Sheets (double skin only)
+          if (_systemType == 'double') ...[
+            _sectionHeader('Liner Sheet', Icons.layers_outlined, Colors.cyan.shade700),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(children: [
+                const Expanded(flex: 2, child: Text('Qty', style: TextStyle(fontSize: 12, color: Colors.grey))),
+                const SizedBox(width: 6),
+                const Expanded(flex: 2, child: Text('Length (m)', style: TextStyle(fontSize: 12, color: Colors.grey))),
+                const SizedBox(width: 6),
+                const Expanded(flex: 4, child: Text('Profile / Description', style: TextStyle(fontSize: 12, color: Colors.grey))),
+                const SizedBox(width: 32),
+              ]),
+            ),
+            ..._linerItems.asMap().entries.map((entry) {
+              final i = entry.key;
+              final item = entry.value;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(children: [
+                  Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
+                  const SizedBox(width: 6),
+                  Expanded(flex: 2, child: TextField(controller: item.lengthController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0.0'))),
+                  const SizedBox(width: 6),
+                  Expanded(flex: 4, child: TextField(controller: item.materialController, textCapitalization: TextCapitalization.words, decoration: _hintDec('e.g. 32/1000 Liner 0.4mm'))),
+                  const SizedBox(width: 4),
+                  IconButton(
+                    onPressed: _linerItems.length > 1 ? () => setState(() { _linerItems[i].dispose(); _linerItems.removeAt(i); }) : null,
+                    icon: Icon(Icons.remove_circle_outline, color: _linerItems.length > 1 ? Colors.red : Colors.grey, size: 22),
+                    padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                ]),
+              );
+            }),
+            TextButton.icon(
+              onPressed: () => setState(() { _linerItems.add(_SheetItem()); }),
+              icon: const Icon(Icons.add_circle_outline, size: 18),
+              label: const Text('Add liner row'),
+              style: TextButton.styleFrom(foregroundColor: Colors.cyan.shade700),
+            ),
+          ],
+
           const SizedBox(height: 4),
-          _field('Insulation', _insulationController, suffix: 'm²'),
-          _field('Felt / Underlay', _feltController, suffix: 'rolls'),
-          _field('Battens', _battensController, suffix: 'm'),
-          _field('Spacing Bars', _spacingBarsController, suffix: 'qty'),
+          // Insulation
+          if (_systemType == 'double') ...[
+            _sectionHeader('Insulation', Icons.thermostat, Colors.deepOrange.shade700),
+            _field('Insulation Quilt', _insulationQuilController, suffix: 'm²', hint: 'e.g. 100mm Rockwool'),
+            _field('Rigid Insulation', _insulationController, suffix: 'm²'),
+            _field('Spacing Bars', _spacingBarsController, suffix: 'qty', hint: 'e.g. Z-spacers'),
+          ] else ...[
+            _sectionHeader('Insulation & Accessories', Icons.thermostat, Colors.deepOrange.shade700),
+            _field('Insulation', _insulationController, suffix: 'm²'),
+            _field('Spacing Bars', _spacingBarsController, suffix: 'qty'),
+            _field('Felt / Underlay', _feltController, suffix: 'rolls'),
+          ],
 
           // Fixings
           _sectionHeader('Fixings', Icons.settings, Colors.orange.shade700),
@@ -5908,7 +6097,7 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
               const SizedBox(width: 4),
               const Expanded(flex: 2, child: Text('Colour', style: TextStyle(fontSize: 12, color: Colors.grey))),
               const SizedBox(width: 4),
-              const Expanded(flex: 2, child: Text('Material', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              const Expanded(flex: 2, child: Text('Gauge', style: TextStyle(fontSize: 12, color: Colors.grey))),
               const SizedBox(width: 32),
             ]),
           ),
@@ -5918,9 +6107,19 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(children: [
-                Expanded(flex: 3, child: TextField(controller: item.typeController,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: _hintDec('Ridge'))),
+                Expanded(flex: 3, child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)),
+                  child: DropdownButtonHideUnderline(child: DropdownButton<String>(
+                    value: _flashingTypes.contains(item.typeController.text) ? item.typeController.text : null,
+                    hint: Text('Type', style: TextStyle(color: Colors.grey.shade400, fontSize: 12)),
+                    isExpanded: true,
+                    isDense: true,
+                    style: const TextStyle(fontSize: 12, color: Colors.black87),
+                    items: _flashingTypes.map((t) => DropdownMenuItem(value: t, child: Text(t, style: const TextStyle(fontSize: 12)))).toList(),
+                    onChanged: (val) => setState(() => item.typeController.text = val ?? ''),
+                  )),
+                )),
                 const SizedBox(width: 4),
                 Expanded(flex: 2, child: TextField(controller: item.qtyController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -5931,8 +6130,7 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
                   decoration: _hintDec('Grey'))),
                 const SizedBox(width: 4),
                 Expanded(flex: 2, child: TextField(controller: item.materialController,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: _hintDec('Steel'))),
+                  decoration: _hintDec('0.7mm'))),
                 const SizedBox(width: 4),
                 IconButton(
                   onPressed: _flashingItems.length > 1 ? () => setState(() { _flashingItems[i].dispose(); _flashingItems.removeAt(i); }) : null,
@@ -5949,11 +6147,16 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
           ),
           const SizedBox(height: 4),
 
+          // Rooflights
+          _sectionHeader('Rooflights', Icons.wb_sunny_outlined, Colors.amber.shade700),
+          _field('Qty', _rooflightsController, suffix: 'qty'),
+          _field('Size / Type', _rooflightsSizeController, suffix: '', hint: 'e.g. 600x600 Smoke Vent'),
+
           // Extras
-          _sectionHeader('Extras', Icons.construction, Colors.red.shade700),
-          _field('Sealants', _sealantsController, suffix: 'tubes'),
-          _field('Filler Blocks', _fillerBlocksController, suffix: 'qty'),
-          _field('Vents', _ventsController, suffix: 'qty'),
+          _sectionHeader('Extras & Ancillaries', Icons.construction, Colors.red.shade700),
+          _field('Sealants / Mastic', _sealantsController, suffix: 'tubes'),
+          _field('Filler Blocks / Foam', _fillerBlocksController, suffix: 'qty'),
+          _field('Translucent Sheets', _ventsController, suffix: 'qty'),
           _field('Guttering', _gutteringController, suffix: 'm'),
           _field('Downpipes', _downpipesController, suffix: 'qty'),
 
@@ -6056,6 +6259,7 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
   final _feltController = TextEditingController();
   final _adhesiveController = TextEditingController();
   final _primerController = TextEditingController();
+  final _feltLapClipsController = TextEditingController();
 
   // Battens
   final _battensController = TextEditingController();
@@ -6064,14 +6268,28 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
   // Fixings
   final _nailsController = TextEditingController();
   final _screwsController = TextEditingController();
+  final _soakersController = TextEditingController();
 
   // Flashings
   final List<_DomFlashingItem> _flashingItems = [_DomFlashingItem()];
+
+  // Lead work
+  final _leadCodeController = TextEditingController();
+  final _leadWeightController = TextEditingController();
 
   // Ridge / Hip / Valley
   final List<_RidgeItem> _ridgeItems = [_RidgeItem()];
   final List<_RidgeItem> _hipItems = [_RidgeItem()];
   final List<_ValleyItem> _valleyItems = [_ValleyItem()];
+  String _ridgeFixType = 'mortar'; // 'mortar' or 'dry_fix'
+
+  // GRP Flat Roof
+  bool _hasGrp = false;
+  final _grpMattingController = TextEditingController();
+  final _grpResinController = TextEditingController();
+  final _grpTopcoatController = TextEditingController();
+  final _grpTrimController = TextEditingController();
+  final _grpPrimerController = TextEditingController();
 
   // Extras
   final _ventsController = TextEditingController();
@@ -6085,6 +6303,13 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
   final _scaffoldingController = TextEditingController();
   final _nettingController = TextEditingController();
   final _plantController = TextEditingController();
+
+  static const List<String> _leadCodes = ['Code 3', 'Code 4', 'Code 5', 'Code 6', 'Code 7', 'Code 8'];
+  static const List<String> _domFlashingTypes = [
+    'Step Flashing', 'Soaker / Step', 'Apron Flashing', 'Back Gutter',
+    'Valley', 'Abutment', 'Chimney Back', 'Chimney Front', 'Chimney Side',
+    'Verge / Barge', 'Eaves', 'Skylight Flashing', 'Lead Slate', 'Other',
+  ];
 
   String _date = '';
 
@@ -6103,8 +6328,13 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
     for (final i in _hipItems) { i.dispose(); }
     for (final i in _valleyItems) { i.dispose(); }
     for (final c in [_buildingController, _notesController, _epdmController, _feltController,
-      _adhesiveController, _primerController, _battensController, _battenSpacingController,
-      _nailsController, _screwsController, _ventsController, _ventsTypeController,
+      _adhesiveController, _primerController, _feltLapClipsController,
+      _battensController, _battenSpacingController,
+      _nailsController, _screwsController, _soakersController,
+      _leadCodeController, _leadWeightController,
+      _grpMattingController, _grpResinController, _grpTopcoatController,
+      _grpTrimController, _grpPrimerController,
+      _ventsController, _ventsTypeController,
       _rooflightsController, _rooflightsSizeController, _gutteringController,
       _downpipesController, _scaffoldingController, _nettingController, _plantController]) { c.dispose(); }
     super.dispose();
@@ -6161,11 +6391,16 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
         for (final i in _hipItems) { i.dispose(); } _hipItems.clear(); _hipItems.add(_RidgeItem());
         for (final i in _valleyItems) { i.dispose(); } _valleyItems.clear(); _valleyItems.add(_ValleyItem());
         for (final c in [_buildingController, _notesController, _epdmController, _feltController,
-          _adhesiveController, _primerController, _battensController, _battenSpacingController,
-          _nailsController, _screwsController, _ventsController, _ventsTypeController,
+          _adhesiveController, _primerController, _feltLapClipsController,
+          _battensController, _battenSpacingController,
+          _nailsController, _screwsController, _soakersController,
+          _leadCodeController, _leadWeightController,
+          _grpMattingController, _grpResinController, _grpTopcoatController,
+          _grpTrimController, _grpPrimerController,
+          _ventsController, _ventsTypeController,
           _rooflightsController, _rooflightsSizeController, _gutteringController,
           _downpipesController, _scaffoldingController, _nettingController, _plantController]) { c.clear(); }
-        setState(() {});
+        setState(() { _ridgeFixType = 'mortar'; _hasGrp = false; });
       }
     });
   }
@@ -6185,10 +6420,21 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
       'felt': _feltController.text,
       'adhesive': _adhesiveController.text,
       'primer': _primerController.text,
+      'feltLapClips': _feltLapClipsController.text,
       'battens': _battensController.text,
       'battenSpacing': _battenSpacingController.text,
       'nails': _nailsController.text,
       'screws': _screwsController.text,
+      'soakers': _soakersController.text,
+      'leadCode': _leadCodeController.text,
+      'leadWeight': _leadWeightController.text,
+      'ridgeFixType': _ridgeFixType,
+      'hasGrp': _hasGrp,
+      'grpMatting': _grpMattingController.text,
+      'grpResin': _grpResinController.text,
+      'grpTopcoat': _grpTopcoatController.text,
+      'grpTrim': _grpTrimController.text,
+      'grpPrimer': _grpPrimerController.text,
       'vents': _ventsController.text,
       'ventsType': _ventsTypeController.text,
       'rooflights': _rooflightsController.text,
@@ -6425,10 +6671,11 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
 
           // Underlay
           _sectionHeader('Underlay / Waterproofing', Icons.water_drop, Colors.cyan.shade700),
-          _field('EPDM', _epdmController, suffix: 'm²'),
-          _field('Felt / Underlay', _feltController, suffix: 'rolls'),
+          _field('Felt / Underlay', _feltController, suffix: 'rolls', hint: 'e.g. BS747 Type 1F'),
+          _field('EPDM Membrane', _epdmController, suffix: 'm²'),
           _field('Adhesive', _adhesiveController, suffix: 'litres'),
           _field('Primer', _primerController, suffix: 'litres'),
+          _field('Felt Lap Clips', _feltLapClipsController, suffix: 'qty'),
 
           // Battens
           _sectionHeader('Battens', Icons.view_column, Colors.brown.shade600),
@@ -6447,6 +6694,29 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
           _sectionHeader('Fixings', Icons.settings, Colors.orange.shade700),
           _field('Nails', _nailsController, suffix: 'qty'),
           _field('Screws', _screwsController, suffix: 'qty'),
+          _field('Soakers', _soakersController, suffix: 'qty'),
+
+          // Lead Work
+          _sectionHeader('Lead Work', Icons.layers, Colors.blueGrey.shade700),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(children: [
+              const Expanded(flex: 3, child: Text('Lead Code', style: TextStyle(fontSize: 13))),
+              Expanded(flex: 2, child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)),
+                child: DropdownButtonHideUnderline(child: DropdownButton<String>(
+                  value: _leadCodes.contains(_leadCodeController.text) ? _leadCodeController.text : null,
+                  hint: Text('Select', style: TextStyle(color: Colors.grey.shade400, fontSize: 12)),
+                  isExpanded: true,
+                  isDense: true,
+                  items: _leadCodes.map((c) => DropdownMenuItem(value: c, child: Text(c, style: const TextStyle(fontSize: 12)))).toList(),
+                  onChanged: (val) => setState(() => _leadCodeController.text = val ?? ''),
+                )),
+              )),
+            ]),
+          ),
+          _field('Lead Weight', _leadWeightController, suffix: 'kg', hint: 'Total kg'),
 
           // Flashings
           _sectionHeader('Flashings', Icons.water, Colors.purple.shade700),
@@ -6458,20 +6728,31 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
               SizedBox(width: 4),
               Expanded(flex: 2, child: Text('Size', style: TextStyle(fontSize: 12, color: Colors.grey))),
               SizedBox(width: 4),
-              Expanded(flex: 2, child: Text('Colour', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              Expanded(flex: 2, child: Text('Material', style: TextStyle(fontSize: 12, color: Colors.grey))),
               SizedBox(width: 32),
             ]),
           ),
           ..._flashingItems.asMap().entries.map((entry) {
             final i = entry.key; final item = entry.value;
             return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
-              Expanded(flex: 3, child: TextField(controller: item.typeController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Lead'))),
+              Expanded(flex: 3, child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)),
+                child: DropdownButtonHideUnderline(child: DropdownButton<String>(
+                  value: _domFlashingTypes.contains(item.typeController.text) ? item.typeController.text : null,
+                  hint: Text('Type', style: TextStyle(color: Colors.grey.shade400, fontSize: 12)),
+                  isExpanded: true, isDense: true,
+                  style: const TextStyle(fontSize: 12, color: Colors.black87),
+                  items: _domFlashingTypes.map((t) => DropdownMenuItem(value: t, child: Text(t, style: const TextStyle(fontSize: 12)))).toList(),
+                  onChanged: (val) => setState(() => item.typeController.text = val ?? ''),
+                )),
+              )),
               const SizedBox(width: 4),
               Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
               const SizedBox(width: 4),
               Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('150mm'))),
               const SizedBox(width: 4),
-              Expanded(flex: 2, child: TextField(controller: item.colourController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Grey'))),
+              Expanded(flex: 2, child: TextField(controller: item.colourController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Lead'))),
               const SizedBox(width: 4),
               IconButton(onPressed: _flashingItems.length > 1 ? () => setState(() { _flashingItems[i].dispose(); _flashingItems.removeAt(i); }) : null,
                 icon: Icon(Icons.remove_circle_outline, color: _flashingItems.length > 1 ? Colors.red : Colors.grey, size: 20),
@@ -6484,23 +6765,58 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
 
           // Ridge / Hip / Valley
           _sectionHeader('Ridge / Hip / Valley', Icons.change_history, Colors.red.shade700),
+
+          // Ridge fix type toggle
+          Card(
+            color: Colors.red.shade50,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(children: [
+                const Text('Fix Type:', style: TextStyle(fontSize: 13)),
+                const SizedBox(width: 12),
+                Expanded(child: GestureDetector(
+                  onTap: () => setState(() => _ridgeFixType = 'mortar'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      color: _ridgeFixType == 'mortar' ? Colors.red.shade700 : Colors.white,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: Colors.red.shade300),
+                    ),
+                    child: Text('Mortar', textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold,
+                        color: _ridgeFixType == 'mortar' ? Colors.white : Colors.red.shade700)),
+                  ),
+                )),
+                const SizedBox(width: 8),
+                Expanded(child: GestureDetector(
+                  onTap: () => setState(() => _ridgeFixType = 'dry_fix'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      color: _ridgeFixType == 'dry_fix' ? Colors.red.shade700 : Colors.white,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: Colors.red.shade300),
+                    ),
+                    child: Text('Dry Fix', textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold,
+                        color: _ridgeFixType == 'dry_fix' ? Colors.white : Colors.red.shade700)),
+                  ),
+                )),
+              ]),
+            ),
+          ),
+          const SizedBox(height: 10),
+
           const Text('Ridge Tiles', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey)),
           const SizedBox(height: 6),
           ..._ridgeItems.asMap().entries.map((entry) {
             final i = entry.key; final item = entry.value;
             return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
-              const Expanded(flex: 2, child: Text('Qty', style: TextStyle(fontSize: 12, color: Colors.grey))),
+              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0', suffix: 'qty'))),
               const SizedBox(width: 8),
-              const Expanded(flex: 2, child: Text('Size', style: TextStyle(fontSize: 12, color: Colors.grey))),
-              const SizedBox(width: 32),
-            ]));
-          }),
-          ..._ridgeItems.asMap().entries.map((entry) {
-            final i = entry.key; final item = entry.value;
-            return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
-              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
-              const SizedBox(width: 8),
-              Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('200mm'))),
+              Expanded(flex: 3, child: TextField(controller: item.sizeController, decoration: _hintDec('e.g. Half Round 300mm'))),
               const SizedBox(width: 4),
               IconButton(onPressed: _ridgeItems.length > 1 ? () => setState(() { _ridgeItems[i].dispose(); _ridgeItems.removeAt(i); }) : null,
                 icon: Icon(Icons.remove_circle_outline, color: _ridgeItems.length > 1 ? Colors.red : Colors.grey, size: 20),
@@ -6517,9 +6833,9 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
           ..._hipItems.asMap().entries.map((entry) {
             final i = entry.key; final item = entry.value;
             return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
-              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
+              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0', suffix: 'qty'))),
               const SizedBox(width: 8),
-              Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('200mm'))),
+              Expanded(flex: 3, child: TextField(controller: item.sizeController, decoration: _hintDec('e.g. Segmental Hip 300mm'))),
               const SizedBox(width: 4),
               IconButton(onPressed: _hipItems.length > 1 ? () => setState(() { _hipItems[i].dispose(); _hipItems.removeAt(i); }) : null,
                 icon: Icon(Icons.remove_circle_outline, color: _hipItems.length > 1 ? Colors.red : Colors.grey, size: 20),
@@ -6538,7 +6854,7 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
             return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
               Expanded(flex: 2, child: TextField(controller: item.lengthController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0', suffix: 'm'))),
               const SizedBox(width: 6),
-              Expanded(flex: 2, child: TextField(controller: item.typeController, textCapitalization: TextCapitalization.words, decoration: _hintDec('GRP'))),
+              Expanded(flex: 2, child: TextField(controller: item.typeController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Lead / GRP'))),
               const SizedBox(width: 6),
               Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('150mm'))),
               const SizedBox(width: 4),
@@ -6551,8 +6867,34 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
             icon: const Icon(Icons.add_circle_outline, size: 18), label: const Text('Add valley'),
             style: TextButton.styleFrom(foregroundColor: Colors.red.shade700)),
 
+          // GRP Flat Roof Section
+          _sectionHeader('GRP / Flat Roof', Icons.roofing, Colors.green.shade700),
+          Card(
+            color: Colors.green.shade50,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                const Text('Include GRP flat roof section?', style: TextStyle(fontSize: 13)),
+                Switch(
+                  value: _hasGrp,
+                  activeColor: Colors.green.shade700,
+                  onChanged: (val) => setState(() => _hasGrp = val),
+                ),
+              ]),
+            ),
+          ),
+          if (_hasGrp) ...[
+            const SizedBox(height: 10),
+            _field('Fibreglass Matting', _grpMattingController, suffix: 'm²', hint: '450g or 600g'),
+            _field('Laminating Resin', _grpResinController, suffix: 'kg'),
+            _field('Topcoat / Gelcoat', _grpTopcoatController, suffix: 'kg'),
+            _field('GRP Trim / Edging', _grpTrimController, suffix: 'm'),
+            _field('Acetone / Primer', _grpPrimerController, suffix: 'litres'),
+          ],
+
           // Extras
-          _sectionHeader('Extras', Icons.construction, Colors.teal.shade700),
+          _sectionHeader('Extras & Ventilation', Icons.construction, Colors.teal.shade700),
           Row(children: [
             const Expanded(flex: 3, child: Text('Vents', style: TextStyle(fontSize: 13))),
             Expanded(flex: 2, child: TextField(controller: _ventsController, keyboardType: const TextInputType.numberWithOptions(decimal: true),
