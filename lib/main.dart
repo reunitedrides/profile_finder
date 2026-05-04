@@ -1668,16 +1668,35 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     final List<String> matLists = prefs.getStringList('saved_material_lists') ?? [];
 
     if (AuthService.isLoggedIn) {
-      // Logged in — backup everything to Firestore
       try {
         final history = await HistoryService.loadHistory();
         await AuthService.syncHistoryToCloud(history);
-        // Save material lists to Firestore
         final uid = AuthService.currentUser!.uid;
-        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        final now = DateTime.now();
+        final backupData = {
           'materialLists': matLists,
           'backupAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
+          'backupLabel': '${now.day.toString().padLeft(2,'0')}/${now.month.toString().padLeft(2,'0')}/${now.year}  ${now.hour.toString().padLeft(2,'0')}:${now.minute.toString().padLeft(2,'0')}',
+          'historyCount': history.length,
+          'matListCount': matLists.length,
+        };
+        // Save to main user doc (keeps existing restore working)
+        await FirebaseFirestore.instance.collection('users').doc(uid).set(backupData, SetOptions(merge: true));
+        // Save dated snapshot to backups subcollection
+        final backupRef = FirebaseFirestore.instance
+          .collection('users').doc(uid).collection('backups')
+          .doc(now.millisecondsSinceEpoch.toString());
+        await backupRef.set({
+          ...backupData,
+          'history': history.map((e) => e.toJson()).toList(),
+        });
+        // Trim to last 10 backups
+        final allBackups = await FirebaseFirestore.instance
+          .collection('users').doc(uid).collection('backups')
+          .orderBy('backupAt', descending: true).get();
+        if (allBackups.docs.length > 10) {
+          for (final doc in allBackups.docs.skip(10)) { await doc.reference.delete(); }
+        }
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('✓ ${history.length} history entries + material lists backed up to cloud!'),
           backgroundColor: Colors.green.shade700,
@@ -1712,7 +1731,6 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   }
 
   Future<void> _restoreAllData() async {
-    // If logged in, offer cloud restore first
     if (AuthService.isLoggedIn) {
       final choice = await showDialog<String>(context: context, builder: (ctx) => AlertDialog(
         title: const Row(children: [Icon(Icons.restore, color: Colors.blue), SizedBox(width: 8), Text('Restore Data')]),
@@ -1727,25 +1745,7 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         ],
       ));
       if (choice == 'cloud') {
-        try {
-          final cloudHistory = await AuthService.loadHistoryFromCloud();
-          // Restore material lists from Firestore
-          final uid = AuthService.currentUser!.uid;
-          final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-          final mats = doc.data()?['materialLists'] as List<dynamic>? ?? [];
-          for (final entry in cloudHistory.reversed) { await HistoryService.saveEntry(entry); }
-          if (mats.isNotEmpty) {
-            final prefs = await SharedPreferences.getInstance();
-            final existing = prefs.getStringList('saved_material_lists') ?? [];
-            for (final m in mats) { if (!existing.contains(m.toString())) existing.add(m.toString()); }
-            await prefs.setStringList('saved_material_lists', existing);
-          }
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('✓ Restored ${cloudHistory.length} entries + material lists!'),
-            backgroundColor: Colors.green));
-        } catch (e) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cloud restore failed: \$e'), backgroundColor: Colors.red));
-        }
+        await _restoreFromCloudWithDatePicker();
         return;
       }
       if (choice != 'paste') return;
@@ -1771,11 +1771,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     try {
       final Map<String, dynamic> backup = jsonDecode(pasteController.text.trim()) as Map<String, dynamic>;
       int restored = 0;
-      // Restore history
       if (backup['history'] != null) {
         restored += await HistoryService.importBackup(backup['history'] as String);
       }
-      // Restore material lists
       if (backup['materialLists'] != null) {
         final prefs = await SharedPreferences.getInstance();
         final List<dynamic> mats = backup['materialLists'] as List<dynamic>;
@@ -1788,6 +1786,141 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
         backgroundColor: Colors.green));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Restore failed: $e'), backgroundColor: Colors.red));
+    }
+  }
+
+  Future<void> _restoreFromCloudWithDatePicker() async {
+    if (!mounted) return;
+    showDialog<void>(context: context, barrierDismissible: false,
+      builder: (_) => const AlertDialog(
+        content: Row(children: [
+          CircularProgressIndicator(),
+          SizedBox(width: 16),
+          Text('Loading backups...'),
+        ]),
+      ));
+    try {
+      final uid = AuthService.currentUser!.uid;
+      final snap = await FirebaseFirestore.instance
+        .collection('users').doc(uid).collection('backups')
+        .orderBy('backupAt', descending: true)
+        .limit(10)
+        .get();
+      if (mounted) Navigator.of(context).pop(); // close loading
+
+      if (snap.docs.isEmpty) {
+        // No dated backups yet — fall back to old single restore
+        if (!mounted) return;
+        final cloudHistory = await AuthService.loadHistoryFromCloud();
+        final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        final mats = doc.data()?['materialLists'] as List<dynamic>? ?? [];
+        for (final entry in cloudHistory.reversed) { await HistoryService.saveEntry(entry); }
+        if (mats.isNotEmpty) {
+          final prefs = await SharedPreferences.getInstance();
+          final existing = prefs.getStringList('saved_material_lists') ?? [];
+          for (final m in mats) { if (!existing.contains(m.toString())) existing.add(m.toString()); }
+          await prefs.setStringList('saved_material_lists', existing);
+        }
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('✓ Restored ${cloudHistory.length} entries from cloud!'),
+          backgroundColor: Colors.green));
+        return;
+      }
+
+      // Show dated backup picker
+      if (!mounted) return;
+      final chosen = await showModalBottomSheet<Map<String, dynamic>>(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        builder: (ctx) => Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            Row(children: [
+              Icon(Icons.cloud_download, color: Colors.blue.shade700),
+              const SizedBox(width: 10),
+              const Text('Choose Backup to Restore', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+            ]),
+            const SizedBox(height: 6),
+            Text('${snap.docs.length} backup${snap.docs.length == 1 ? '' : 's'} found — tap one to restore',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+            const SizedBox(height: 16),
+            ...snap.docs.asMap().entries.map((entry) {
+              final i = entry.key;
+              final doc = entry.value;
+              final data = doc.data();
+              final label = data['backupLabel'] as String? ?? 'Backup ${i + 1}';
+              final histCount = data['historyCount'] as int? ?? 0;
+              final matCount = data['matListCount'] as int? ?? 0;
+              final isLatest = i == 0;
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  onTap: () => Navigator.pop(ctx, data),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  tileColor: isLatest ? Colors.blue.shade50 : Colors.grey.shade50,
+                  leading: CircleAvatar(
+                    backgroundColor: isLatest ? Colors.blue.shade700 : Colors.grey.shade400,
+                    child: const Icon(Icons.cloud, color: Colors.white, size: 18),
+                  ),
+                  title: Row(children: [
+                    Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    if (isLatest) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(color: Colors.blue.shade700, borderRadius: BorderRadius.circular(10)),
+                        child: const Text('Latest', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ]),
+                  subtitle: Text('$histCount history entries  •  $matCount material lists',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  trailing: Icon(Icons.restore, color: isLatest ? Colors.blue.shade700 : Colors.grey.shade500),
+                ),
+              );
+            }),
+            const SizedBox(height: 8),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ]),
+        ),
+      );
+
+      if (chosen == null || !mounted) return;
+
+      // Restore from chosen snapshot
+      int restored = 0;
+      final historyList = chosen['history'] as List<dynamic>? ?? [];
+      for (final item in historyList.reversed) {
+        try {
+          final entry = HistoryEntry.fromJson(item as Map<String, dynamic>);
+          await HistoryService.saveEntry(entry);
+          restored++;
+        } catch (_) {}
+      }
+      final mats = chosen['materialLists'] as List<dynamic>? ?? [];
+      if (mats.isNotEmpty) {
+        final prefs = await SharedPreferences.getInstance();
+        final existing = prefs.getStringList('saved_material_lists') ?? [];
+        for (final m in mats) { if (!existing.contains(m.toString())) existing.add(m.toString()); }
+        await prefs.setStringList('saved_material_lists', existing);
+      }
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('✓ Restored $restored history entries + ${mats.length} material lists from ${chosen['backupLabel'] ?? 'selected backup'}!'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 4),
+      ));
+    } catch (e) {
+      if (mounted) {
+        try { Navigator.of(context).pop(); } catch (_) {}
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Cloud restore failed: $e'), backgroundColor: Colors.red));
+      }
+    }
+  }
         content: Text('Restore failed: $e'), backgroundColor: Colors.red));
     }
   }
