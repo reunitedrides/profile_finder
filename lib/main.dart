@@ -1102,42 +1102,114 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   Future<void> _showAboutDialogBox() async {
     await showDialog<void>(context: context, builder: (ctx) => AlertDialog(
-      title: const Text('About Roof Profile & Tile Finder'),
-      content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('Roof Profile & Tile Finder was created to help roofers identify roof profile sheets, tiles and slates quickly and accurately on site.'),
-        const SizedBox(height: 8),
-        const Text('This is my first app and my first experience of coding. I work as a roofer, and I built it to help solve a real problem on site.'),
-        const SizedBox(height: 8),
-        const Text('Use the search fields, filters and measurements to narrow down likely matches, then review them on the dedicated results screen.'),
-        const SizedBox(height: 8),
-        const SizedBox(height: 8),
-        const Text('Features:', style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
-        const Text(
-          '🔍  700+ steel, cement and tile profiles\n'
-          '📐  Roof Pitch Finder\n'
-          '📋  Material List — Industrial & Domestic\n'
-          '📏  Roof Area Calculator\n'
-          '📐  Rafter Calculator\n'
-          '🏗️  Perimeter Area Tool\n'
-          '☕  Site Stops nearby finder\n'
-          '🔦  Torch\n'
-          '📍  GPS location saving with map view\n'
-          '📄  PDF export\n'
-          '☁️  Cloud backup & sync\n'
-          '💾  Save & restore material lists',
-          style: TextStyle(height: 1.8, fontSize: 12)),
-        const SizedBox(height: 8),
-        const Text('I will continue improving the database. If you notice a missing profile please use the suggest option in the menu.'),
-        const SizedBox(height: 12),
-        Text('Version: $_appVersion', style: const TextStyle(fontWeight: FontWeight.w600)),
-      ])),
+      contentPadding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      content: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          // Header
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+            decoration: BoxDecoration(color: Colors.blue.shade700),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
+                  child: const Icon(Icons.roofing, color: Colors.white, size: 28),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('Roof Profile & Tile Finder', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text('The roofer\'s on-site companion', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                ])),
+              ]),
+              const SizedBox(height: 16),
+              Text('Version $_appVersion', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+            ]),
+          ),
+
+          // Story
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('Built by a roofer, for roofers', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              const SizedBox(height: 6),
+              Text(
+                'Created by Mark Jones, a working roofer from the West Midlands. '
+                'Built to solve a real problem on site — identifying roof sheets, tiles and slates quickly '
+                'without having to ring around or search the internet. This was his first app and first experience of coding.',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade700, height: 1.5),
+              ),
+            ]),
+          ),
+
+          // Features
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('What\'s included', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              const SizedBox(height: 10),
+              _aboutFeature(Icons.search, Colors.blue.shade700, 'Profile Finder', '760+ steel, cement, composite & standing seam profiles'),
+              _aboutFeature(Icons.home, Colors.orange.shade700, 'Tile Finder', 'Concrete, clay, slate and natural stone tiles'),
+              _aboutFeature(Icons.show_chart, Colors.red.shade700, 'Roof Pitch Finder', 'Live angle readout with voice callout & ridge angle calculator'),
+              _aboutFeature(Icons.list_alt, Colors.green.shade700, 'Material Lists', 'Industrial & domestic takeoff lists with PDF export'),
+              _aboutFeature(Icons.calculate, Colors.purple.shade700, 'Rafter Calculator', 'Accurate rafter lengths with birdsmouth and overhang'),
+              _aboutFeature(Icons.roofing, Colors.teal.shade700, 'Roof Area Calculator', 'Draw any roof shape and get area & perimeter instantly'),
+              _aboutFeature(Icons.crop_free, Colors.indigo.shade700, 'Perimeter Area Tool', 'Calculate areas and perimeters on site'),
+              _aboutFeature(Icons.local_cafe, Colors.brown.shade600, 'Site Stop Finder', 'Find nearby cafes, food vans and drive-throughs'),
+              _aboutFeature(Icons.flashlight_on, Colors.grey.shade700, 'Torch', 'Built-in torch for dark lofts and roof spaces'),
+              _aboutFeature(Icons.photo_camera, Colors.blue.shade600, 'Community Photos', 'Submit and approve real profile & tile photos'),
+              _aboutFeature(Icons.cloud_upload, Colors.blue.shade700, 'Cloud Backup', 'Auto backup with dated restore points — up to 10 snapshots'),
+              _aboutFeature(Icons.location_on, Colors.red.shade600, 'GPS Saving', 'Save profiles with location, pitch and site notes'),
+              _aboutFeature(Icons.share, Colors.green.shade600, 'Share & Export', 'Share profiles and material lists via PDF or text'),
+            ]),
+          ),
+
+          // Contact
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.grey.shade200)),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text('Get in touch', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                const SizedBox(height: 6),
+                Text('Missing a profile? Found an error? Tap "Suggest Profile" below and email us directly.',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700, height: 1.4)),
+                const SizedBox(height: 4),
+                Text('marksjones73@gmail.com', style: TextStyle(fontSize: 12, color: Colors.blue.shade700, fontWeight: FontWeight.w500)),
+              ]),
+            ),
+          ),
+        ])),
+      ),
       actions: [
         TextButton(onPressed: () async { Navigator.of(ctx).pop(); await _openSuggestEmail(); }, child: const Text('Suggest Profile')),
         TextButton(onPressed: () async { Navigator.of(ctx).pop(); await _openDonate(); }, child: const Text('Donate')),
         TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Close')),
       ],
     ));
+  }
+
+  Widget _aboutFeature(IconData icon, Color color, String title, String subtitle) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+          child: Icon(icon, color: color, size: 16),
+        ),
+        const SizedBox(width: 10),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+          Text(subtitle, style: TextStyle(fontSize: 11, color: Colors.grey.shade600, height: 1.3)),
+        ])),
+      ]),
+    );
   }
 
   Future<void> _showSuggestProfileDialog() async {
