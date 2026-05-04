@@ -1,126 +1,150 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roof Profile & Tile Finder</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Roof Profile & Tile Finder | Built by a Roofer for Roofers</title>
+  <meta name="description" content="Roof Profile & Tile Finder helps roofers identify roof sheets, tiles and slates, calculate pitch, roof area, rafters, material lists and more." />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; }
-    header { background: #1565C0; color: white; padding: 40px 20px; text-align: center; }
-    header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-    header p { font-size: 16px; opacity: 0.85; }
-    .badge-row { display: flex; justify-content: center; gap: 16px; padding: 28px 20px; flex-wrap: wrap; }
-    .badge-row a img { height: 48px; }
-    .features { max-width: 640px; margin: 0 auto; padding: 20px; }
-    .features h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; color: #1565C0; }
-    .feature { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; background: white; padding: 14px 16px; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-    .feature .icon { font-size: 24px; min-width: 32px; text-align: center; }
-    .feature h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-    .feature p { font-size: 13px; color: #666; line-height: 1.4; }
-    .support { max-width: 640px; margin: 0 auto 40px; padding: 0 20px; }
-    .support-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-    .support-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: #1565C0; }
-    .support-card p { font-size: 13px; color: #555; margin-bottom: 12px; line-height: 1.5; }
-    .support-card a { color: #1565C0; font-weight: 600; text-decoration: none; }
-    footer { text-align: center; padding: 20px; font-size: 12px; color: #999; }
+    :root{
+      --bg:#0b0b0b; --panel:#151515; --yellow:#f7b900; --blue:#1565d8; --green:#087a5e;
+      --cream:#f5f1e7; --text:#ffffff; --muted:#d6d6d6; --line:rgba(255,255,255,.14);
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);line-height:1.45}
+    a{color:inherit;text-decoration:none}.wrap{width:min(1160px,92vw);margin:auto}.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;padding:15px 22px;border-radius:14px;font-weight:800;letter-spacing:.02em;border:2px solid transparent;transition:.2s}.btn.primary{background:var(--yellow);color:#111}.btn.ghost{border-color:var(--yellow);color:var(--yellow)}.btn:hover{transform:translateY(-2px)}
+    .hazard{height:18px;background:repeating-linear-gradient(135deg,var(--yellow) 0 22px,#111 22px 42px);opacity:.95}
+    header{position:sticky;top:0;z-index:5;background:rgba(8,8,8,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    nav{height:74px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:12px;font-weight:900;text-transform:uppercase}.brand-mark{width:42px;height:42px;border-radius:12px;background:var(--yellow);display:grid;place-items:center;color:#111;font-size:24px}.navlinks{display:flex;gap:22px;color:var(--muted);font-weight:700}.navlinks a:hover{color:var(--yellow)}
+    .hero{position:relative;overflow:hidden;padding:70px 0 50px;background:radial-gradient(circle at 75% 25%,rgba(247,185,0,.18),transparent 34%),linear-gradient(135deg,#0a0a0a,#151515)}
+    .hero:before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:34px 34px;opacity:.45}.hero-grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center}
+    .eyebrow{display:inline-block;background:var(--yellow);color:#111;font-weight:900;text-transform:uppercase;padding:8px 13px;border-radius:8px;transform:rotate(-1deg)}
+    h1{font-size:clamp(44px,7vw,86px);line-height:.93;margin:22px 0 20px;text-transform:uppercase;letter-spacing:-.04em}.yellow{color:var(--yellow)}.lead{font-size:clamp(18px,2.2vw,25px);color:#eee;max-width:680px}.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin:30px 0}.trust{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.pill{border:1px solid var(--line);background:rgba(255,255,255,.05);padding:10px 14px;border-radius:999px;color:#eee;font-weight:700}
+    .phone-card{background:#111;border:1px solid var(--line);border-radius:34px;padding:16px;box-shadow:0 30px 80px rgba(0,0,0,.55);max-width:390px;margin:auto}.phone-card img{width:100%;border-radius:24px;display:block;background:#eee}.phone-placeholder{aspect-ratio:9/18;background:linear-gradient(#176bdc,#f8f6ee 25%);border-radius:24px;padding:18px;color:#111}.app-title{color:white;text-align:center;font-size:24px;font-weight:800;margin:10px 0 36px}.app-tile{background:white;border-radius:14px;margin:12px 0;padding:15px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 18px rgba(0,0,0,.16)}.icon{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;color:white;font-size:23px}.blue{background:#1976d2}.orange{background:#f57c00}.red{background:#d32f2f}.green{background:#388e3c}.brown{background:#795548}.purple{background:#7b1fa2}
+    section{padding:72px 0}.section-title{font-size:clamp(32px,4vw,54px);text-transform:uppercase;line-height:1;margin:0 0 16px}.section-intro{color:var(--muted);font-size:19px;max-width:760px}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}.feature{background:linear-gradient(180deg,#191919,#101010);border:1px solid var(--line);border-radius:20px;padding:24px;min-height:190px}.feature .ficon{font-size:36px;color:var(--yellow);margin-bottom:12px}.feature h3{margin:0 0 8px;font-size:22px}.feature p{margin:0;color:var(--muted)}
+    .story{background:var(--cream);color:#151515}.story-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:36px;align-items:center}.badge{background:#111;color:var(--yellow);padding:22px;border-radius:20px;font-size:30px;font-weight:900;text-transform:uppercase;text-align:center}.story p{font-size:20px;color:#333}
+    .screens{background:#101010}.shot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:32px}.shot{background:#171717;border:1px solid var(--line);border-radius:18px;overflow:hidden}.shot img{width:100%;display:block;aspect-ratio:9/16;object-fit:cover;background:#222}.shot div{padding:14px;font-weight:800;color:var(--yellow)}
+    .how{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:30px}.step{border:1px solid var(--line);border-radius:18px;padding:22px;background:#151515}.step strong{display:block;color:var(--yellow);font-size:32px}.step h3{margin:10px 0 8px}.step p{color:var(--muted);margin:0}
+    .cta{background:linear-gradient(135deg,#141414,#050505);text-align:center;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.cta h2{font-size:clamp(34px,5vw,70px);line-height:1;text-transform:uppercase;margin:0 0 18px}.cta p{font-size:21px;color:var(--muted);max-width:740px;margin:0 auto 28px}
+    footer{padding:32px 0;color:#aaa}.footer-grid{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:22px}.small{font-size:13px;color:#888}
+    @media(max-width:900px){.hero-grid,.story-grid{grid-template-columns:1fr}.features{grid-template-columns:1fr 1fr}.shot-grid{grid-template-columns:1fr 1fr}.how{grid-template-columns:1fr 1fr}.navlinks{display:none}.phone-card{max-width:330px}}
+    @media(max-width:560px){section{padding:52px 0}.features,.shot-grid,.how{grid-template-columns:1fr}.hero{padding-top:44px}.btn{width:100%}.trust{display:grid;grid-template-columns:1fr}.brand span{font-size:14px}}
   </style>
 </head>
 <body>
-
-<header>
-  <h1>🏠 Roof Profile & Tile Finder</h1>
-  <p>The roofer's on-site companion — built by a roofer, for roofers</p>
-</header>
-
-<div class="badge-row">
-  <a href="https://apps.apple.com/app/id[YOUR_APP_ID]">
-    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
-  </a>
-  <a href="https://play.google.com/store/apps/details?id=com.marksamazingapps.profilefinder">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play">
-  </a>
-</div>
-
-<div class="features">
-  <h2>What's included</h2>
-
-  <div class="feature">
-    <div class="icon">🔍</div>
-    <div>
-      <h3>Profile Finder</h3>
-      <p>Search 760+ steel, cement, composite and standing seam profiles by name or measurements.</p>
+  <div class="hazard"></div>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="#top"><span class="brand-mark">🏠</span><span>Roof Profile<br>& Tile Finder</span></a>
+        <div class="navlinks"><a href="#features">Features</a><a href="#screenshots">Screenshots</a><a href="#how">How it works</a><a href="#download">Download</a></div>
+      </nav>
     </div>
-  </div>
+  </header>
 
-  <div class="feature">
-    <div class="icon">🏠</div>
-    <div>
-      <h3>Tile & Slate Finder</h3>
-      <p>Identify concrete, clay, natural slate and stone tiles with smart filters and dimensions.</p>
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow">Built by a roofer for roofers</span>
+          <h1>All your <span class="yellow">roofing tools</span><br>in one app</h1>
+          <p class="lead">Identify roof sheets, tiles and slates. Measure pitch. Calculate roof area, perimeter, rafters and material lists — fast on site.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#download">Download the app</a>
+            <a class="btn ghost" href="#features">See features</a>
+          </div>
+          <div class="trust">
+            <span class="pill">700+ profiles</span><span class="pill">Save & share</span><span class="pill">On-site tools</span><span class="pill">Torch included</span>
+          </div>
+        </div>
+        <div class="phone-card" aria-label="App preview">
+          <!-- Replace this mockup with your own screenshot if wanted: <img src="assets/home-screen.png" alt="Roof Profile app home screen"> -->
+          <div class="phone-placeholder">
+            <div class="app-title">Home</div>
+            <div class="app-tile"><span class="icon blue">🔍</span><b>Profile Finder</b></div>
+            <div class="app-tile"><span class="icon orange">🏠</span><b>Tile Finder</b></div>
+            <div class="app-tile"><span class="icon red">📐</span><b>Roof Pitch Finder</b></div>
+            <div class="app-tile"><span class="icon green">📋</span><b>Material List</b></div>
+            <div class="app-tile"><span class="icon brown">📏</span><b>Rafter Calculator</b></div>
+            <div class="app-tile"><span class="icon purple">▣</span><b>Perimeter Area Tool</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="wrap">
+        <h2 class="section-title">Made for real roofing work</h2>
+        <p class="section-intro">A practical toolkit for roofers, surveyors, contractors and merchants who need quick answers while on site.</p>
+        <div class="features">
+          <article class="feature"><div class="ficon">🔍</div><h3>Profile Finder</h3><p>Search steel, cement, composite and standing seam profiles by name, code or measurements.</p></article>
+          <article class="feature"><div class="ficon">🏠</div><h3>Tile Identifier</h3><p>Find roof tiles and slates using search, filters and key dimensions.</p></article>
+          <article class="feature"><div class="ficon">📐</div><h3>Pitch Finder</h3><p>Use your phone to measure roof pitch, ratio and slope with live readings.</p></article>
+          <article class="feature"><div class="ficon">📋</div><h3>Material Lists</h3><p>Create, save and share industrial or domestic material takeoff lists.</p></article>
+          <article class="feature"><div class="ficon">📏</div><h3>Rafter Calculator</h3><p>Calculate rafter lengths, ridge height, cut angles and birdsmouth details.</p></article>
+          <article class="feature"><div class="ficon">▣</div><h3>Roof Area & Perimeter</h3><p>Calculate roof areas, draw complex perimeters and allow for wastage.</p></article>
+          <article class="feature"><div class="ficon">📍</div><h3>Save Jobs</h3><p>Save useful job details including location and roof pitch for later reference.</p></article>
+          <article class="feature"><div class="ficon">🔦</div><h3>Torch</h3><p>Built-in torch tool for dark lofts, sheds and roof spaces.</p></article>
+          <article class="feature"><div class="ficon">☕</div><h3>Site Stops</h3><p>Find quick stops near site, including cafés, food stops and trade counters.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="story">
+      <div class="wrap story-grid">
+        <div class="badge">Built by a roofer<br>for roofers</div>
+        <div>
+          <h2 class="section-title">Created from real site problems</h2>
+          <p>Roof Profile & Tile Finder was created by a working roofer to solve everyday problems on site — identifying old sheets, checking measurements, calculating materials and keeping job information organised.</p>
+          <p>No corporate fluff. Just practical tools designed around how roofers actually work.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="screenshots" class="screens">
+      <div class="wrap">
+        <h2 class="section-title">App screenshots</h2>
+        <p class="section-intro">Replace these image paths with your finished rugged screenshots when you upload the site.</p>
+        <div class="shot-grid">
+          <div class="shot"><img src="assets/screenshot-1.png" alt="Home screen"><div>Home tools</div></div>
+          <div class="shot"><img src="assets/screenshot-2.png" alt="Profile Finder"><div>Profile Finder</div></div>
+          <div class="shot"><img src="assets/screenshot-3.png" alt="Tile Finder"><div>Tile Finder</div></div>
+          <div class="shot"><img src="assets/screenshot-4.png" alt="Results"><div>Instant Results</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="wrap">
+        <h2 class="section-title">How it works</h2>
+        <div class="how">
+          <div class="step"><strong>1</strong><h3>Choose a tool</h3><p>Open the finder, calculator, material list or torch from the home screen.</p></div>
+          <div class="step"><strong>2</strong><h3>Enter details</h3><p>Search by name, add measurements, or input job dimensions.</p></div>
+          <div class="step"><strong>3</strong><h3>Get results</h3><p>View matches, calculations and useful site information instantly.</p></div>
+          <div class="step"><strong>4</strong><h3>Save or share</h3><p>Keep records for later or send results to your team, client or supplier.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="download" class="cta">
+      <div class="wrap">
+        <h2>Save time on every job</h2>
+        <p>Roof Profile & Tile Finder brings profile search, roof calculations, material lists and site tools into one practical app.</p>
+        <div class="hero-actions" style="justify-content:center">
+          <a class="btn primary" href="#">Google Play link</a>
+          <a class="btn ghost" href="#">App Store link</a>
+        </div>
+        <p class="small">Replace these buttons with your live store links when published.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-grid">
+      <div><b>Roof Profile & Tile Finder</b><br><span class="small">Built by a roofer for roofers.</span></div>
+      <div class="small">© <span id="year"></span> Roof Profile & Tile Finder. All rights reserved.</div>
     </div>
-  </div>
-
-  <div class="feature">
-    <div class="icon">📐</div>
-    <div>
-      <h3>Roof Pitch Finder</h3>
-      <p>Live angle readout with voice callout and ridge flashing angle calculator.</p>
-    </div>
-  </div>
-
-  <div class="feature">
-    <div class="icon">📋</div>
-    <div>
-      <h3>Material Lists</h3>
-      <p>Build industrial and domestic takeoff lists on site and export to PDF.</p>
-    </div>
-  </div>
-
-  <div class="feature">
-    <div class="icon">📏</div>
-    <div>
-      <h3>Rafter Calculator</h3>
-      <p>Calculate rafter lengths, ridge height and birdsmouth cut details.</p>
-    </div>
-  </div>
-
-  <div class="feature">
-    <div class="icon">🏗️</div>
-    <div>
-      <h3>Roof Area Calculator</h3>
-      <p>Enter length, width and pitch for instant area and quantity estimates.</p>
-    </div>
-  </div>
-
-  <div class="feature">
-    <div class="icon">☕</div>
-    <div>
-      <h3>Site Stop Finder</h3>
-      <p>Find nearby cafes, Greggs, McDonald's and trade counters up to 15 miles away.</p>
-    </div>
-  </div>
-
-  <div class="feature">
-    <div class="icon">☁️</div>
-    <div>
-      <h3>Cloud Backup</h3>
-      <p>Automatic backup with dated restore points and cross-device sync.</p>
-    </div>
-  </div>
-</div>
-
-<div class="support">
-  <div class="support-card">
-    <h2>Support</h2>
-    <p>Having trouble or found a missing profile? Get in touch and we'll help as quickly as possible.</p>
-    <a href="mailto:marksjones73@gmail.com">marksjones73@gmail.com</a>
-  </div>
-</div>
-
-<footer>
-  &copy; 2026 Roof Profile & Tile Finder. Built by a roofer, for roofers.
-</footer>
-
+  </footer>
+  <div class="hazard"></div>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
