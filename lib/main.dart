@@ -9978,17 +9978,53 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
   }
 
   Future<void> _deleteAccount() async {
-    // Step 1 — confirm intent
-    final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
-      title: const Row(children: [Icon(Icons.warning, color: Colors.red), SizedBox(width: 8), Text('Delete Account')]),
-      content: const Text(
-        'This will permanently delete your account and all associated data including history, backups and favourites.\n\nThis cannot be undone.'),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-        ElevatedButton(onPressed: () => Navigator.pop(ctx, true),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-          child: const Text('Delete My Account')),
-      ],
+    // Show confirmation dialog with keep photos toggle
+    bool keepPhotos = true;
+    final confirm = await showDialog<bool>(context: context, builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setDialogState) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(children: [
+          Icon(Icons.warning, color: Colors.red),
+          SizedBox(width: 8),
+          Text('Delete Account'),
+        ]),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text(
+            'This will permanently delete your account and all associated data including history, backups and favourites.\n\nThis cannot be undone.',
+            style: TextStyle(fontSize: 13, height: 1.5),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.blue.shade100),
+            ),
+            padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+            child: Row(children: [
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text('Keep my submitted photos', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 3),
+                Text('Your approved profile photos will remain visible to help other users, but will no longer be linked to your account.',
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600, height: 1.4)),
+              ])),
+              Switch(
+                value: keepPhotos,
+                activeColor: Colors.blue.shade700,
+                onChanged: (val) => setDialogState(() => keepPhotos = val),
+              ),
+            ]),
+          ),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            child: const Text('Delete My Account'),
+          ),
+        ],
+      ),
     ));
     if (confirm != true || !mounted) return;
 
@@ -9997,7 +10033,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         final uid = user.uid;
-        // Delete all Firestore data
+        // Delete Firestore personal data
         try {
           final histSnap = await FirebaseFirestore.instance.collection('users').doc(uid).collection('history').get();
           for (final doc in histSnap.docs) { await doc.reference.delete(); }
@@ -10005,7 +10041,37 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
           for (final doc in backupSnap.docs) { await doc.reference.delete(); }
           await FirebaseFirestore.instance.collection('users').doc(uid).delete();
         } catch (_) {}
-        // Delete local data
+
+        // Optionally delete submitted photos from Storage
+        if (!keepPhotos) {
+          try {
+            final userEmail = user.email ?? '';
+            // Delete sheet photos submitted by this user
+            for (final folder in ['sheet_photos', 'tile_photos']) {
+              final ref = FirebaseStorage.instance.ref(folder);
+              final list = await ref.listAll();
+              for (final item in list.items) {
+                try {
+                  final meta = await item.getMetadata();
+                  if (meta.customMetadata?['uploadedBy'] == userEmail ||
+                      meta.customMetadata?['uid'] == uid) {
+                    await item.delete();
+                  }
+                } catch (_) {}
+              }
+            }
+            // Remove from profile_photos collection where correctionId links back to this user
+            final corrections = await FirebaseFirestore.instance
+              .collection('image_corrections')
+              .where('submittedBy', isEqualTo: userEmail)
+              .get();
+            for (final doc in corrections.docs) {
+              await doc.reference.delete();
+            }
+          } catch (_) {}
+        }
+
+        // Clear local data
         await HistoryService.clearHistory();
         final prefs = await SharedPreferences.getInstance();
         await prefs.remove('saved_material_lists');
@@ -10015,13 +10081,17 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
       }
       await AuthService.signOut();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Account deleted successfully'), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(keepPhotos
+            ? 'Account deleted. Your photos remain to help the community.'
+            : 'Account and all data deleted successfully.'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 4),
+        ));
         Navigator.pop(context, true);
       }
     } on FirebaseAuthException catch (e) {
       if (mounted) setState(() { _busy = false; });
-      // If re-auth needed (Google/Apple sign in users)
       if (e.code == 'requires-recent-login') {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Please sign out and sign back in, then try deleting your account again.'),
