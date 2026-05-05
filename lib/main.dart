@@ -3581,6 +3581,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                           'profileName': p.profileName, 'manufacturer': p.manufacturer,
                           'photoUrl': uploadedUrl, 'notes': notesController.text.trim(),
                           'submittedBy': FirebaseAuth.instance.currentUser?.email ?? 'anonymous',
+                          'uid': FirebaseAuth.instance.currentUser?.uid ?? '',
                           'submittedAt': FieldValue.serverTimestamp(), 'status': 'pending',
                         });
                         setSheet(() { submitting = false; submitted = true; });
@@ -3726,6 +3727,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                           'correctedName': nameCtrl.text.trim(), 'correctedMfr': mfrCtrl.text.trim(),
                           'photoUrl': photoUrl,
                           'submittedBy': FirebaseAuth.instance.currentUser?.email ?? 'anonymous',
+                          'uid': FirebaseAuth.instance.currentUser?.uid ?? '',
                           'submittedAt': FieldValue.serverTimestamp(), 'status': 'pending',
                         });
                         setSheet(() { submitting = false; submitted = true; });
@@ -10045,27 +10047,25 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
         // Optionally delete submitted photos from Storage
         if (!keepPhotos) {
           try {
-            final userEmail = user.email ?? '';
-            // Delete sheet photos submitted by this user
-            for (final folder in ['sheet_photos', 'tile_photos']) {
-              final ref = FirebaseStorage.instance.ref(folder);
-              final list = await ref.listAll();
-              for (final item in list.items) {
-                try {
-                  final meta = await item.getMetadata();
-                  if (meta.customMetadata?['uploadedBy'] == userEmail ||
-                      meta.customMetadata?['uid'] == uid) {
-                    await item.delete();
-                  }
-                } catch (_) {}
-              }
-            }
-            // Remove from profile_photos collection where correctionId links back to this user
+            // Call Cloud Function to delete approved photos from profile_photos
+            final callable = FirebaseFunctions.instanceFor(region: 'europe-west2')
+              .httpsCallable('deleteUserPhotos');
+            await callable.call();
+          } catch (_) {}
+          try {
+            // Delete pending/rejected corrections with photos
             final corrections = await FirebaseFirestore.instance
               .collection('image_corrections')
-              .where('submittedBy', isEqualTo: userEmail)
+              .where('uid', isEqualTo: uid)
               .get();
             for (final doc in corrections.docs) {
+              try {
+                final photoUrl = doc.data()['photoUrl'] as String?;
+                if (photoUrl != null && photoUrl.isNotEmpty) {
+                  final path = Uri.decodeFull(photoUrl.split('/o/')[1].split('?')[0]);
+                  await FirebaseStorage.instance.ref(path).delete();
+                }
+              } catch (_) {}
               await doc.reference.delete();
             }
           } catch (_) {}

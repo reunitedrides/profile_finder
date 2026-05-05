@@ -155,11 +155,40 @@ exports.approveCorrection = onCall(
           category: data.type === 'tile_photo' ? 'tile' : 'sheet',
           approvedAt: admin.firestore.FieldValue.serverTimestamp(),
           correctionId,
+          submittedBy: data.submittedBy ?? '',
+          uid: data.uid ?? '',
         }, { merge: true });
       }
     }
 
     return { success: true };
+  }
+);
+
+// ── Delete user photos on account deletion ─────────────────────
+exports.deleteUserPhotos = onCall(
+  { region: 'europe-west2' },
+  async (request) => {
+    if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
+    const uid = request.auth.uid;
+
+    // Delete from profile_photos collection
+    const photoSnap = await admin.firestore().collection('profile_photos')
+      .where('uid', '==', uid).get();
+    for (const doc of photoSnap.docs) {
+      const photoUrl = doc.data().photoUrl;
+      if (photoUrl) {
+        try {
+          const path = decodeURIComponent(photoUrl.split('/o/')[1].split('?')[0]);
+          await admin.storage().bucket().file(path).delete();
+        } catch (e) {
+          console.log('Storage delete skipped:', e.message);
+        }
+      }
+      await doc.ref.delete();
+    }
+
+    return { deleted: photoSnap.size };
   }
 );
 
