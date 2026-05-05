@@ -189,7 +189,7 @@ class FCMService {
 
 class HistoryService {
   static const String _key = 'profile_history_v2';
-  static const int _maxItems = 20;
+  static const int _maxItems = 10;
 
   static Future<void> saveEntry(HistoryEntry entry) async {
     final prefs = await SharedPreferences.getInstance();
@@ -9977,6 +9977,66 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
     if (mounted) Navigator.pop(context, true);
   }
 
+  Future<void> _deleteAccount() async {
+    // Step 1 — confirm intent
+    final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Row(children: [Icon(Icons.warning, color: Colors.red), SizedBox(width: 8), Text('Delete Account')]),
+      content: const Text(
+        'This will permanently delete your account and all associated data including history, backups and favourites.\n\nThis cannot be undone.'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+        ElevatedButton(onPressed: () => Navigator.pop(ctx, true),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+          child: const Text('Delete My Account')),
+      ],
+    ));
+    if (confirm != true || !mounted) return;
+
+    setState(() { _busy = true; });
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final uid = user.uid;
+        // Delete all Firestore data
+        try {
+          final histSnap = await FirebaseFirestore.instance.collection('users').doc(uid).collection('history').get();
+          for (final doc in histSnap.docs) { await doc.reference.delete(); }
+          final backupSnap = await FirebaseFirestore.instance.collection('users').doc(uid).collection('backups').get();
+          for (final doc in backupSnap.docs) { await doc.reference.delete(); }
+          await FirebaseFirestore.instance.collection('users').doc(uid).delete();
+        } catch (_) {}
+        // Delete local data
+        await HistoryService.clearHistory();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('saved_material_lists');
+        await prefs.remove('favourites');
+        // Delete Firebase Auth account
+        await user.delete();
+      }
+      await AuthService.signOut();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Account deleted successfully'), backgroundColor: Colors.green));
+        Navigator.pop(context, true);
+      }
+    } on FirebaseAuthException catch (e) {
+      if (mounted) setState(() { _busy = false; });
+      // If re-auth needed (Google/Apple sign in users)
+      if (e.code == 'requires-recent-login') {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Please sign out and sign back in, then try deleting your account again.'),
+          backgroundColor: Colors.orange, duration: Duration(seconds: 5)));
+      } else {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Delete failed: ${e.message}'), backgroundColor: Colors.red));
+      }
+    } catch (e) {
+      if (mounted) setState(() { _busy = false; });
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Delete failed: $e'), backgroundColor: Colors.red));
+    }
+  }
+
   Future<void> _syncNow() async {
     setState(() { _busy = true; });
     try {
@@ -10093,11 +10153,25 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
         if (_busy) const CircularProgressIndicator(),
         const SizedBox(height: 24),
         SizedBox(width: double.infinity, child: OutlinedButton.icon(
-          onPressed: _signOut,
+          onPressed: _busy ? null : _signOut,
           icon: const Icon(Icons.logout, color: Colors.red),
           label: const Text('Sign Out', style: TextStyle(color: Colors.red)),
           style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
         )),
+        const SizedBox(height: 12),
+        SizedBox(width: double.infinity, child: OutlinedButton.icon(
+          onPressed: _busy ? null : _deleteAccount,
+          icon: Icon(Icons.delete_forever, color: Colors.red.shade700),
+          label: Text('Delete Account', style: TextStyle(color: Colors.red.shade700)),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            side: BorderSide(color: Colors.red.shade700),
+          ),
+        )),
+        const SizedBox(height: 8),
+        Text('Deleting your account permanently removes all your data.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
       ]),
     );
   }
