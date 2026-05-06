@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "899172571973-bgbahmvd64jhdtatkh8673g4uml8vapq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.marksamazingapps.profilefinder",
+            "certificate_hash": "3e6a7831ac838fb7ad31e59ed8d3329d95914e69"
+          }
+        },
+        {
           "client_id": "899172571973-q50ngh8pinceu2g1qoqblvtqfn2a5atk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
