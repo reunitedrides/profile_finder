@@ -1129,7 +1129,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       content: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        child: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           // Header
           Container(
             width: double.infinity,
@@ -1238,7 +1240,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
   Future<void> _showSuggestProfileDialog() async {
     await showDialog<void>(context: context, builder: (ctx) => AlertDialog(
       title: const Text('Suggest a Missing Profile'),
-      content: const SingleChildScrollView(child: Text('If you cannot find a roof sheet, tile or slate, tap Email below and include as much detail as possible.')),
+      content: const SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Text('If you cannot find a roof sheet, tile or slate, tap Email below and include as much detail as possible.')),
       actions: [
         TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Close')),
         TextButton(onPressed: () async { Navigator.of(ctx).pop(); await _openSuggestEmail(); }, child: const Text('Email')),
@@ -1656,7 +1660,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
     final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
       title: const Row(children: [Icon(Icons.admin_panel_settings, color: Colors.blue), SizedBox(width: 8), Text('Admin Access')]),
       content: TextField(
-        controller: pinController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: pinController,
         obscureText: true,
         keyboardType: TextInputType.number,
         maxLength: 6,
@@ -1780,7 +1785,9 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         const Text('Paste your backup JSON below to restore history and material lists:'),
         const SizedBox(height: 12),
-        TextField(controller: pasteController, maxLines: 5,
+        TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: pasteController, maxLines: 5,
           decoration: const InputDecoration(hintText: 'Paste backup JSON here...', border: OutlineInputBorder())),
       ]),
       actions: [
@@ -2121,7 +2128,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
   Widget _measurementField(String label, TextEditingController controller) {
     return TextField(
-      controller: controller,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: InputDecoration(
         labelText: label,
@@ -2306,7 +2314,8 @@ class _ProfileSearchScreenState extends State<ProfileSearchScreen> {
 
                 // Search bar
                 TextField(
-                  controller: _profileSearchController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _profileSearchController,
                   decoration: InputDecoration(
                     labelText: _searchFieldLabel(),
                     hintText: _searchFieldHint(),
@@ -2769,7 +2778,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
         const Text('Open the backup JSON file, copy all the text, then paste it here:'),
         const SizedBox(height: 12),
         TextField(
-          controller: pasteController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: pasteController,
           maxLines: 5,
           decoration: const InputDecoration(
             hintText: 'Paste backup JSON here...',
@@ -3070,7 +3080,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheetState) => SingleChildScrollView(
-          padding: EdgeInsets.only(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: EdgeInsets.only(
             left: 20, right: 20, top: 20,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + MediaQuery.of(ctx).padding.bottom + 20,
           ),
@@ -3086,7 +3097,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
             const Text('Building Name', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             TextField(
-              controller: buildingController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: buildingController,
               textCapitalization: TextCapitalization.words,
               decoration: const InputDecoration(
                 hintText: 'e.g. Smith Residence, Factory Unit 4...',
@@ -3102,7 +3114,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
             const SizedBox(height: 6),
             Row(children: [
               Expanded(child: TextField(
-                controller: locationController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: locationController,
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
                   hintText: 'e.g. 14 High Street, Birmingham',
@@ -3217,7 +3230,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
             const Text('Roof pitch (degrees)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             TextField(
-              controller: pitchController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: pitchController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: const InputDecoration(
                 hintText: 'e.g. 22.5',
@@ -3234,7 +3248,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
             const Text('Notes', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             TextField(
-              controller: notesController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: notesController,
               textCapitalization: TextCapitalization.sentences,
               maxLines: 2,
               decoration: const InputDecoration(
@@ -3500,7 +3515,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => SingleChildScrollView(
-          padding: EdgeInsets.only(left: 20, right: 20, top: 20,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: EdgeInsets.only(left: 20, right: 20, top: 20,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + MediaQuery.of(ctx).padding.bottom + 20),
           child: submitted
             ? Column(mainAxisSize: MainAxisSize.min, children: [
@@ -3558,7 +3574,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 const SizedBox(height: 14),
                 const Text('Notes (optional)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                 const SizedBox(height: 6),
-                TextField(controller: notesController, maxLines: 2,
+                TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: notesController, maxLines: 2,
                   decoration: InputDecoration(
                     hintText: 'e.g. Photographed on a factory in Birmingham...',
                     border: const OutlineInputBorder(), isDense: true,
@@ -3644,7 +3662,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => SingleChildScrollView(
-          padding: EdgeInsets.only(left: 20, right: 20, top: 20,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: EdgeInsets.only(left: 20, right: 20, top: 20,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + MediaQuery.of(ctx).padding.bottom + 20),
           child: submitted
             ? Column(mainAxisSize: MainAxisSize.min, children: [
@@ -3673,12 +3692,16 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 const SizedBox(height: 20),
                 const Text('Profile Name', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                 const SizedBox(height: 6),
-                TextField(controller: nameCtrl,
+                TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: nameCtrl,
                   decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true, prefixIcon: Icon(Icons.label_outline))),
                 const SizedBox(height: 14),
                 const Text('Manufacturer', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                 const SizedBox(height: 6),
-                TextField(controller: mfrCtrl,
+                TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: mfrCtrl,
                   decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true, prefixIcon: Icon(Icons.business_outlined))),
                 const SizedBox(height: 14),
                 const Text('Photo (optional)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
@@ -3861,7 +3884,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   const Expanded(child: Text('Found your profile? Scroll down to save it with location & roof pitch!', style: TextStyle(fontSize: 13, color: Colors.black87))),
                 ]),
               ),
-              Expanded(child: SingleChildScrollView(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(child: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   child: Text('Matches found: ${widget.results.length}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                 ...widget.results.map((r) => Padding(padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -4118,13 +4143,15 @@ class _ToolsScreenState extends State<ToolsScreen> {
         const Text('Add a link to any app or website you use on site.', style: TextStyle(fontSize: 13, color: Colors.grey)),
         const SizedBox(height: 16),
         TextField(
-          controller: nameController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: nameController,
           textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(labelText: 'App Name', hintText: 'e.g. BBC Weather', border: OutlineInputBorder(), prefixIcon: Icon(Icons.apps)),
         ),
         const SizedBox(height: 12),
         TextField(
-          controller: urlController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: urlController,
           keyboardType: TextInputType.url,
           decoration: const InputDecoration(labelText: 'URL or App Link', hintText: 'e.g. https://weather.com', border: OutlineInputBorder(), prefixIcon: Icon(Icons.link)),
         ),
@@ -4352,13 +4379,15 @@ class _MyAppsScreenState extends State<MyAppsScreen> {
       title: const Text('Add App'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         TextField(
-          controller: nameController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: nameController,
           textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(labelText: 'App Name', hintText: 'e.g. BBC Weather', border: OutlineInputBorder(), prefixIcon: Icon(Icons.apps)),
         ),
         const SizedBox(height: 12),
         TextField(
-          controller: urlController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: urlController,
           keyboardType: TextInputType.url,
           decoration: const InputDecoration(labelText: 'URL or App Link', hintText: 'e.g. https://bbc.co.uk/weather', border: OutlineInputBorder(), prefixIcon: Icon(Icons.link)),
         ),
@@ -4386,10 +4415,14 @@ class _MyAppsScreenState extends State<MyAppsScreen> {
     final result = await showDialog<String>(context: context, builder: (ctx) => AlertDialog(
       title: const Text('Edit App'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: nameController, textCapitalization: TextCapitalization.words,
+        TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: nameController, textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(labelText: 'App Name', border: OutlineInputBorder(), prefixIcon: Icon(Icons.apps))),
         const SizedBox(height: 12),
-        TextField(controller: urlController, keyboardType: TextInputType.url,
+        TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: urlController, keyboardType: TextInputType.url,
           decoration: const InputDecoration(labelText: 'URL', border: OutlineInputBorder(), prefixIcon: Icon(Icons.link))),
       ]),
       actions: [
@@ -4726,7 +4759,8 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
         content: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: math.min(MediaQuery.of(ctx).size.width - 64, 420)),
           child: SingleChildScrollView(
-            child: RepaintBoundary(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: RepaintBoundary(
               key: diagramKey,
               child: Container(
                 color: Colors.white,
@@ -4836,6 +4870,7 @@ class _PitchAngleScreenState extends State<PitchAngleScreen> {
         ],
       ),
       body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -5584,7 +5619,8 @@ class _SavedMaterialListDetailScreen extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
-          child: SelectableText(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: SelectableText(
             text,
             style: const TextStyle(fontSize: 14, height: 1.45),
           ),
@@ -5828,7 +5864,9 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         const Text('Enter a name for this list:'),
         const SizedBox(height: 12),
-        TextField(controller: nameController, textCapitalization: TextCapitalization.words,
+        TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: nameController, textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(border: OutlineInputBorder(), prefixIcon: Icon(Icons.list_alt)),
           autofocus: true),
       ]),
@@ -6107,7 +6145,8 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
       child: Row(children: [
         Expanded(flex: 3, child: Text(label, style: const TextStyle(fontSize: 13))),
         Expanded(flex: 2, child: TextField(
-          controller: controller,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: controller,
           keyboardType: keyboardType ?? (isLabel ? TextInputType.text : const TextInputType.numberWithOptions(decimal: true)),
           textCapitalization: isLabel ? TextCapitalization.words : TextCapitalization.none,
           decoration: InputDecoration(
@@ -6126,17 +6165,16 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           // Header
           Card(color: Colors.green.shade50, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               TextField(
-                controller: _buildingController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _buildingController,
                 textCapitalization: TextCapitalization.words,
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 decoration: const InputDecoration(
@@ -6224,19 +6262,22 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(children: [
                 Expanded(flex: 2, child: TextField(
-                  controller: item.qtyController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.qtyController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: _hintDec('0'),
                 )),
                 const SizedBox(width: 6),
                 Expanded(flex: 2, child: TextField(
-                  controller: item.lengthController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.lengthController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: _hintDec('0.0'),
                 )),
                 const SizedBox(width: 6),
                 Expanded(flex: 4, child: TextField(
-                  controller: item.materialController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.materialController,
                   textCapitalization: TextCapitalization.words,
                   decoration: _hintDec('e.g. Trisomet 0.7mm HPS200'),
                 )),
@@ -6330,11 +6371,17 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Row(children: [
-                  Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
+                  Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
                   const SizedBox(width: 6),
-                  Expanded(flex: 2, child: TextField(controller: item.lengthController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0.0'))),
+                  Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.lengthController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0.0'))),
                   const SizedBox(width: 6),
-                  Expanded(flex: 4, child: TextField(controller: item.materialController, textCapitalization: TextCapitalization.words, decoration: _hintDec('e.g. 32/1000 Liner 0.4mm'))),
+                  Expanded(flex: 4, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.materialController, textCapitalization: TextCapitalization.words, decoration: _hintDec('e.g. 32/1000 Liner 0.4mm'))),
                   const SizedBox(width: 4),
                   IconButton(
                     onPressed: _linerItems.length > 1 ? () => setState(() { _linerItems[i].dispose(); _linerItems.removeAt(i); }) : null,
@@ -6386,19 +6433,27 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(children: [
-                Expanded(flex: 2, child: TextField(controller: item.headController,
+                Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.headController,
                   textCapitalization: TextCapitalization.words,
                   decoration: _hintDec('Hex'))),
                 const SizedBox(width: 4),
-                Expanded(flex: 2, child: TextField(controller: item.lengthController,
+                Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.lengthController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: _hintDec('51mm'))),
                 const SizedBox(width: 4),
-                Expanded(flex: 2, child: TextField(controller: item.washerController,
+                Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.washerController,
                   textCapitalization: TextCapitalization.words,
                   decoration: _hintDec('EPDM'))),
                 const SizedBox(width: 4),
-                Expanded(flex: 2, child: TextField(controller: item.qtyController,
+                Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.qtyController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: false),
                   decoration: _hintDec('0'))),
                 const SizedBox(width: 4),
@@ -6453,15 +6508,21 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
                   )),
                 )),
                 const SizedBox(width: 4),
-                Expanded(flex: 2, child: TextField(controller: item.qtyController,
+                Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.qtyController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: _hintDec('0'))),
                 const SizedBox(width: 4),
-                Expanded(flex: 2, child: TextField(controller: item.colourController,
+                Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.colourController,
                   textCapitalization: TextCapitalization.words,
                   decoration: _hintDec('Grey'))),
                 const SizedBox(width: 4),
-                Expanded(flex: 2, child: TextField(controller: item.materialController,
+                Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.materialController,
                   decoration: _hintDec('0.7mm'))),
                 const SizedBox(width: 4),
                 IconButton(
@@ -6495,6 +6556,7 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
           // Notes
           _sectionHeader('Notes', Icons.notes, Colors.grey.shade700),
           TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
             controller: _notesController,
             maxLines: 4,
             textCapitalization: TextCapitalization.sentences,
@@ -6531,7 +6593,6 @@ class _MaterialListScreenState extends State<IndustrialMaterialList> {
           ),
           const SizedBox(height: 30),
         ]),
-      ),
       ),
     );
   }
@@ -6696,7 +6757,8 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
       child: Row(children: [
         Expanded(flex: 3, child: Text(label, style: const TextStyle(fontSize: 13))),
         Expanded(flex: 2, child: TextField(
-          controller: controller,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           decoration: InputDecoration(
             hintText: hint ?? '0', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
@@ -6795,7 +6857,9 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         const Text('Enter a name for this list:'),
         const SizedBox(height: 12),
-        TextField(controller: nameController, textCapitalization: TextCapitalization.words,
+        TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: nameController, textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(border: OutlineInputBorder(), prefixIcon: Icon(Icons.home)),
           autofocus: true),
       ]),
@@ -6955,16 +7019,16 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           // Header
           Card(color: Colors.green.shade50, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              TextField(controller: _buildingController, textCapitalization: TextCapitalization.words,
+              TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _buildingController, textCapitalization: TextCapitalization.words,
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 decoration: InputDecoration(hintText: 'Building / Job Name', border: InputBorder.none,
                   prefixIcon: const Icon(Icons.home_work_outlined),
@@ -6990,11 +7054,17 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
           ..._tileItems.asMap().entries.map((entry) {
             final i = entry.key; final item = entry.value;
             return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
-              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
+              Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
               const SizedBox(width: 6),
-              Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('265x165'))),
+              Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.sizeController, decoration: _hintDec('265x165'))),
               const SizedBox(width: 6),
-              Expanded(flex: 3, child: TextField(controller: item.materialController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Concrete'))),
+              Expanded(flex: 3, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.materialController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Concrete'))),
               const SizedBox(width: 4),
               IconButton(onPressed: _tileItems.length > 1 ? () => setState(() { _tileItems[i].dispose(); _tileItems.removeAt(i); }) : null,
                 icon: Icon(Icons.remove_circle_outline, color: _tileItems.length > 1 ? Colors.red : Colors.grey, size: 22),
@@ -7018,7 +7088,9 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
           _field('Battens', _battensController, suffix: 'm'),
           Row(children: [
             const Expanded(flex: 3, child: Text('Batten Spacing', style: TextStyle(fontSize: 13))),
-            Expanded(flex: 2, child: TextField(controller: _battenSpacingController,
+            Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _battenSpacingController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(hintText: '100', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
                 suffixText: 'mm', border: const OutlineInputBorder(), isDense: true,
@@ -7084,11 +7156,17 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
                 )),
               )),
               const SizedBox(width: 4),
-              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
+              Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0'))),
               const SizedBox(width: 4),
-              Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('150mm'))),
+              Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.sizeController, decoration: _hintDec('150mm'))),
               const SizedBox(width: 4),
-              Expanded(flex: 2, child: TextField(controller: item.colourController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Lead'))),
+              Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.colourController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Lead'))),
               const SizedBox(width: 4),
               IconButton(onPressed: _flashingItems.length > 1 ? () => setState(() { _flashingItems[i].dispose(); _flashingItems.removeAt(i); }) : null,
                 icon: Icon(Icons.remove_circle_outline, color: _flashingItems.length > 1 ? Colors.red : Colors.grey, size: 20),
@@ -7150,9 +7228,13 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
           ..._ridgeItems.asMap().entries.map((entry) {
             final i = entry.key; final item = entry.value;
             return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
-              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0', suffix: 'qty'))),
+              Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0', suffix: 'qty'))),
               const SizedBox(width: 8),
-              Expanded(flex: 3, child: TextField(controller: item.sizeController, decoration: _hintDec('e.g. Half Round 300mm'))),
+              Expanded(flex: 3, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.sizeController, decoration: _hintDec('e.g. Half Round 300mm'))),
               const SizedBox(width: 4),
               IconButton(onPressed: _ridgeItems.length > 1 ? () => setState(() { _ridgeItems[i].dispose(); _ridgeItems.removeAt(i); }) : null,
                 icon: Icon(Icons.remove_circle_outline, color: _ridgeItems.length > 1 ? Colors.red : Colors.grey, size: 20),
@@ -7169,9 +7251,13 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
           ..._hipItems.asMap().entries.map((entry) {
             final i = entry.key; final item = entry.value;
             return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
-              Expanded(flex: 2, child: TextField(controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0', suffix: 'qty'))),
+              Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.qtyController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0', suffix: 'qty'))),
               const SizedBox(width: 8),
-              Expanded(flex: 3, child: TextField(controller: item.sizeController, decoration: _hintDec('e.g. Segmental Hip 300mm'))),
+              Expanded(flex: 3, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.sizeController, decoration: _hintDec('e.g. Segmental Hip 300mm'))),
               const SizedBox(width: 4),
               IconButton(onPressed: _hipItems.length > 1 ? () => setState(() { _hipItems[i].dispose(); _hipItems.removeAt(i); }) : null,
                 icon: Icon(Icons.remove_circle_outline, color: _hipItems.length > 1 ? Colors.red : Colors.grey, size: 20),
@@ -7188,11 +7274,17 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
           ..._valleyItems.asMap().entries.map((entry) {
             final i = entry.key; final item = entry.value;
             return Padding(padding: const EdgeInsets.only(bottom: 8), child: Row(children: [
-              Expanded(flex: 2, child: TextField(controller: item.lengthController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0', suffix: 'm'))),
+              Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.lengthController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: _hintDec('0', suffix: 'm'))),
               const SizedBox(width: 6),
-              Expanded(flex: 2, child: TextField(controller: item.typeController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Lead / GRP'))),
+              Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.typeController, textCapitalization: TextCapitalization.words, decoration: _hintDec('Lead / GRP'))),
               const SizedBox(width: 6),
-              Expanded(flex: 2, child: TextField(controller: item.sizeController, decoration: _hintDec('150mm'))),
+              Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: item.sizeController, decoration: _hintDec('150mm'))),
               const SizedBox(width: 4),
               IconButton(onPressed: _valleyItems.length > 1 ? () => setState(() { _valleyItems[i].dispose(); _valleyItems.removeAt(i); }) : null,
                 icon: Icon(Icons.remove_circle_outline, color: _valleyItems.length > 1 ? Colors.red : Colors.grey, size: 20),
@@ -7233,12 +7325,16 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
           _sectionHeader('Extras & Ventilation', Icons.construction, Colors.teal.shade700),
           Row(children: [
             const Expanded(flex: 3, child: Text('Vents', style: TextStyle(fontSize: 13))),
-            Expanded(flex: 2, child: TextField(controller: _ventsController, keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _ventsController, keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(hintText: '0', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
                 suffixText: 'qty', border: const OutlineInputBorder(), isDense: true,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10)))),
             const SizedBox(width: 8),
-            Expanded(flex: 2, child: TextField(controller: _ventsTypeController, textCapitalization: TextCapitalization.words,
+            Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _ventsTypeController, textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(hintText: 'Type', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
                 border: const OutlineInputBorder(), isDense: true,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10)))),
@@ -7246,12 +7342,16 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
           const SizedBox(height: 10),
           Row(children: [
             const Expanded(flex: 3, child: Text('Rooflights', style: TextStyle(fontSize: 13))),
-            Expanded(flex: 2, child: TextField(controller: _rooflightsController, keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _rooflightsController, keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(hintText: '0', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
                 suffixText: 'qty', border: const OutlineInputBorder(), isDense: true,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10)))),
             const SizedBox(width: 8),
-            Expanded(flex: 2, child: TextField(controller: _rooflightsSizeController,
+            Expanded(flex: 2, child: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _rooflightsSizeController,
               decoration: InputDecoration(hintText: '1000x1000', hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 12),
                 border: const OutlineInputBorder(), isDense: true,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10)))),
@@ -7268,7 +7368,9 @@ class _DomesticMaterialListState extends State<DomesticMaterialList> {
 
           // Notes
           _sectionHeader('Notes', Icons.notes, Colors.grey.shade700),
-          TextField(controller: _notesController, maxLines: 4, textCapitalization: TextCapitalization.sentences,
+          TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _notesController, maxLines: 4, textCapitalization: TextCapitalization.sentences,
             decoration: InputDecoration(hintText: 'Any additional notes...', hintStyle: TextStyle(color: Colors.grey.shade400), border: const OutlineInputBorder())),
 
           const SizedBox(height: 24),
@@ -7897,11 +7999,9 @@ class _RoofAreaCalculatorState extends State<RoofAreaCalculator> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
-        controller: controller,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        textInputAction: TextInputAction.done,
-        onSubmitted: (_) => FocusScope.of(context).unfocus(),
-        onTapOutside: (_) => FocusScope.of(context).unfocus(),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint ?? '0.0',
@@ -7933,10 +8033,8 @@ class _RoofAreaCalculatorState extends State<RoofAreaCalculator> {
           IconButton(tooltip: 'Clear', onPressed: _clear, icon: const Icon(Icons.refresh)),
         ],
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           _buildHeroCard(),
@@ -7966,10 +8064,7 @@ class _RoofAreaCalculatorState extends State<RoofAreaCalculator> {
                 const SizedBox(height: 4),
                 Row(children: [
                   Expanded(child: ElevatedButton.icon(
-                    onPressed: () {
-          FocusScope.of(context).unfocus();
-          _calculate();
-        },
+                    onPressed: _calculate,
                     icon: const Icon(Icons.calculate),
                     label: const Text('Calculate'),
                     style: ElevatedButton.styleFrom(
@@ -7981,10 +8076,7 @@ class _RoofAreaCalculatorState extends State<RoofAreaCalculator> {
                   )),
                   const SizedBox(width: 12),
                   OutlinedButton.icon(
-                    onPressed: () {
-          FocusScope.of(context).unfocus();
-          _clear();
-        },
+                    onPressed: _clear,
                     icon: const Icon(Icons.clear),
                     label: const Text('Clear'),
                     style: OutlinedButton.styleFrom(
@@ -8131,6 +8223,7 @@ class _RafterCalculatorState extends State<RafterCalculator> {
   double? _hipSeatCut;
   double? _hipDihedral;
   int _savedCount = 0;
+  bool _lockRafterPageScroll = false;
 
   @override
   void initState() {
@@ -8154,7 +8247,9 @@ class _RafterCalculatorState extends State<RafterCalculator> {
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         const Text('Enter a name for this calculation:'),
         const SizedBox(height: 12),
-        TextField(controller: nameController, textCapitalization: TextCapitalization.words,
+        TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: nameController, textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(border: OutlineInputBorder(), prefixIcon: Icon(Icons.architecture)),
           autofocus: true),
       ]),
@@ -8263,8 +8358,7 @@ class _RafterCalculatorState extends State<RafterCalculator> {
     });
   }
 
-  void _shareRafterCalculation() {
-    if (_rafterLength == null || _ridgeHeight == null) return;
+  String _rafterShareText() {
     final pitch = double.tryParse(_pitchController.text) ?? 0;
     final seatCut = 90 - pitch;
     String text = '📐 Rafter Calculation\n'
@@ -8282,18 +8376,85 @@ class _RafterCalculatorState extends State<RafterCalculator> {
     }
     if (_numberOfRafters != null) text += '\nRafters needed: $_numberOfRafters\n';
     text += '\nCalculated by Roof Profile Finder';
-    Share.share(text, sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1));
+    return text;
+  }
+
+  Future<File> _createRafterCadImage() async {
+    final pitch = _isHip ? (_hipPlumbCut ?? 0) : (double.tryParse(_pitchController.text) ?? 0);
+    final eaves = double.tryParse(_eavesController.text) ?? 0.3;
+    final birdWidth = pitch > 0 ? 50.0 / math.tan(pitch * math.pi / 180) : 50.0;
+
+    const double sheetWidth = 1120;
+    const double sheetHeight = 520;
+    const double pixelRatio = 3.0;
+
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+    canvas.scale(pixelRatio);
+    canvas.drawRect(
+      const Rect.fromLTWH(0, 0, sheetWidth, sheetHeight),
+      Paint()..color = const Color(0xFFFFFFFF),
+    );
+
+    _CadRafterPainter(
+      halfSpan: _halfSpan!,
+      rafterLength: _isHip ? _hipLength! : _rafterLength!,
+      ridgeHeight: _ridgeHeight!,
+      pitchDegrees: pitch,
+      eavesOverhang: eaves,
+      isHip: _isHip,
+      birdMouthWidthMm: birdWidth,
+    ).paint(canvas, const Size(sheetWidth, sheetHeight));
+
+    final picture = recorder.endRecording();
+    final image = await picture.toImage((sheetWidth * pixelRatio).round(), (sheetHeight * pixelRatio).round());
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    picture.dispose();
+    image.dispose();
+
+    if (byteData == null) {
+      throw Exception('Could not create CAD drawing image.');
+    }
+
+    final safePitch = pitch.toStringAsFixed(0).replaceAll(RegExp(r'[^0-9A-Za-z_-]'), '');
+    final file = File('${Directory.systemTemp.path}/rafter_cad_${safePitch}deg_${DateTime.now().millisecondsSinceEpoch}.png');
+    await file.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+    return file;
+  }
+
+  Future<void> _shareRafterCalculation() async {
+    if (_rafterLength == null || _ridgeHeight == null || _halfSpan == null) return;
+
+    final text = _rafterShareText();
+    try {
+      final imageFile = await _createRafterCadImage();
+      await Share.shareXFiles(
+        [XFile(imageFile.path, mimeType: 'image/png', name: 'rafter_cad_drawing.png')],
+        text: text,
+        subject: 'Rafter CAD cut drawing',
+        sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+      );
+    } catch (_) {
+      await Share.share(
+        text,
+        subject: 'Rafter Calculation',
+        sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Shared measurements. CAD image export was not available on this device.'),
+        ));
+      }
+    }
   }
 
   Widget _inputField(String label, TextEditingController controller, {String? suffix, String? hint, IconData? icon}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
-        controller: controller,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        textInputAction: TextInputAction.done,
-        onSubmitted: (_) => FocusScope.of(context).unfocus(),
-        onTapOutside: (_) => FocusScope.of(context).unfocus(),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint ?? '0.0',
@@ -8434,10 +8595,9 @@ class _RafterCalculatorState extends State<RafterCalculator> {
           ]),
         ],
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        physics: _lockRafterPageScroll ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics(),
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           _buildRafterHeroCard(),
@@ -8528,16 +8688,18 @@ class _RafterCalculatorState extends State<RafterCalculator> {
                   pitchDegrees: _isHip ? _hipPlumbCut! : double.tryParse(_pitchController.text) ?? 0,
                   eavesOverhang: double.tryParse(_eavesController.text) ?? 0.3,
                   isHip: _isHip,
+                  onInteractionChanged: (active) {
+                    if (mounted && _lockRafterPageScroll != active) {
+                      setState(() => _lockRafterPageScroll = active);
+                    }
+                  },
                 ),
               ),
             ),
             const SizedBox(height: 14),
             Row(children: [
               Expanded(child: ElevatedButton.icon(
-                onPressed: () {
-                  FocusScope.of(context).unfocus();
-                  _saveCalculation();
-                },
+                onPressed: _saveCalculation,
                 icon: const Icon(Icons.save),
                 label: const Text('Save Result'),
                 style: ElevatedButton.styleFrom(
@@ -8549,10 +8711,7 @@ class _RafterCalculatorState extends State<RafterCalculator> {
               )),
               const SizedBox(width: 10),
               Expanded(child: OutlinedButton.icon(
-                onPressed: () {
-                  FocusScope.of(context).unfocus();
-                  _shareRafterCalculation();
-                },
+                onPressed: _shareRafterCalculation,
                 icon: const Icon(Icons.share),
                 label: const Text('Share'),
                 style: OutlinedButton.styleFrom(
@@ -8727,6 +8886,7 @@ class RafterDiagram extends StatefulWidget {
   final double pitchDegrees;
   final double eavesOverhang;
   final bool isHip;
+  final ValueChanged<bool>? onInteractionChanged;
 
   const RafterDiagram({
     super.key,
@@ -8736,6 +8896,7 @@ class RafterDiagram extends StatefulWidget {
     required this.pitchDegrees,
     required this.eavesOverhang,
     this.isHip = false,
+    this.onInteractionChanged,
   });
 
   @override
@@ -8743,170 +8904,408 @@ class RafterDiagram extends StatefulWidget {
 }
 
 class _RafterDiagramState extends State<RafterDiagram> {
-  String? _zoomedSection;
+  late final TransformationController _controller;
+  static const double _sheetWidth = 1120;
+  static const double _sheetHeight = 520;
+  double _zoom = 0.72;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TransformationController();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _applyZoom(0.72, center: false));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _applyZoom(double zoom, {bool center = true}) {
+    final next = zoom.clamp(0.45, 2.75).toDouble();
+    setState(() => _zoom = next);
+    final matrix = Matrix4.identity()..scale(next);
+    if (center) {
+      // Nudge the large CAD sheet into view after changing scale.
+      matrix.translate(-120.0, -80.0);
+    }
+    _controller.value = matrix;
+  }
+
+  void _resetView() => _applyZoom(0.72, center: false);
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      if (_zoomedSection == null)
-        Padding(
-          padding: const EdgeInsets.only(bottom: 6),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(Icons.touch_app, size: 14, color: Colors.grey.shade500),
-            const SizedBox(width: 4),
-            Text('Tap ridge, bird\'s mouth or tail to zoom in',
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
-          ]),
-        )
-      else
-        TextButton.icon(
-          onPressed: () => setState(() { _zoomedSection = null; }),
-          icon: const Icon(Icons.zoom_out, size: 16),
-          label: const Text('Back to full view', style: TextStyle(fontSize: 12)),
-          style: TextButton.styleFrom(padding: EdgeInsets.zero, visualDensity: VisualDensity.compact),
-        ),
+    final seatCut = 90 - widget.pitchDegrees;
+    final birdWidth = widget.pitchDegrees > 0
+        ? 50.0 / math.tan(widget.pitchDegrees * math.pi / 180)
+        : 50.0;
 
-      if (_zoomedSection == null)
-        GestureDetector(
-          onTapDown: (details) => _handleTap(details.localPosition, context),
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: CustomPaint(
-              painter: _RafterPainter(
-                halfSpan: widget.halfSpan,
-                rafterLength: widget.rafterLength,
-                ridgeHeight: widget.ridgeHeight,
-                pitchDegrees: widget.pitchDegrees,
-                eavesOverhang: widget.eavesOverhang,
-                isHip: widget.isHip,
-                showTapHints: true,
-              ),
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+        decoration: BoxDecoration(
+          color: const Color(0xFF101820),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFF2F3A45)),
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            const Icon(Icons.architecture, color: Color(0xFF9ED8FF), size: 18),
+            const SizedBox(width: 8),
+            Expanded(child: Text(
+              widget.isHip ? 'CAD cut drawing — hip rafter' : 'CAD cut drawing — common rafter',
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14),
+            )),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(color: const Color(0xFF1D2A35), borderRadius: BorderRadius.circular(99)),
+              child: Text('${widget.pitchDegrees.toStringAsFixed(1)}° pitch', style: const TextStyle(color: Color(0xFFBFE8FF), fontSize: 11, fontWeight: FontWeight.w700)),
+            ),
+          ]),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              height: 360,
+              color: const Color(0xFFF7F9FB),
+              child: Stack(children: [
+                Listener(
+                  onPointerDown: (_) => widget.onInteractionChanged?.call(true),
+                  onPointerUp: (_) => widget.onInteractionChanged?.call(false),
+                  onPointerCancel: (_) => widget.onInteractionChanged?.call(false),
+                  child: InteractiveViewer(
+                    transformationController: _controller,
+                    panEnabled: true,
+                    scaleEnabled: false,
+                    minScale: 0.45,
+                    maxScale: 2.75,
+                    boundaryMargin: const EdgeInsets.all(900),
+                    constrained: false,
+                    child: SizedBox(
+                      width: _sheetWidth,
+                      height: _sheetHeight,
+                      child: CustomPaint(
+                        painter: _CadRafterPainter(
+                          halfSpan: widget.halfSpan,
+                          rafterLength: widget.rafterLength,
+                          ridgeHeight: widget.ridgeHeight,
+                          pitchDegrees: widget.pitchDegrees,
+                          eavesOverhang: widget.eavesOverhang,
+                          isHip: widget.isHip,
+                          birdMouthWidthMm: birdWidth,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.94),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFD8DEE6)),
+                      boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 8, offset: Offset(0, 3))],
+                    ),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      _viewerButton(Icons.remove, () => _applyZoom(_zoom - 0.18)),
+                      Text('${(_zoom * 100).round()}%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF17212B))),
+                      _viewerButton(Icons.add, () => _applyZoom(_zoom + 0.18)),
+                      _viewerButton(Icons.center_focus_strong, _resetView),
+                    ]),
+                  ),
+                ),
+                Positioned(
+                  left: 10,
+                  bottom: 10,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.92), borderRadius: BorderRadius.circular(99), border: Border.all(color: const Color(0xFFD8DEE6))),
+                    child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.open_with, size: 14, color: Color(0xFF506070)),
+                      SizedBox(width: 5),
+                      Text('Drag drawing left/right/up/down', style: TextStyle(fontSize: 11, color: Color(0xFF506070), fontWeight: FontWeight.w700)),
+                    ]),
+                  ),
+                ),
+              ]),
             ),
           ),
-        )
-      else
-        _buildZoomedView(),
-
-      const SizedBox(height: 12),
-      Wrap(spacing: 16, runSpacing: 6, children: [
-        _legendItem(widget.isHip ? Colors.orange.shade700 : Colors.brown.shade700, widget.isHip ? 'Hip Rafter' : 'Rafter'),
-        _legendItem(Colors.blue.shade700, 'Ridge'),
-        _legendItem(Colors.grey.shade600, 'Wall plate'),
-        _legendItem(Colors.red.shade600, 'Bird\'s mouth'),
-      ]),
-      const SizedBox(height: 8),
-      Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: widget.isHip ? Colors.orange.shade50 : Colors.brown.shade50,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: widget.isHip ? Colors.orange.shade200 : Colors.brown.shade200),
-        ),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-          _cutInfo('Plumb Cut', '${widget.pitchDegrees.toStringAsFixed(1)}°', Icons.architecture),
-          _cutInfo('Seat Cut', '${(90 - widget.pitchDegrees).toStringAsFixed(1)}°', Icons.architecture),
-          if (widget.isHip) _cutInfo('Cheek Cut', '45°', Icons.rotate_90_degrees_ccw),
-          _cutInfo('Eaves', '${(widget.eavesOverhang * 1000).toStringAsFixed(0)}mm', Icons.straighten),
+          const SizedBox(height: 8),
+          const Row(children: [
+            Icon(Icons.touch_app, color: Color(0xFF9ED8FF), size: 14),
+            SizedBox(width: 6),
+            Expanded(child: Text('Use + / − to zoom. Drag the CAD sheet to inspect cut marks and dimensions.', style: TextStyle(color: Colors.white70, fontSize: 11))),
+          ]),
         ]),
       ),
+      const SizedBox(height: 12),
+      Wrap(spacing: 8, runSpacing: 8, children: [
+        _cadChip('Rafter length', '${widget.rafterLength.toStringAsFixed(3)} m'),
+        _cadChip('Rise', '${widget.ridgeHeight.toStringAsFixed(3)} m'),
+        _cadChip('Run', '${widget.halfSpan.toStringAsFixed(3)} m'),
+        _cadChip('Overhang', '${(widget.eavesOverhang * 1000).toStringAsFixed(0)} mm'),
+        _cadChip('Plumb cut', '${widget.pitchDegrees.toStringAsFixed(1)}°'),
+        _cadChip('Seat cut', '${seatCut.toStringAsFixed(1)}°'),
+        _cadChip('Birdsmouth', '50 × ${birdWidth.toStringAsFixed(0)} mm'),
+        if (widget.isHip) _cadChip('Cheek cut', '45°'),
+      ]),
     ]);
   }
 
-  void _handleTap(Offset pos, BuildContext context) {
-    final RenderBox? box = context.findRenderObject() as RenderBox?;
-    if (box == null) return;
-    final double width = box.size.width;
-    final double relX = pos.dx / width;
-    if (relX < 0.25) {
-      setState(() { _zoomedSection = 'tail'; });
-    } else if (relX > 0.75) {
-      setState(() { _zoomedSection = 'ridge'; });
-    } else {
-      setState(() { _zoomedSection = 'birdmouth'; });
-    }
-  }
-
-  Widget _buildZoomedView() {
-    final pitch = widget.pitchDegrees;
-    final seatCut = 90 - pitch;
-    final pitchRad = pitch * math.pi / 180;
-    final birdWidth = pitchRad > 0 ? 50.0 / math.tan(pitchRad) : 50.0;
-
-    switch (_zoomedSection) {
-      case 'ridge':
-        return _zoomCard('Ridge / Plumb Cut', Colors.blue.shade700, [
-          AspectRatio(aspectRatio: 2,
-            child: CustomPaint(painter: _RidgeZoomPainter(pitchDegrees: pitch, isHip: widget.isHip))),
-          const SizedBox(height: 8),
-          _zoomDetail('Plumb Cut Angle', '${pitch.toStringAsFixed(1)}°'),
-          _zoomDetail('Set bevel to', '${pitch.toStringAsFixed(1)}° from vertical'),
-          if (widget.isHip) _zoomDetail('Cheek Cut', '45° both sides'),
-        ]);
-      case 'birdmouth':
-        return _zoomCard('Bird\'s Mouth Cut', Colors.red.shade700, [
-          AspectRatio(aspectRatio: 2,
-            child: CustomPaint(painter: _BirdMouthZoomPainter(pitchDegrees: pitch))),
-          const SizedBox(height: 8),
-          _zoomDetail('Plumb Cut Depth', '50mm'),
-          _zoomDetail('Seat Cut Width', '${birdWidth.toStringAsFixed(0)}mm'),
-          _zoomDetail('Seat Angle', '${seatCut.toStringAsFixed(1)}°'),
-          _zoomDetail('Plumb Angle', '${pitch.toStringAsFixed(1)}°'),
-        ]);
-      case 'tail':
-        return _zoomCard('Tail / Eaves Cut', Colors.green.shade700, [
-          AspectRatio(aspectRatio: 2,
-            child: CustomPaint(painter: _TailZoomPainter(pitchDegrees: pitch, eavesOverhang: widget.eavesOverhang))),
-          const SizedBox(height: 8),
-          _zoomDetail('Tail Plumb Cut', '${pitch.toStringAsFixed(1)}°'),
-          _zoomDetail('Eaves Overhang', '${(widget.eavesOverhang * 1000).toStringAsFixed(0)}mm'),
-          _zoomDetail('Fascia Cut', 'Square or plumb to suit'),
-        ]);
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget _zoomCard(String title, Color color, List<Widget> children) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.3)),
+  Widget _viewerButton(IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Icon(icon, size: 18, color: const Color(0xFF17212B)),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color)),
-        const SizedBox(height: 8),
-        ...children,
-      ]),
     );
   }
 
-  Widget _zoomDetail(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(children: [
-        Expanded(child: Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade700))),
-        Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+  Widget _cadChip(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFD8DEE6)),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+        Text(label.toUpperCase(), style: const TextStyle(fontSize: 9, letterSpacing: 0.7, color: Color(0xFF607080), fontWeight: FontWeight.w700)),
+        const SizedBox(height: 2),
+        Text(value, style: const TextStyle(fontSize: 13, color: Color(0xFF17212B), fontWeight: FontWeight.w900)),
       ]),
     );
   }
+}
 
-  Widget _legendItem(Color color, String label) {
-    return Row(mainAxisSize: MainAxisSize.min, children: [
-      Container(width: 20, height: 3, color: color),
-      const SizedBox(width: 4),
-      Text(label, style: const TextStyle(fontSize: 11)),
-    ]);
+class _CadRafterPainter extends CustomPainter {
+  final double halfSpan;
+  final double rafterLength;
+  final double ridgeHeight;
+  final double pitchDegrees;
+  final double eavesOverhang;
+  final bool isHip;
+  final double birdMouthWidthMm;
+
+  _CadRafterPainter({
+    required this.halfSpan,
+    required this.rafterLength,
+    required this.ridgeHeight,
+    required this.pitchDegrees,
+    required this.eavesOverhang,
+    required this.isHip,
+    required this.birdMouthWidthMm,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const ink = Color(0xFF17212B);
+    const lightInk = Color(0xFF607080);
+    const blue = Color(0xFF1565C0);
+    const red = Color(0xFFC62828);
+    const grid = Color(0xFFF0F3F6);
+    const timber = Color(0xFF263238);
+
+    final w = size.width;
+    final h = size.height;
+    _drawGrid(canvas, size, grid);
+
+    final padL = w * 0.10;
+    final padR = w * 0.10;
+    final padT = h * 0.15;
+    final padB = h * 0.22;
+    final totalRun = math.max(halfSpan + eavesOverhang, 0.1);
+    final scale = math.min((w - padL - padR) / totalRun, (h - padT - padB) / math.max(ridgeHeight, 0.1));
+
+    final wallPlate = Offset(padL + eavesOverhang * scale, h - padB);
+    final tail = Offset(padL, h - padB + math.tan(pitchDegrees * math.pi / 180) * eavesOverhang * scale);
+    final ridge = Offset(wallPlate.dx + halfSpan * scale, wallPlate.dy - ridgeHeight * scale);
+    final baseY = wallPlate.dy;
+    final pitchRad = pitchDegrees * math.pi / 180;
+
+    final timberPaint = Paint()
+      ..color = timber
+      ..strokeWidth = isHip ? 7 : 6
+      ..strokeCap = StrokeCap.square
+      ..style = PaintingStyle.stroke;
+    final thinPaint = Paint()
+      ..color = ink
+      ..strokeWidth = 1.2
+      ..style = PaintingStyle.stroke;
+    final dimPaint = Paint()
+      ..color = blue
+      ..strokeWidth = 1.1
+      ..style = PaintingStyle.stroke;
+    final redPaint = Paint()
+      ..color = red
+      ..strokeWidth = 1.6
+      ..style = PaintingStyle.stroke;
+    final guidePaint = Paint()
+      ..color = lightInk.withOpacity(0.55)
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+
+    // Main reference lines.
+    _dashLine(canvas, Offset(padL - 12, baseY), Offset(ridge.dx + 26, baseY), guidePaint);
+    _dashLine(canvas, Offset(ridge.dx, ridge.dy), Offset(ridge.dx, baseY), guidePaint);
+    canvas.drawLine(Offset(wallPlate.dx - 42, baseY + 8), Offset(wallPlate.dx + 52, baseY + 8), Paint()..color = const Color(0xFFB0BEC5)..strokeWidth = 5..strokeCap = StrokeCap.round);
+    _label(canvas, 'WALL PLATE', Offset(wallPlate.dx - 35, baseY + 18), lightInk, size: 9, weight: FontWeight.w800);
+
+    // Rafter.
+    canvas.drawLine(tail, ridge, timberPaint);
+    canvas.drawCircle(ridge, 3.5, Paint()..color = red);
+
+    // Ridge board/cut marker.
+    canvas.drawLine(Offset(ridge.dx - 6, ridge.dy - 30), Offset(ridge.dx - 6, ridge.dy + 30), Paint()..color = const Color(0xFF90A4AE)..strokeWidth = 5..strokeCap = StrokeCap.round);
+    canvas.drawLine(Offset(ridge.dx - 18, ridge.dy - 18), Offset(ridge.dx + 10, ridge.dy + 18), redPaint);
+    _label(canvas, 'PLUMB CUT ${pitchDegrees.toStringAsFixed(1)}°', Offset(ridge.dx - 96, ridge.dy - 44), red, size: 10, weight: FontWeight.w900);
+    _leader(canvas, Offset(ridge.dx - 16, ridge.dy - 18), Offset(ridge.dx - 42, ridge.dy - 34), redPaint);
+
+    // Birdsmouth reference at wall plate.
+    final depthPx = math.min(26.0, math.max(16.0, h * 0.085));
+    final widthPx = pitchRad > 0 ? depthPx / math.tan(pitchRad) : depthPx;
+    final bird = Path()
+      ..moveTo(wallPlate.dx - widthPx, wallPlate.dy - depthPx * 1.7)
+      ..lineTo(wallPlate.dx, wallPlate.dy)
+      ..lineTo(wallPlate.dx + depthPx * 0.82, wallPlate.dy - depthPx * 0.82);
+    canvas.drawPath(bird, redPaint);
+    _label(canvas, 'BIRDSMOUTH', Offset(wallPlate.dx - 78, wallPlate.dy - depthPx * 2.55), red, size: 10, weight: FontWeight.w900);
+    _label(canvas, '50mm depth', Offset(wallPlate.dx + 18, wallPlate.dy - depthPx * 1.35), blue, size: 9, weight: FontWeight.w800);
+    _label(canvas, '${birdMouthWidthMm.toStringAsFixed(0)}mm seat', Offset(wallPlate.dx - widthPx - 8, wallPlate.dy + 24), blue, size: 9, weight: FontWeight.w800);
+
+    // Tail cut marker.
+    final tailCutA = Offset(tail.dx + 18, tail.dy - 28);
+    final tailCutB = Offset(tail.dx + 18, tail.dy + 22);
+    canvas.drawLine(tailCutA, tailCutB, redPaint);
+    _label(canvas, 'TAIL CUT ${pitchDegrees.toStringAsFixed(1)}°', Offset(tail.dx + 8, tail.dy + 34), red, size: 10, weight: FontWeight.w900);
+
+    // Dimension lines.
+    _dimension(canvas, tail, ridge, '${rafterLength.toStringAsFixed(3)}m RAFTER LENGTH', dimPaint, blue, offset: -28);
+    _dimension(canvas, wallPlate, Offset(ridge.dx, baseY), 'RUN ${halfSpan.toStringAsFixed(3)}m', dimPaint, blue, yOffset: 48);
+    _dimension(canvas, Offset(padL, baseY), wallPlate, '${(eavesOverhang * 1000).toStringAsFixed(0)}mm OVERHANG', dimPaint, blue, yOffset: 28);
+    _verticalDimension(canvas, Offset(ridge.dx + 28, ridge.dy), Offset(ridge.dx + 28, baseY), 'RISE ${ridgeHeight.toStringAsFixed(3)}m', dimPaint, blue);
+
+    // Pitch arc.
+    final arcR = 42.0;
+    final arcRect = Rect.fromCircle(center: wallPlate, radius: arcR);
+    canvas.drawArc(arcRect, -math.pi, pitchRad, false, Paint()..color = red..strokeWidth = 1.4..style = PaintingStyle.stroke);
+    _label(canvas, '${pitchDegrees.toStringAsFixed(1)}°', Offset(wallPlate.dx - arcR - 2, wallPlate.dy - 24), red, size: 11, weight: FontWeight.w900);
+
+    if (isHip) {
+      _label(canvas, 'HIP RAFTER: add 45° cheek cuts / backing as shown in cut sheet', Offset(padL, 18), const Color(0xFFE65100), size: 10, weight: FontWeight.w900);
+    } else {
+      _label(canvas, 'COMMON RAFTER CUTTING REFERENCE', Offset(padL, 18), ink, size: 10, weight: FontWeight.w900);
+    }
+
+    // Border and title block.
+    final border = Rect.fromLTWH(8, 8, w - 16, h - 16);
+    canvas.drawRect(border, Paint()..color = ink.withOpacity(0.35)..strokeWidth = 1..style = PaintingStyle.stroke);
+    final titleRect = Rect.fromLTWH(w - 168, h - 42, 154, 26);
+    canvas.drawRect(titleRect, Paint()..color = Colors.white..style = PaintingStyle.fill);
+    canvas.drawRect(titleRect, Paint()..color = ink.withOpacity(0.45)..strokeWidth = 0.8..style = PaintingStyle.stroke);
+    _label(canvas, 'ROOF PROFILE FINDER', Offset(titleRect.left + 8, titleRect.top + 6), ink, size: 9, weight: FontWeight.w900);
+    _label(canvas, isHip ? 'HIP RAFTER' : 'COMMON RAFTER', Offset(titleRect.left + 8, titleRect.top + 17), lightInk, size: 7, weight: FontWeight.w800);
   }
 
-  Widget _cutInfo(String label, String value, IconData icon) {
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      Icon(icon, size: 16, color: Colors.brown.shade600),
-      const SizedBox(height: 2),
-      Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.brown.shade700)),
-      Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-    ]);
+  void _drawGrid(Canvas canvas, Size size, Color color) {
+    final p = Paint()..color = color..strokeWidth = 0.7;
+    const step = 20.0;
+    for (double x = 0; x <= size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), p);
+    }
+    for (double y = 0; y <= size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), p);
+    }
+  }
+
+  void _label(Canvas canvas, String text, Offset pos, Color color, {double size = 10, FontWeight weight = FontWeight.w700}) {
+    final tp = TextPainter(
+      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: size, fontWeight: weight, letterSpacing: 0.2)),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: 170);
+    tp.paint(canvas, pos);
+  }
+
+  void _leader(Canvas canvas, Offset a, Offset b, Paint paint) {
+    canvas.drawLine(a, b, paint);
+    canvas.drawCircle(a, 2.5, Paint()..color = paint.color);
+  }
+
+  void _dashLine(Canvas canvas, Offset a, Offset b, Paint paint) {
+    final dx = b.dx - a.dx;
+    final dy = b.dy - a.dy;
+    final dist = math.sqrt(dx * dx + dy * dy);
+    if (dist == 0) return;
+    final ux = dx / dist;
+    final uy = dy / dist;
+    double t = 0;
+    while (t < dist) {
+      final t2 = math.min(t + 6, dist);
+      canvas.drawLine(Offset(a.dx + ux * t, a.dy + uy * t), Offset(a.dx + ux * t2, a.dy + uy * t2), paint);
+      t += 11;
+    }
+  }
+
+  void _arrowHead(Canvas canvas, Offset tip, double angle, Paint paint) {
+    const len = 7.0;
+    canvas.drawLine(tip, Offset(tip.dx - len * math.cos(angle - 0.45), tip.dy - len * math.sin(angle - 0.45)), paint);
+    canvas.drawLine(tip, Offset(tip.dx - len * math.cos(angle + 0.45), tip.dy - len * math.sin(angle + 0.45)), paint);
+  }
+
+  void _dimension(Canvas canvas, Offset a, Offset b, String text, Paint paint, Color color, {double offset = 0, double? yOffset}) {
+    Offset aa = a;
+    Offset bb = b;
+    if (yOffset != null) {
+      aa = Offset(a.dx, a.dy + yOffset);
+      bb = Offset(b.dx, b.dy + yOffset);
+      canvas.drawLine(a, aa, paint);
+      canvas.drawLine(b, bb, paint);
+    } else if (offset != 0) {
+      final dx = b.dx - a.dx;
+      final dy = b.dy - a.dy;
+      final len = math.sqrt(dx * dx + dy * dy);
+      if (len > 0) {
+        final nx = -dy / len * offset;
+        final ny = dx / len * offset;
+        aa = Offset(a.dx + nx, a.dy + ny);
+        bb = Offset(b.dx + nx, b.dy + ny);
+        canvas.drawLine(a, aa, paint);
+        canvas.drawLine(b, bb, paint);
+      }
+    }
+    canvas.drawLine(aa, bb, paint);
+    final angle = math.atan2(bb.dy - aa.dy, bb.dx - aa.dx);
+    _arrowHead(canvas, aa, angle + math.pi, paint);
+    _arrowHead(canvas, bb, angle, paint);
+    final mid = Offset((aa.dx + bb.dx) / 2, (aa.dy + bb.dy) / 2);
+    _label(canvas, text, Offset(mid.dx - 54, mid.dy - 16), color, size: 9, weight: FontWeight.w900);
+  }
+
+  void _verticalDimension(Canvas canvas, Offset a, Offset b, String text, Paint paint, Color color) {
+    canvas.drawLine(a, b, paint);
+    _arrowHead(canvas, a, -math.pi / 2, paint);
+    _arrowHead(canvas, b, math.pi / 2, paint);
+    canvas.drawLine(Offset(a.dx - 28, a.dy), a, paint);
+    canvas.drawLine(Offset(b.dx - 28, b.dy), b, paint);
+    _label(canvas, text, Offset(a.dx + 8, (a.dy + b.dy) / 2 - 8), color, size: 9, weight: FontWeight.w900);
+  }
+
+  @override
+  bool shouldRepaint(covariant _CadRafterPainter oldDelegate) {
+    return oldDelegate.halfSpan != halfSpan ||
+        oldDelegate.rafterLength != rafterLength ||
+        oldDelegate.ridgeHeight != ridgeHeight ||
+        oldDelegate.pitchDegrees != pitchDegrees ||
+        oldDelegate.eavesOverhang != eavesOverhang ||
+        oldDelegate.isHip != isHip ||
+        oldDelegate.birdMouthWidthMm != birdMouthWidthMm;
   }
 }
 
@@ -9298,7 +9697,9 @@ class _SavedRafterScreenState extends State<SavedRafterScreen> {
     final pasteController = TextEditingController();
     final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
       title: const Text('Paste Backup JSON'),
-      content: TextField(controller: pasteController, maxLines: 5,
+      content: TextField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: pasteController, maxLines: 5,
         decoration: const InputDecoration(hintText: 'Paste backup JSON here...', border: OutlineInputBorder())),
       actions: [
         TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
@@ -9583,9 +9984,11 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
                     panEnabled: true,
                     scaleEnabled: true,
                     child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        scrollDirection: Axis.horizontal,
                       child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        scrollDirection: Axis.vertical,
                         child: SizedBox(
                           width: 650,
                           height: 650,
@@ -9606,7 +10009,8 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
           Expanded(
             flex: 3,
             child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(16, 10, 16, 56 + MediaQuery.of(context).viewPadding.bottom),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: EdgeInsets.fromLTRB(16, 10, 16, 56 + MediaQuery.of(context).viewPadding.bottom),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(children: [
                   Icon(Icons.straighten, color: Colors.indigo.shade700),
@@ -9630,7 +10034,8 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
                       _wallNumber(i + 2 > _points.length ? 1 : i + 2),
                       const SizedBox(width: 12),
                       Expanded(child: TextField(
-                        controller: entry.value.lengthController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: entry.value.lengthController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         onChanged: (_) { if (_showResults) setState(() { _showResults = false; }); },
                         decoration: InputDecoration(
@@ -9649,7 +10054,8 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
                 const SizedBox(height: 8),
                 Row(children: [
                   Expanded(child: TextField(
-                    controller: _pitchController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _pitchController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (_) { if (_showResults) setState(() { _showResults = false; }); },
                     decoration: InputDecoration(
@@ -9662,7 +10068,8 @@ class _PerimeterAreaToolState extends State<PerimeterAreaTool> {
                   )),
                   const SizedBox(width: 12),
                   Expanded(child: TextField(
-                    controller: _wastageController,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: _wastageController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (_) { if (_showResults) setState(() { _showResults = false; }); },
                     decoration: InputDecoration(
@@ -10180,7 +10587,8 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
-        controller: controller,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: controller,
         obscureText: obscure && _obscure,
         keyboardType: keyboard,
         decoration: InputDecoration(
@@ -10216,7 +10624,8 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
 
   Widget _buildLoggedIn() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(20),
       child: Column(children: [
         const SizedBox(height: 20),
         CircleAvatar(
@@ -10283,7 +10692,8 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
       children: [
         // Sign In tab
         SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(20),
           child: Column(children: [
             const SizedBox(height: 16),
             if (_error != null) ...[
@@ -10321,7 +10731,8 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
         ),
         // Register tab
         SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(20),
           child: Column(children: [
             const SizedBox(height: 16),
             if (_error != null) ...[
@@ -10517,7 +10928,8 @@ class _AdminSheetFormState extends State<_AdminSheetForm> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // Category
         Row(children: [
@@ -10582,7 +10994,8 @@ class _AdminSheetFormState extends State<_AdminSheetForm> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextField(
-        controller: c,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: c,
         keyboardType: isNumber ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
         textCapitalization: isNumber ? TextCapitalization.none : TextCapitalization.words,
         decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), isDense: true),
@@ -10678,7 +11091,8 @@ class _AdminTileFormState extends State<_AdminTileForm> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           const Text('Material:', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -10746,7 +11160,8 @@ class _AdminTileFormState extends State<_AdminTileForm> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextField(
-        controller: c,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            controller: c,
         keyboardType: isNumber ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
         textCapitalization: isNumber ? TextCapitalization.none : TextCapitalization.words,
         decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), isDense: true),
@@ -10804,7 +11219,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: ConstrainedBox(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: MediaQuery.of(context).size.height
                 - MediaQuery.of(context).padding.top
